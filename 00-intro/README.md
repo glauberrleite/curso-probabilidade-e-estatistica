@@ -8,7 +8,15 @@ Vamos começar com algumas definições, para entender como diversos autores enx
 
 > Estatística é a ciência que nos ajuda a tomar decisões e a tirar conclusões na presença de variabilidade. (Montgomery, 2021)
 
-Vamos seguir maior parte do programa e definições apresentados no livro de Montgomery. 
+Vamos seguir maior parte do programa e definições apresentados no livro de Montgomery.
+
+Reunindo essas definições, podemos enxergar a Estatística como um fluxo de trabalho: a partir dos dados, reduzimos, analisamos e modelamos, para finalmente inferir sobre a população.
+
+```mermaid
+flowchart LR
+    A[Coleta] --> B[Redução] --> C[Análise] --> D[Modelagem] --> E[Inferência]
+    E -.->|conclui sobre| P[(População)]
+```
 
 Qual o papel de um engenheiro(a) nisso? Um engenheiro é alguém que resolve problemas de interesse da sociedade, pela aplicação eficiente de princípios científicos. Então precisamos entender bem o método científico e a estatística está fortemente presente nele.
 
@@ -17,6 +25,13 @@ Vemos que um ponto central é a *variabilidade*, também existe uma definição 
 > Métodos científicos são usados para nos ajudar a entender variabilidade. Por variabilidade, queremos dizer que sucessivas observações de um sistema ou de um fenômeno não produzem exatamente o mesmo resultado.
 
 Veja que é diferente do esperado, por exemplo, pelo conceito de função matemática *determinística*: $f(x) = x^2$ ou algo como $f(x) = \int_{0}^{x} ln(k)*e^(k) dk$. Sempre que você for computar com um mesmo valor de $x$ o resultado sairá igual. Não é a mesma coisa quando se tem uma natureza *estocástica*, ou seja, indeterminada.
+
+```mermaid
+flowchart TB
+    X([Entrada x]) --> D{Natureza do fenômeno}
+    D -->|Determinística| F["f(x): mesmo x sempre gera o mesmo resultado"]
+    D -->|Estocástica| G["Resultado varia a cada observação<br/>(variabilidade)"]
+```
 
 Um exemplo disso é na observação do desempenho do consumo em cada tanque de combustível, no caso de um automóvel. A variabilidade é apresentada em decorrência de muitos fatores, como:
 - Tipo de estrada
@@ -64,9 +79,23 @@ $$\text{DADOS} = \text{MODELO} + \text{RESÍDUOS}$$
 
 ![](./relacao_dado_modelo_residuo.png)
 
+Ou seja, cada observação (o dado) é decomposta em uma parte explicada por um modelo e uma parte aleatória (o resíduo):
+
+```mermaid
+flowchart LR
+    O[Observações<br/>DADOS] --> M["MODELO<br/>parte explicada (V/R)"]
+    O --> R["RESÍDUOS<br/>parte aleatória ε"]
+```
+
 ## Populações e amostras
 
 Modelos podem vir de leis físicas e relações conhecidas, descrevendo o caminho de leis gerais para casos específicos. Outra forma de raciocinar é a partir de um conjunto específico (*amostra*) para casos gerais (*população*). Esse processo é conhecido como *inferência estatística*.
+
+```mermaid
+flowchart LR
+    P[(População<br/>N elementos)] -->|amostragem| A[Amostra<br/>n elementos]
+    A -->|inferência estatística| P
+```
 
 ## Tipos de coleta
 
@@ -80,6 +109,16 @@ Vamos considerar o problema de selecionar uma amostra de alguma população. Par
   - Resolve o primeiro e o segundo problemas relatados no estudo retrospectivo, mas não o último.
 - Experimento controlado: São realizadas variações deliberadas (propositais) nas variáveis controláveis do sistema.
   - Resolve todos os problemas apresentados pelo estudo retrospectivo, mas requer cuidados no planejamento.
+
+Podemos enxergar essas três metodologias como uma progressão crescente de controle sobre o sistema. Quanto maior o controle, mais problemas conseguimos resolver — até chegarmos a relações de causa e efeito:
+
+```mermaid
+flowchart LR
+    R["Estudo retrospectivo<br/>(dados históricos)"] --> O["Estudo observacional<br/>(perturba pouco)"]
+    O --> E["Experimento controlado<br/>(variações deliberadas)"]
+    E --> C["+ Aleatorização<br/>(experimento planejado)"]
+    C ==> CE([Relações de causa e efeito])
+```
 
 O melhor cenário: Experimentos planejados + aleatorização -> relações de causa e efeito.
 
