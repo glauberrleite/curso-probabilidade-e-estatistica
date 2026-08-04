@@ -24,7 +24,7 @@ Vemos que um ponto central é a *variabilidade*, também existe uma definição 
 
 > Métodos científicos são usados para nos ajudar a entender variabilidade. Por variabilidade, queremos dizer que sucessivas observações de um sistema ou de um fenômeno não produzem exatamente o mesmo resultado.
 
-Veja que é diferente do esperado, por exemplo, pelo conceito de função matemática *determinística*: $f(x) = x^2$ ou algo como $f(x) = \int_{0}^{x} ln(k)*e^(k) dk$. Sempre que você for computar com um mesmo valor de $x$ o resultado sairá igual. Não é a mesma coisa quando se tem uma natureza *estocástica*, ou seja, indeterminada.
+Veja que é diferente do esperado, por exemplo, pelo conceito de função matemática *determinística*: $f(x) = x^2$ ou algo como $f(x) = \int_{0}^{x} ln(k)*e^{(k)} dk$. Sempre que você for computar com um mesmo valor de $x$ o resultado sairá igual. Não é a mesma coisa quando se tem uma natureza *estocástica*, ou seja, indeterminada.
 
 ```mermaid
 flowchart TB
