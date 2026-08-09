@@ -3,7 +3,33 @@
 O início do livro *Probability, Random Variables, And Stochastic Processes* (4 ed.) do Papoulis (1921), Pillai (2002) diz:
 > The theory of probability deals with averages of mass phenomena occurring sequentially and simultaneously, e.g. electron emission, system failure, turbulence, among many others. It has been **observed** that in these and other fields certain averages **approach a constant value** as the number of observation increases and this value remains the same (...).
 
+Nosso objetivo é compreender, quantificar e modelar o tipo de variações que encontramos com frequência.
+
 ## Espaços amostrais e eventos
+
+> Definição: Um experimento que pode fornecer diferentes resultados, embora seja repetido toda vez da mesma maneira, é chamado de experimento aleatório.
+
+### Espaço amostral
+> Definição: O conjunto de todos os resultados possíveis de um experimento aleatório é conhecido como espaço amostral do experimento. O espaço amostral é denotado por $S$.
+
+Exemplo da Câmera Flash: Experimento que registra o tempo de recarga de um flash 
+- Tempo de recarga do flash 
+- Limitações entre 1,5 e 5 segundos
+- Análise se tempo é baixo, médio ou alto
+- Análise se câmera satisfaz um requisito mínimo (_threshold_)
+
+💡A melhor escolha de um espaço amostral depende dos objetivos do estudo
+
+### Eventos
+> Definição: Evento é um subconjunto do espaço amostral de um experimento aleatório.
+
+- A união de dois eventos é o evento que consiste em todos os resultados que estão contidos em cada um dos dois eventos. Denotamos a união por $E_1 \cup E_2$.
+- A interseção de dois eventos é o evento que consiste em todos os resultados que estão contidos nos dois eventos, simultaneamente. Denotamos a interseção por $E_1 \cap E_2$. 
+- O complemento de um evento em um espaço amostral é o conjunto dos resultados no espaço amostral que não estão no evento. Denotamos o complemento do evento $E$ por $E'$ ou $E^c$.
+
+Algumas situações especiais
+- Como $E \subseteq S$, temos o evento de acontecimento certo $E = S$ e o evento impossível $E = S^c = \varnothing$
+- Eventos excludentes $E_1 \cap E_2 = \varnothing$
 
 ## Definição baseada na frequência relativa
 
@@ -15,6 +41,7 @@ Essa abordagem pode ser usada apenas como hipótese, mas não como base de const
 Problema: Vamos fazer um paralelo com a definição de uma resistência $R$. Podemos usar o limite:
 $$R = \lim_{n \rightarrow \infty} \frac{v(t)}{i_n (t)}$$
 Em que $v(t)$ é uma fonte de tensão e $i_n(t)$ são as correntes de uma sequência de resistores reais que tendem a um elemento (de dois terminais) reais.
+
 🧮 A teoria resultante é complexa demais, melhor usar uma abordagem axiomática baseada nas leis de Kirchoff.
 
 ## Definição clássica
@@ -25,10 +52,58 @@ Em que $N$ é o número de resultados possíveis *(dispostos de maneira igualmen
 
 ⚠️ O problema desta abordagem é a possibilidade de ambiguidade.
 
+**Resultados igualmente prováveis**: Toda vez que um espaço amostral consistir em N resultados possíveis que forem igualmente prováveis, a probabilidade de cada resultado é 1/N.
+
+**Probabilidade de um evento em espaço amostral discreto**: Para um espaço amostral discreto, a probabilidade de um evento $E$, denotada por $P(E)$, é igual à soma das probabilidades dos resultados em $E$.
+
+Exemplo: A partir de um silo com 50 itens, seis deles são selecionados aleatoriamente sem reposição. O silo contém três itens defeituosos e 47 não defeituosos. Qual é a probabilidade de que exatamente dois itens defeituosos sejam selecionados na amostra?
+Precisamos de algum mecanismo para resolver isso, para isso, como se trata de um espaço discreto, vamos recorrer a alguma técnica de contagem. Depois voltamos para ele.
+
 # Técnicas de contagem
 
 Vamos resolver o problema do *dispostos de maneira igualmente apresentada* da definição clássica.
 💡Para isso, vamos usar combinatória.
+
+**Regra da multiplicação**: Considere que uma operação possa ser descrita como uma sequência de k etapas, em que $n_i$ é o número de maneiras de completar a etapa $i \in [1, k]$. Então:
+$$n_{total} = n_1 \times n_2 \times \cdots \times n_k $$
+
+**Permutações**: Número de sequências ordenadas dos elementos de um conjunto. Seja $n$ o número de elementos diferentes do conjunto, o número de permutações será:
+$$n! = n \times (n-1) \times (n-2) \times \cdots \times 2 \times 1$$
+
+Uma propriedade interessante do fatorial (!) é a recursão.
+
+**Permutações de subconjuntos**: O número de permutações de subconjuntos de r elementos selecionados de um conjunto de $n$ elementos diferentes é:
+$$P_r^n = n \times (n-1) \times \cdots \times (n - r + 1)$$
+
+**Permutações de objetos diferentes**: O número de permutações de $n = n_1 + n_2 + ... + n_r$ objetos dos quais $n_1$ são de um tipo, $n_2$ são de um segundo tipo, ..., e $n_r$ são de $r$-ésimo tipo é:
+$$\frac{n!}{n_1! n_2! \cdots n_r!}$$
+
+**Combinações**: O número de combinações, subconjuntos de tamanho $r$ que podem ser selecionados a partir de um conjunto de $n$ elementos:
+$$C_r^n = \begin{pmatrix}n \\ r \end{pmatrix} = \frac{n!}{r!(n-r)!}$$
+
+Exemplo: Um silo com 50 itens fabricados contém três itens defeituosos e 47 itens não defeituosos. Uma amostra de seis itens é selecionada a partir dos 50 itens. Os itens selecionados não são repostos. Ou seja, cada item pode somente ser selecionado uma única vez e a amostra é um subconjunto dos 50 itens. Quantas amostras diferentes existem, de tamanho seis, que contêm exatamente dois itens defeituosos?
+
+Exemplo: Uma placa de circuito impresso tem oito localizações diferentes em que um componente pode ser colocado. Se quatro componentes diferentes forem colocados na placa, quantos projetos diferentes serão possíveis? 
+
+Exemplo: Um componente pode ser colocado em oito localizações diferentes em uma placa de circuito impresso. Se cinco componentes idênticos forem colocados na placa, quantos projetos diferentes serão possíveis?
+
+# Paradoxo de Bertrand
+
+> We are given a circle $C$ of radius $r$ and we wish to determine the probability $p$ that 
+the length $1$ of a "randomly selected" cord $AB$ is greater than the length $r\sqrt(3)$ of the 
+inscribed equilateral triangle. 
+
+Mostra um questionamento da unicidade da solução da formulação clássica para problemas em que a quantidade de resultados possíveis é infinita. [Artigo na wikipedia](https://en.wikipedia.org/wiki/Bertrand_paradox_(probability))
+
+Dependendo do método usado (_a priori_) para definir a aleatoriedade, pode dar três resultados válidos:
+- Ponto medio uniforme no disco: $P = \frac{1}{4}$
+- Extremos uniformes na circunferência: $P = \frac{1}{3}$
+- Distância uniforme num diâmetro: $P = \frac{1}{2}$
+
+Podemos usar uma simulação computacional e a definição baseada em frequência relativa para *estimar*, para isso montamos um [script com simulação Monte Carlo](./scripts/bertrand_simulacao.py), gerando a seguinte figura:
+![](./media/bertrand_simulacao.png)
+
+O problema deste paradoxo é que "seleção ao acaso" precisa ser definida: cada um dos três métodos corresponde a uma forma diferente de sortear a corda — ou seja, a uma distribuição de probabilidade diferente. Não existe uma única resposta "correta"; a resposta depende do mecanismo que gera a corda. (Voltaremos a esse conceito de distribuição de probabilidade mais adiante, e ele vai ajudar a formalizar essa ideia.)
 
 # Axiomas de probabilidade
 
