@@ -114,6 +114,24 @@ Probabilidade é um número que é atribuído a cada membro de uma coleção de 
 3. Para dois eventos $E_1$ e $E_2$ com $E_1 \cap E_2 = \varnothing$, temos que $P(E_1 \cup E_2) = P(E_1) + P(E_2)$
 
 # Álgebra da probabilidade
+> Do livro do Papoulis/Pillai:
+> We roll two dice and we want to find the probability p that the sum of the numbers that show equals 7. 
+> (a) We could consider as possible outcomes the 11 sums 
+> (b) We could count as possible outcomes all pairs of numbers not distinguishing between the first and the second die 
+> ⚠️ outcomes in (a) and (b) are not equally likely
+(Emendar solução com a motivação para a afirmação a seguir)
+
+Afirmação: Toda vez que um espaço amostral consistir em $N$ resultados possíveis que forem igualmente prováveis, a probabilidade de cada resultado é $1/N$.
+> We must count all pairs of numbers distinguishing between the first and the second die.
+
+Afirmação: Para um espaço amostral discreto, a probabilidade de um evento $E$, denotada por $P(E)$, é igual à soma das probabilidades dos resultados em $E$.
+
+Probabilidade de uma União: $P(A \cup B) = P(A) + P(B) - P(A \cap B)$
+
+Eventos mutuamente excludentes: $E_1 \cap E_2 = \varnothing \Rightarrow P(E_1 \cap E_2) = 0$
+
+Exercício: Como seria $P(A \cup B \cup C)$?
+E se os eventos forem mutuamente excludentes?
 
 # Probabilidade condicional
 
