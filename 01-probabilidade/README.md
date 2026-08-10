@@ -133,12 +133,84 @@ Eventos mutuamente excludentes: $E_1 \cap E_2 = \varnothing \Rightarrow P(E_1 \c
 Exercício: Como seria $P(A \cup B \cup C)$?
 E se os eventos forem mutuamente excludentes?
 
+> Definição: Uma partição $U$ de um conjunto $S$ é uma coleção de conjuntos mutuamente excludentes $A_i$ de $S$ tal que:
+> $$A_1 \cup A_2 \cup \cdots \cup A_n = S \quad A_i \cap A_j = \varnothing \quad i \neq j$$
+> $$U = [A_1, A_2, \cdots, A_n]$$
+
+Nesse caso, $P(A_1, A_2, \cdots, A_n) = P(A_1) + P(A_2) + \cdots + P(A_n) = P(S) = 1$.
+
+
 # Probabilidade condicional
+
+> Definição: A probabilidade condicional é um mecanismo de reavaliação de probabilidades, de acordo com a disponibilidade de novas informações.
+> $$P(B|A) = \frac{P(A \cap B)}{P(A)}, \quad P(A) > 0$$
+> É a probabilidade condicional de B dado A.
+
+Exercício: Mostre que probabilidades condicionais seguem os axiomas de probabilidade.
+![](./media/diagrama_venn_excludentes_condicional.png)
+
+Exemplo: Denotamos por $t$ a idade de uma pessoa ao falecer. A probabilidade $t \leq t_0$ é dada por
+$$P(t \leq t_0) = \int_0^{t_{0}} \alpha(t)dt$$
+Em que $\alpha(t)$ é uma função determinada pelos registros de mortalidade. Assumimos que:
+$$\alpha(t) = 3 \times 10^{-9} t^2(100 - t)^2 \quad 0 \leq t \leq 100 \text{ anos}$$
+e 0, caso contrário.
+Qual é a probabilidade de que uma pessoa vai morrer entre as idades de 60 e 70 anos assumindo que ela estava viva aos 60.
+![](./media/exemplo_mortalidade.png)
 
 # Interseção de eventos
 
+Podemos reescrever a definição de probabilidade condicional para montar a regra da multiplicação:
+
+$$P(A \cap B) = P(A | B) P(B)$$
+
+Exemplo: A probabilidade de que o primeiro estágio de uma operação, numericamente controlada, de usinagem para pistões com alta rpm atenda às especificações é igual a 0,90. Falhas são causadas por variações no metal, alinhamento de acessórios, condição da lâmina de corte, vibração e condições ambientais. Dado que o primeiro estágio atende às especificações, a probabilidade de que o segundo estágio de usinagem atenda às especificações é de 0,95. Qual é a probabilidade de ambos os estágios atenderem às especificações?
+(Interpretação prática: Consequentemente, a probabilidade de que cada estágio seja completado com sucesso necessita ser grande para que um pistão atenda a todas as especificações.)
+
+Uma formulação útil é a da regra da probabilidade total:
+> Definição: Suponha que $E_1, E_2, /cdots, E_k$ sejam $k$ conjuntos participantes de um partição $U$ de $S$. Então:
+> $$P(B) = P(B \cap E_1) + P(B \cap E_2) + \cdots + P(B \cap E_k)$$
+![](./media/regra_probabilidade_total.png)
+
+Podemos computar um caso especial, que é:
+$$P(B) = P(B \cap A) + P(B \cap A^c) = P(B | A) P(A) + P(B|A^c)P(A^c)$$
+
 # Independência
+
+Em um caso especial, $P(B|A) = P(B)$, isso significa que o evento $A$ não afeta a probabilidade de que o resultado de um experimento esteja no evento $B$.
+
+> Para dois eventos: Dois eventos são independentes se qualquer uma das seguintes afirmações for verdadeira:
+> - $P(A|B) = P(A)$
+> - $P(B|A) = P(B)$
+> - $P(A \cap B) = P(A)P(B)$
+
+No caso de múltiplos eventos, podemos usar a última condição:
+$$P(E_1 \cap E_2 \cap \cdots \cap E_n) = P(E_1) \times P(E_2) \times \cdots \times P(E_n)$$
 
 # Teorema de Bayes
 
+Iniciamos com a comutatividade da intersecção: $P(A \cap B) = P(B \cap A)$
+
+Thomas Bayes tratou essa questão nos anos 1700 e desenvolveu o resultado fundamental, conhecido como teorema de Bayes.
+
+$$P(A|B) = \frac{P(B|A)P(A)}{P(B)}, \quad P(B) > 0$$
+
 # Variáveis aleatórias
+
+> Uma variável aleatória é uma função que confere um número real a cada resultado no espaço amostral de um experimento aleatório.
+
+> Notação: Uma variável aleatória é denotada por uma letra maiúscula, tal como X. Depois de um experimento ser conduzido, o valor medido da variável aleatória é denotado por uma letra minúscula, tal como x = 70 miliampères.
+
+> Uma variável aleatória discreta é uma variável aleatória com uma faixa finita (ou infinita contável). Uma variável aleatória contínua é uma variável aleatória com um intervalo (tanto finito como infinito) de números reais para sua faixa.
+
+Exemplos de variáveis aleatórias contínuas: 
+- corrente elétrica
+- comprimento
+- pressão
+- temperatura
+- tempo
+- tensão
+- peso 
+Exemplos de variáveis aleatórias discretas: 
+- número de arranhões em uma superfície
+- proporção de partes defeituosas entre 1000 testadas
+- número de bits transmitidos que foram recebidos com erro
