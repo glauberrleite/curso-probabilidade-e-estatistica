@@ -145,10 +145,11 @@ Nesse caso, $P(A_1, A_2, \cdots, A_n) = P(A_1) + P(A_2) + \cdots + P(A_n) = P(S)
 > Definição: A probabilidade condicional é um mecanismo de reavaliação de probabilidades, de acordo com a disponibilidade de novas informações.
 > $$P(B|A) = \frac{P(A \cap B)}{P(A)}, \quad P(A) > 0$$
 > É a probabilidade condicional de B dado A.
-
+---
 Exercício: Mostre que probabilidades condicionais seguem os axiomas de probabilidade.
-![](./media/diagrama_venn_excludentes_condicional.png)
 
+![](./media/diagrama_venn_excludentes_condicional.png)
+---
 Exemplo: Denotamos por $t$ a idade de uma pessoa ao falecer. A probabilidade $t \leq t_0$ é dada por
 $$P(t \leq t_0) = \int_0^{t_{0}} \alpha(t)dt$$
 Em que $\alpha(t)$ é uma função determinada pelos registros de mortalidade. Assumimos que:
@@ -156,7 +157,7 @@ $$\alpha(t) = 3 \times 10^{-9} t^2(100 - t)^2 \quad 0 \leq t \leq 100 \text{ ano
 e 0, caso contrário.
 Qual é a probabilidade de que uma pessoa vai morrer entre as idades de 60 e 70 anos assumindo que ela estava viva aos 60.
 ![](./media/exemplo_mortalidade.png)
-
+---
 # Interseção de eventos
 
 Podemos reescrever a definição de probabilidade condicional para montar a regra da multiplicação:
@@ -170,7 +171,39 @@ Uma formulação útil é a da regra da probabilidade total:
 > Definição: Suponha que $E_1, E_2, /cdots, E_k$ sejam $k$ conjuntos participantes de um partição $U$ de $S$. Então:
 > $$P(B) = P(B \cap E_1) + P(B \cap E_2) + \cdots + P(B \cap E_k)$$
 ![](./media/regra_probabilidade_total.png)
+---
+Exemplo: Suppose box 1 contains $a$ white balls and $b$ black balls, and box 2 contains $c$ white balls and $d$ black balls. One ball of unknown color is transferred from the first box into the second one and then a ball is drawn from the latter. What is the probability that it will be a white ball?
+If no ball is transferred from the first box into the second box, the probability of obtaining a white ball from the second one is simply $c/(c+d)$. In the present case, a ball is first transferred from box 1 to box 2 and there are only two mutually exclusive possibilities for this event—the transferred ball is either a white ball or a black ball. Let
+**Solução**
+$$W = \{\text{transferred ball is white}\} \qquad B = \{\text{transferred ball is black}\}$$
 
+Note that $W$ together with $B$ form a partition ($W \cup B = S$) and
+
+$$P(W) = \frac{a}{a+b} \qquad P(B) = \frac{b}{a+b}$$
+
+The event of interest
+
+$$A = \{\text{white ball is drawn from the second box}\}$$
+
+can happen only under the two mentioned mutually exclusive possibilities. Hence
+
+$$
+\begin{aligned}
+P(A) &= P\{A \cap (W \cup B)\} = P\{(A \cap W) \cup (A \cap B)\} \\
+&= P(A \cap W) + P(A \cap B) \\
+&= P(A \mid W)P(W) + P(A \mid B)P(B)
+\end{aligned}
+$$
+
+But
+
+$$P(A \mid W) = \frac{c+1}{c+d+1} \qquad P(A \mid B) = \frac{c}{c+d+1}$$
+
+Hence
+
+$$P(A) = \frac{a(c+1)}{(a+b)(c+d+1)} + \frac{bc}{(a+b)(c+d+1)} = \frac{ac+bc+a}{(a+b)(c+d+1)}$$
+
+---
 Podemos computar um caso especial, que é:
 $$P(B) = P(B \cap A) + P(B \cap A^c) = P(B | A) P(A) + P(B|A^c)P(A^c)$$
 
@@ -185,6 +218,51 @@ Em um caso especial, $P(B|A) = P(B)$, isso significa que o evento $A$ não afeta
 
 No caso de múltiplos eventos, podemos usar a última condição:
 $$P(E_1 \cap E_2 \cap \cdots \cap E_n) = P(E_1) \times P(E_2) \times \cdots \times P(E_n)$$
+
+---
+Trains X and Y arrive at a station at random between 8 A.M. and 8.20 A.M. Train X stops for four minutes and train Y stops for five minutes. Assuming that the trains arrive independently of each other, we shall determine various probabilities related to the times x and y of their respective arrivals.
+(a) Specify the experiment and the general probability $P(A \cap B)$
+(b) Determine the probability that train X arrives before Y.
+(c) Determine the probability that the trains meet at the station.
+(d) Assuming that the trains met, determine the probability that train X arrived before train Y.
+To do so, we must first specify the underlying experiment.
+
+(a) The outcomes of this experiment are all points $(x, y)$ in the square of Fig. 2-12. The event
+
+$$A = \{X \text{ arrives in the interval } (t_1, t_2)\} = \{t_1 \le x \le t_2\}$$
+
+is a vertical strip as in Fig. 2-12*a* and its probability equals $(t_2 - t_1)/20$. This is our interpretation of the information that the train arrives at random. Similarly, the event
+
+$$B = \{Y \text{ arrives in the interval } (t_3, t_4)\} = \{t_3 \le y \le t_4\}$$
+
+is a horizontal strip and its probability equals $(t_4 - t_3)/20$.
+
+Proceeding similarly, we can determine the probabilities of any horizontal or vertical sets of points. To complete the specification of the experiment, we must determine also the probabilities of their intersections. Interpreting the independence of the arrival times as independence of the events $A$ and $B$, we obtain
+
+$$P(AB) = P(A)P(B) = \frac{(t_2 - t_1)(t_4 - t_3)}{20 \times 20}$$
+
+The event $AB$ is the rectangle shown in the figure. Since the coordinates of this rectangle are arbitrary, we conclude that the probability of any rectangle equals its area divided by 400. In the plane, all events are unions and intersections of rectangles forming a Borel field. This shows that the probability that the point $(x, y)$ will be in an arbitrary region $R$ of the plane equals the area of $R$ divided by 400. This completes the specification of the experiment.
+
+(*b*) We shall determine the probability that train $X$ arrives before train $Y$. This is the probability of the event
+
+$$C = \{x \le y\}$$
+
+shown in Fig. 2-12*b*. This event is a triangle with area 200. Hence
+
+$$P(C) = \frac{200}{400}$$
+
+(*c*) We shall determine the probability that the trains meet at the station. For the trains to meet, $x$ must be less than $y + 5$ and $y$ must be less than $x + 4$. This is the event
+
+$$D = \{-4 \le x - y \le 5\}$$
+
+of Fig. 2-12*c*. As we see from the figure, the region $D$ consists of two trapezoids with
+$AB = BC = AC = ABC$ — diagrama de Venn com três regiões alongadas $A$, $B$ e $C$ sobrepostas em um ponto comum central, dentro de um retângulo (espaço amostral).
+common base, and its area equals 159.5. Hence
+$$P(D) = \frac{159.5}{400}$$
+
+(*d*) Assuming that the trains met, we shall determine the probability that train $X$ arrived before train $Y$. We wish to find the conditional probability $P(C \mid D)$. The event $CD$ is a trapezoid as shown and its area equals 72. Hence
+$$P(C \mid D) = \frac{P(CD)}{P(D)} = \frac{72}{159.5}$$
+---
 
 # Teorema de Bayes
 
