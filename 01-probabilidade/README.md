@@ -239,7 +239,7 @@ is a horizontal strip and its probability equals $(t_4 - t_3)/20$.
 
 Proceeding similarly, we can determine the probabilities of any horizontal or vertical sets of points. To complete the specification of the experiment, we must determine also the probabilities of their intersections. Interpreting the independence of the arrival times as independence of the events $A$ and $B$, we obtain
 
-$$P(AB) = P(A)P(B) = \frac{(t_2 - t_1)(t_4 - t_3)}{20 \times 20}$$
+$$P(A \cap B) = P(A)P(B) = \frac{(t_2 - t_1)(t_4 - t_3)}{20 \times 20}$$
 
 The event $AB$ is the rectangle shown in the figure. Since the coordinates of this rectangle are arbitrary, we conclude that the probability of any rectangle equals its area divided by 400. In the plane, all events are unions and intersections of rectangles forming a Borel field. This shows that the probability that the point $(x, y)$ will be in an arbitrary region $R$ of the plane equals the area of $R$ divided by 400. This completes the specification of the experiment.
 
