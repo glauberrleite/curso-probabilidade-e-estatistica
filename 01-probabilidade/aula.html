@@ -1,0 +1,2690 @@
+<title>Probabilidade — dos experimentos aleatórios às variáveis aleatórias</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+/* ============================================================
+   ECOM020 — Probabilidade e Estatística
+   Registro visual: instrumentação / caderno de laboratório.
+   Acentos com significado fixo:
+     --empirico (âmbar) = medido, estimado, frequência
+     --teorico  (teal)  = exato, deduzido, axioma
+
+   Dois modos sobre o MESMO DOM:
+     documento     — .slide é display:contents (some do layout)
+     apresentação  — .slide vira slide de tela cheia
+
+   ESCALA NA APRESENTAÇÃO
+   No modo apresentação a fonte da RAIZ é que cresce com a viewport,
+   então todo tamanho em rem (inclusive botões, rótulos e leituras das
+   demos) acompanha junto. --ps é o zoom manual (A− / A+).
+   ============================================================ */
+
+:root {
+  --paper:      #f2f5f6;
+  --surface:    #ffffff;
+  --surface-2:  #e9eef0;
+  --ink:        #131b20;
+  --ink-soft:   #45565e;
+  --ink-mute:   #6d7f88;
+  --rule:       #d5dde1;
+  --rule-soft:  #e5eaed;
+
+  --empirico:   #a8620a;
+  --empirico-bg:#f6ecdd;
+  --teorico:    #0d6e7d;
+  --teorico-bg: #dfeef0;
+  --alerta:     #9d332e;
+  --alerta-bg:  #f7e7e5;
+
+  --serif: ui-serif, "Iowan Old Style", Charter, "Bitstream Charter", "Palatino Linotype", Palatino, Georgia, serif;
+  --sans:  ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --mono:  ui-monospace, "SF Mono", SFMono-Regular, "JetBrains Mono", Menlo, Consolas, monospace;
+
+  --measure: 68ch;
+  --rail: 15rem;
+  --ps: 1;            /* zoom da apresentação */
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper:#0d1418; --surface:#131e23; --surface-2:#1a272d;
+    --ink:#e3eaed; --ink-soft:#b3c3ca; --ink-mute:#8598a1;
+    --rule:#263740; --rule-soft:#1c2a31;
+    --empirico:#e2a355; --empirico-bg:#2a2013;
+    --teorico:#55c0d2; --teorico-bg:#102a30;
+    --alerta:#e2867d; --alerta-bg:#2c1817;
+  }
+}
+:root[data-theme="dark"] {
+  --paper:#0d1418; --surface:#131e23; --surface-2:#1a272d;
+  --ink:#e3eaed; --ink-soft:#b3c3ca; --ink-mute:#8598a1;
+  --rule:#263740; --rule-soft:#1c2a31;
+  --empirico:#e2a355; --empirico-bg:#2a2013;
+  --teorico:#55c0d2; --teorico-bg:#102a30;
+  --alerta:#e2867d; --alerta-bg:#2c1817;
+}
+:root[data-theme="light"] {
+  --paper:#f2f5f6; --surface:#ffffff; --surface-2:#e9eef0;
+  --ink:#131b20; --ink-soft:#45565e; --ink-mute:#6d7f88;
+  --rule:#d5dde1; --rule-soft:#e5eaed;
+  --empirico:#a8620a; --empirico-bg:#f6ecdd;
+  --teorico:#0d6e7d; --teorico-bg:#dfeef0;
+  --alerta:#9d332e; --alerta-bg:#f7e7e5;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 1.0625rem;
+  line-height: 1.62;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------- estrutura ---------- */
+
+.shell { display: grid; grid-template-columns: var(--rail) minmax(0, 1fr); }
+
+.rail {
+  position: sticky; top: 0; height: 100vh;
+  padding: 2rem 1.25rem 2rem 1.75rem;
+  border-right: 1px solid var(--rule);
+  display: flex; flex-direction: column; gap: 1.2rem;
+  overflow-y: auto;
+}
+.rail-brand {
+  font-family: var(--mono); font-size: .7rem; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--ink-mute); line-height: 1.5;
+}
+.rail-brand b { color: var(--ink); font-weight: 600; display: block; letter-spacing: .1em; }
+
+.rail nav { display: flex; flex-direction: column; }
+.rail nav a {
+  display: grid; grid-template-columns: 1.9rem 1fr; gap: .45rem; align-items: baseline;
+  padding: .3rem 0; text-decoration: none; color: var(--ink-soft);
+  font-family: var(--sans); font-size: .78rem; line-height: 1.25;
+  border-top: 1px solid var(--rule-soft);
+}
+.rail nav a:first-child { border-top: 0; }
+.rail nav a .n { font-family: var(--mono); font-size: .66rem; color: var(--ink-mute); }
+.rail nav a:hover { color: var(--ink); }
+.rail nav a.on, .rail nav a.on .n { color: var(--teorico); }
+
+.rail-foot {
+  margin-top: auto; font-family: var(--sans); font-size: .75rem;
+  color: var(--ink-mute); display: flex; flex-direction: column; gap: .5rem;
+}
+.rail-btn {
+  font-family: var(--mono); font-size: .68rem; letter-spacing: .1em; text-transform: uppercase;
+  background: transparent; color: var(--ink-mute); border: 1px solid var(--rule);
+  padding: .45rem .6rem; cursor: pointer; text-align: left; text-decoration: none;
+}
+.rail-btn:hover { color: var(--ink); border-color: var(--ink-mute); }
+.rail-btn.accent { color: var(--teorico); border-color: var(--teorico); }
+.rail-btn.accent:hover { background: var(--teorico); color: var(--paper); }
+
+main { padding: 0 0 8rem; min-width: 0; }
+.wrap { max-width: var(--measure); padding: 0 2.5rem; }
+.slide { display: contents; }
+
+/* ---------- capa ---------- */
+
+.hero {
+  border-bottom: 1px solid var(--rule);
+  padding: 4.5rem 0 2.5rem;
+  background-image:
+    linear-gradient(to right, var(--rule-soft) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--rule-soft) 1px, transparent 1px);
+  background-size: 28px 28px; background-position: -1px -1px;
+}
+.eyebrow {
+  font-family: var(--mono); font-size: .7rem; letter-spacing: .16em;
+  text-transform: uppercase; color: var(--ink-mute);
+}
+h1 {
+  font-size: clamp(2.1rem, 4.4vw, 3.15rem); line-height: 1.08; font-weight: 600;
+  letter-spacing: -0.018em; margin: .7rem 0 0; text-wrap: balance; max-width: 20ch;
+}
+h1 em { font-style: italic; color: var(--teorico); }
+.dek { margin: 1.1rem 0 0; font-size: 1.15rem; color: var(--ink-soft); max-width: 52ch; }
+
+.hero-fig { margin-top: 2.2rem; }
+.hero-fig canvas {
+  display: block; width: 100%; height: 120px;
+  border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+}
+.hero-cap {
+  margin-top: .55rem; font-family: var(--sans); font-size: .78rem;
+  color: var(--ink-mute); display: flex; gap: 1.4rem; flex-wrap: wrap;
+}
+.hero-cap span::before {
+  content: ""; display: inline-block; width: 1.6rem; height: 2px;
+  vertical-align: middle; margin-right: .45rem;
+}
+.hero-cap .k-emp::before { background: var(--empirico); }
+.hero-cap .k-teo::before { background: var(--teorico); }
+
+/* ---------- seções ---------- */
+
+section { padding-top: 4.5rem; }
+
+.sec-head {
+  display: grid; grid-template-columns: 4.5rem 1fr; gap: .5rem; align-items: start;
+  border-top: 2px solid var(--ink); padding-top: .7rem; margin-bottom: 1.5rem;
+}
+.sec-head .n {
+  font-family: var(--mono); font-size: .72rem; letter-spacing: .1em;
+  color: var(--ink-mute); padding-top: .45rem;
+}
+h2 {
+  font-size: clamp(1.5rem, 2.6vw, 1.95rem); line-height: 1.15; font-weight: 600;
+  letter-spacing: -0.012em; margin: 0; text-wrap: balance;
+}
+.sec-head .sub {
+  grid-column: 2; font-family: var(--sans); font-size: .84rem;
+  color: var(--ink-mute); margin-top: .3rem;
+}
+h3 {
+  font-family: var(--sans); font-size: .76rem; font-weight: 650; letter-spacing: .13em;
+  text-transform: uppercase; color: var(--ink-mute);
+  margin: 2.2rem 0 .8rem; padding-bottom: .35rem; border-bottom: 1px solid var(--rule);
+}
+
+p { margin: 0 0 1rem; }
+p:last-child { margin-bottom: 0; }
+ul, ol { margin: 0 0 1rem; padding-left: 1.3rem; }
+li { margin-bottom: .4rem; }
+li::marker { color: var(--ink-mute); }
+a { color: var(--teorico); text-underline-offset: 2px; }
+strong { font-weight: 650; }
+:focus-visible { outline: 2px solid var(--teorico); outline-offset: 2px; }
+
+/* ---------- definições, citações, avisos ---------- */
+
+.defn {
+  border-left: 2px solid var(--teorico); background: var(--teorico-bg);
+  padding: .95rem 1.2rem; margin: 0 0 1.1rem;
+}
+.defn .lab {
+  display: block; font-family: var(--mono); font-size: .66rem; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--teorico); margin-bottom: .3rem;
+}
+.defn p { margin: 0 0 .7rem; }
+.defn p:last-child { margin-bottom: 0; }
+.defn ul { margin: .5rem 0 0; }
+
+blockquote {
+  margin: 0 0 1.1rem; padding: 0 0 0 1.2rem;
+  border-left: 1px solid var(--rule); color: var(--ink-soft);
+}
+blockquote cite {
+  display: block; margin-top: .5rem; font-style: normal;
+  font-family: var(--sans); font-size: .78rem; color: var(--ink-mute);
+}
+
+.note {
+  border: 1px solid var(--rule); border-left: 2px solid var(--ink-mute);
+  padding: .8rem 1.1rem; margin: 0 0 1.1rem; background: var(--surface);
+}
+.note.problema { border-left-color: var(--alerta); background: var(--alerta-bg); }
+.note.problema .lab { color: var(--alerta); }
+.note .lab {
+  display: block; font-family: var(--mono); font-size: .66rem; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--ink-mute); margin-bottom: .3rem;
+}
+.note p { margin: 0 0 .55rem; }
+.note p:last-child { margin-bottom: 0; }
+
+/* ---------- matemática ---------- */
+
+.eq {
+  font-family: var(--serif); font-size: 1.2rem; line-height: 1.25;
+  text-align: center; margin: 1.4rem 0; overflow-x: auto; padding: .35rem 0;
+}
+.v { font-style: italic; }
+/* vertical-align:middle deixa a barra da fração na altura do sinal de "=" */
+.frac {
+  display: inline-flex; flex-direction: column; vertical-align: middle;
+  text-align: center; margin: 0 .18em;
+}
+.frac > span:first-child { border-bottom: 1px solid currentColor; padding: 0 .4em .12em; }
+.frac > span:last-child { padding: .12em .4em 0; }
+.lim { display: inline-flex; flex-direction: column; align-items: center; vertical-align: -0.45em; margin-right: .25em; }
+.lim > span:last-child { font-size: .62em; line-height: 1; margin-top: -.1em; }
+.binom { display: inline-flex; align-items: center; vertical-align: middle; }
+.binom .par { font-size: 2.1em; font-weight: 200; line-height: .8; }
+.binom .col { display: inline-flex; flex-direction: column; text-align: center; padding: 0 .12em; font-size: .92em; line-height: 1.15; }
+.intg { font-size: 1.5em; vertical-align: -0.25em; line-height: .8; }
+
+/* ---------- demos ---------- */
+
+.demo { border: 1px solid var(--rule); background: var(--surface); margin: 1.3rem 0; }
+.demo-head {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 1rem;
+  flex-wrap: wrap; padding: .7rem 1.1rem;
+  border-bottom: 1px solid var(--rule); background: var(--surface-2);
+}
+.demo-head .t { font-family: var(--sans); font-size: .78rem; font-weight: 650; letter-spacing: .1em; text-transform: uppercase; }
+.demo-head .h { font-family: var(--sans); font-size: .76rem; color: var(--ink-mute); }
+.demo-body { padding: 1.1rem; }
+
+.ctl { display: flex; gap: .45rem; flex-wrap: wrap; align-items: center; margin-bottom: .9rem; }
+
+button.b {
+  font-family: var(--sans); font-size: .8rem; font-weight: 550; padding: .42rem .85rem;
+  border: 1px solid var(--rule); background: var(--surface); color: var(--ink); cursor: pointer;
+}
+button.b:hover { border-color: var(--ink-mute); }
+button.b.primary { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+button.b:disabled { opacity: .45; cursor: default; }
+
+.seg { display: inline-flex; flex-wrap: wrap; max-width: 100%; border: 1px solid var(--rule); }
+.seg button {
+  font-family: var(--sans); font-size: .78rem; padding: .4rem .8rem;
+  border: 0; border-left: 1px solid var(--rule);
+  background: var(--surface); color: var(--ink-soft); cursor: pointer;
+}
+.seg button:first-child { border-left: 0; }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+
+.readout {
+  display: flex; gap: 1.8rem; flex-wrap: wrap;
+  font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: .82rem;
+  margin-top: .9rem; padding-top: .8rem; border-top: 1px solid var(--rule-soft);
+}
+.readout div { display: flex; flex-direction: column; gap: .15rem; }
+.readout .k { font-size: .64rem; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-mute); }
+.readout .val { font-size: 1.15rem; }
+.readout .val.emp { color: var(--empirico); }
+.readout .val.teo { color: var(--teorico); }
+
+canvas.plot { display: block; width: 100%; height: 190px; }
+
+.venn-wrap { display: flex; gap: 1.4rem; align-items: center; flex-wrap: wrap; }
+.venn-wrap svg { flex: 1 1 15rem; min-width: 0; max-width: 24rem; height: auto; }
+.venn-desc { flex: 1 1 13rem; min-width: 0; color: var(--ink-soft); }
+.venn-desc .expr { font-family: var(--serif); font-size: 1.35rem; color: var(--ink); display: block; margin-bottom: .4rem; }
+svg .s-box { fill: var(--surface-2); stroke: var(--rule); }
+svg .circ { fill: none; stroke: var(--ink-mute); stroke-width: 1.5; }
+svg .fillregion { fill: var(--teorico); opacity: .3; }
+svg text { font-family: var(--sans); font-size: 13px; fill: var(--ink-soft); }
+
+.space-out {
+  font-family: var(--mono); font-size: 1rem; background: var(--surface-2);
+  border: 1px solid var(--rule); padding: .85rem 1rem; margin-top: .9rem;
+  overflow-x: auto; white-space: nowrap;
+}
+
+.calc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); gap: 1rem; margin-top: 1rem; }
+.calc-cell { border: 1px solid var(--rule); padding: .8rem .9rem; }
+.calc-cell .k {
+  font-family: var(--sans); font-size: .68rem; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--ink-mute); display: block; margin-bottom: .1rem;
+}
+.calc-cell .f { font-family: var(--serif); font-size: .9rem; color: var(--ink-soft); display: block; margin-bottom: .45rem; }
+.calc-cell .r {
+  font-family: var(--mono); font-variant-numeric: tabular-nums;
+  font-size: 1.3rem; color: var(--teorico); word-break: break-all;
+}
+input[type="number"] {
+  font-family: var(--mono); font-size: .95rem; width: 5rem; padding: .35rem .5rem;
+  border: 1px solid var(--rule); background: var(--surface); color: var(--ink);
+}
+label.inl { font-family: var(--sans); font-size: .82rem; color: var(--ink-soft); display: inline-flex; align-items: center; gap: .4rem; }
+
+/* dados */
+.dice-wrap { display: flex; gap: 1.4rem; flex-wrap: wrap; align-items: flex-start; }
+.dice-grid {
+  display: grid; grid-template-columns: repeat(6, 1fr); gap: .18rem;
+  flex: 1 1 17rem; min-width: 0; max-width: 26rem;
+}
+.dice-cell {
+  aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: .62rem;
+  border: 1px solid var(--rule); background: var(--surface-2); color: var(--ink-mute);
+}
+.dice-cell.fav { background: var(--teorico); border-color: var(--teorico); color: var(--paper); }
+.dice-cell.dim { opacity: .22; }
+.dice-side { flex: 1 1 14rem; min-width: 0; }
+.sum-chips { display: flex; flex-wrap: wrap; gap: .25rem; margin-top: .6rem; }
+.sum-chip {
+  font-family: var(--mono); font-size: .66rem; padding: .2rem .4rem;
+  border: 1px solid var(--rule); background: var(--surface-2); color: var(--ink-soft);
+  display: flex; flex-direction: column; align-items: center; line-height: 1.2;
+}
+.sum-chip.fav { background: var(--teorico); border-color: var(--teorico); color: var(--paper); }
+.sum-chip small { opacity: .75; font-size: .85em; }
+.verdict { font-family: var(--sans); font-size: .82rem; margin-top: .8rem; padding: .5rem .7rem; border-left: 2px solid; }
+.verdict.ok { color: var(--teorico); border-color: var(--teorico); background: var(--teorico-bg); }
+.verdict.bad { color: var(--alerta); border-color: var(--alerta); background: var(--alerta-bg); }
+
+.ex {
+  border: 1px solid var(--rule); border-left: 2px solid var(--empirico);
+  padding: .95rem 1.1rem; margin: 0 0 .9rem; background: var(--surface);
+}
+.ex .lab {
+  font-family: var(--mono); font-size: .66rem; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--empirico); display: block; margin-bottom: .35rem;
+}
+.ex p { margin: 0 0 .8rem; }
+.ex .sol { margin-top: .8rem; padding-top: .8rem; border-top: 1px solid var(--rule-soft); }
+.ex .sol[hidden] { display: none; }
+.ex .sol .res { font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: 1.15rem; color: var(--empirico); }
+
+figure { margin: 1.3rem 0; }
+figure img, figure video {
+  display: block; width: 100%; height: auto;
+  border: 1px solid var(--rule); background: var(--surface);
+}
+figure.plain img { border: 0; background: transparent; }
+figcaption { font-family: var(--sans); font-size: .78rem; color: var(--ink-mute); margin-top: .5rem; }
+.vid-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 1rem; margin: 1.2rem 0; }
+.vid-grid figure { margin: 0; }
+
+.tri { width: 100%; border-collapse: collapse; margin: 1.2rem 0; }
+.tri th, .tri td { text-align: left; padding: .55rem .7rem; border-bottom: 1px solid var(--rule); }
+.tri th {
+  font-family: var(--sans); font-size: .7rem; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--ink-mute); font-weight: 600;
+}
+.tri td.p { font-family: var(--mono); font-variant-numeric: tabular-nums; color: var(--teorico); font-size: 1.05rem; }
+.tbl-scroll { overflow-x: auto; }
+
+.axiom-list { list-style: none; padding: 0; margin: 1.2rem 0; }
+.axiom-list li {
+  display: grid; grid-template-columns: 2.6rem 1fr; gap: .9rem; align-items: baseline;
+  padding: 1.05rem 0; border-top: 1px solid var(--rule); margin: 0;
+}
+.axiom-list li:last-child { border-bottom: 1px solid var(--rule); }
+.axiom-list .ax-n { font-family: var(--mono); font-size: .72rem; letter-spacing: .1em; color: var(--teorico); }
+.axiom-list .ax-eq { font-family: var(--serif); font-size: 1.3rem; }
+
+.cols2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 1.2rem; }
+
+/* pistões — quadrado unitário (mosaico) */
+.mos-wrap { display: flex; gap: 1.4rem; flex-wrap: wrap; align-items: flex-start; }
+.mos-wrap svg { flex: 1 1 15rem; min-width: 0; max-width: 21rem; height: auto; }
+.mos-side { flex: 1 1 15rem; min-width: 0; }
+svg .mos-r { stroke: var(--surface); stroke-width: 1.5; transition: opacity .15s ease; }
+svg .mos-r.dim { opacity: .16; }
+svg .mos-ab   { fill: var(--teorico); }
+svg .mos-abc  { fill: var(--empirico); }
+svg .mos-acb  { fill: var(--ink-mute); }
+svg .mos-acbc { fill: var(--alerta); }
+svg .mos-out  { fill: none; stroke: var(--ink); stroke-width: 1.5; }
+svg .mos-lbl  { font-family: var(--mono); font-size: 9px; fill: var(--ink-mute); }
+svg .mos-in   { font-family: var(--mono); font-size: 8.5px; fill: #fff; }
+
+.sliders { display: flex; flex-direction: column; gap: .55rem; margin-bottom: .9rem; }
+.sld { display: grid; grid-template-columns: 10.5rem 1fr 3.2rem; gap: .6rem; align-items: center; }
+.sld > label { font-family: var(--sans); font-size: .8rem; color: var(--ink-soft); }
+.sld > output {
+  font-family: var(--mono); font-variant-numeric: tabular-nums;
+  font-size: .85rem; color: var(--teorico); text-align: right;
+}
+input[type="range"] {
+  -webkit-appearance: none; appearance: none; width: 100%; height: 1.05rem;
+  background: transparent; cursor: pointer; margin: 0;
+}
+input[type="range"]::-webkit-slider-runnable-track {
+  height: .3rem; background: var(--rule); border: 0;
+}
+input[type="range"]::-moz-range-track { height: .3rem; background: var(--rule); border: 0; }
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: .95rem; height: .95rem; margin-top: -.33rem;
+  background: var(--teorico); border: 0; border-radius: 50%;
+}
+input[type="range"]::-moz-range-thumb {
+  width: .95rem; height: .95rem; background: var(--teorico); border: 0; border-radius: 50%;
+}
+
+.res-line {
+  display: grid; grid-template-columns: 1fr auto; gap: .5rem; align-items: baseline;
+  padding: .4rem 0; border-top: 1px solid var(--rule-soft);
+  font-family: var(--sans); font-size: .82rem; color: var(--ink-soft);
+}
+.res-line .n {
+  font-family: var(--mono); font-variant-numeric: tabular-nums;
+  font-size: 1.1rem; color: var(--ink);
+}
+.res-line.destaque .n { color: var(--teorico); font-weight: 600; }
+.res-line small { display: block; color: var(--ink-mute); font-size: .88em; }
+
+/* trens — probabilidade geométrica */
+.geo-wrap { display: flex; gap: 1.4rem; flex-wrap: wrap; align-items: center; }
+.geo-wrap svg { flex: 1 1 16rem; min-width: 0; max-width: 24rem; height: auto; }
+.geo-side { flex: 1 1 13rem; min-width: 0; }
+svg .tr-sq { fill: var(--surface-2); stroke: var(--ink-mute); stroke-width: 1.2; }
+svg .tr-region { fill: var(--teorico); opacity: .34; stroke: var(--teorico); stroke-width: 1.5; }
+svg .tr-axis { stroke: var(--rule); stroke-width: 1; }
+svg .tr-lbl { font-family: var(--mono); font-size: 9px; fill: var(--ink-mute); }
+
+/* ============================================================
+   MODO APRESENTAÇÃO
+   ============================================================ */
+
+.hud { display: none; }
+
+/* A fonte da raiz cresce com a viewport → todo rem acompanha. */
+:root[data-mode="present"] { font-size: calc(clamp(15px, 1.45vw, 30px) * var(--ps)); }
+
+:root[data-mode="present"] body { overflow: hidden; font-size: 1.12rem; line-height: 1.5; }
+:root[data-mode="present"] .rail { display: none; }
+:root[data-mode="present"] .shell { display: block; }
+:root[data-mode="present"] main { padding: 0; }
+:root[data-mode="present"] section,
+:root[data-mode="present"] .wrap,
+:root[data-mode="present"] .hero { display: contents; }
+
+:root[data-mode="present"] .slide { display: none; }
+:root[data-mode="present"] .slide.on {
+  display: flex; flex-direction: column; justify-content: center; align-items: center;
+  gap: .7rem; position: fixed; inset: 0;
+  padding: 1.6rem clamp(1rem, 4vw, 4rem) 2.9rem;
+  overflow-y: auto; background: var(--paper);
+}
+:root[data-mode="present"] .axiom-list { margin: .6rem 0; }
+:root[data-mode="present"] .axiom-list li { padding: .7rem 0; }
+:root[data-mode="present"] .defn,
+:root[data-mode="present"] .note,
+:root[data-mode="present"] blockquote { margin-bottom: 0; }
+:root[data-mode="present"] .slide.on > * { width: 100%; max-width: 52rem; }
+:root[data-mode="present"] .slide.on > .sec-head { margin-bottom: .2rem; }
+
+/* tamanhos em rem puro: escalam com a raiz */
+:root[data-mode="present"] h1 { font-size: 3rem; max-width: 22ch; }
+:root[data-mode="present"] h2 { font-size: 2rem; }
+:root[data-mode="present"] .dek { font-size: 1.35rem; max-width: 44ch; }
+:root[data-mode="present"] .eq { font-size: 1.65rem; margin: .9rem 0; }
+:root[data-mode="present"] .axiom-list .ax-eq { font-size: 1.75rem; }
+:root[data-mode="present"] .venn-desc .expr { font-size: 1.55rem; }
+:root[data-mode="present"] .dice-cell { font-size: .78rem; }
+:root[data-mode="present"] .sum-chip { font-size: .8rem; }
+:root[data-mode="present"] h3 { margin-top: 0; }
+:root[data-mode="present"] canvas.plot { height: clamp(180px, 28vh, 420px); }
+:root[data-mode="present"] .hero-fig canvas { height: clamp(110px, 16vh, 260px); }
+:root[data-mode="present"] figure img { max-height: 44vh; object-fit: contain; }
+:root[data-mode="present"] .vid-grid { grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); }
+:root[data-mode="present"] .dice-grid { max-width: 24rem; }
+:root[data-mode="present"] .sliders { gap: .35rem; margin-bottom: .6rem; }
+:root[data-mode="present"] .ctl { margin-bottom: .6rem; }
+:root[data-mode="present"] .res-line { padding: .3rem 0; }
+
+/* barra inferior — tamanho próprio, não acompanha o zoom do conteúdo */
+:root[data-mode="present"] .hud {
+  display: flex; align-items: center; gap: .7rem;
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 10;
+  padding: .4rem clamp(.6rem, 2vw, 2rem);
+  background: var(--surface); border-top: 1px solid var(--rule);
+  font-family: var(--sans); font-size: clamp(12px, .55rem, 20px); color: var(--ink-mute);
+}
+.hud .where { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hud .where b { color: var(--ink); font-weight: 600; }
+.hud .count, .hud .zoom {
+  font-family: var(--mono); font-variant-numeric: tabular-nums; letter-spacing: .04em; white-space: nowrap;
+}
+.hud button {
+  font-family: var(--sans); font-size: inherit; padding: .25rem .6rem;
+  border: 1px solid var(--rule); background: var(--surface); color: var(--ink); cursor: pointer;
+}
+.hud button:hover { border-color: var(--ink-mute); }
+.hud .sep { width: 1px; align-self: stretch; background: var(--rule); }
+.hud .bar { position: absolute; left: 0; top: -1px; height: 2px; background: var(--teorico); transition: width .18s ease; }
+
+/* ---------- responsivo ---------- */
+
+@media (max-width: 62rem) {
+  .shell { grid-template-columns: 1fr; }
+  .rail { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--rule); padding: 1.5rem; }
+  .rail nav { display: grid; grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr)); gap: 0 1.2rem; }
+  .rail-foot { margin-top: 1rem; }
+  .wrap { padding-left: 1.5rem; padding-right: 1.5rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+
+html { scroll-behavior: smooth; }
+</style>
+
+<div class="shell">
+  <aside class="rail">
+    <div class="rail-brand">
+      <b>ECOM020</b>
+      Probabilidade e Estatística<br>
+      Eng. de Computação · UFAL
+    </div>
+    <nav id="toc">
+      <a href="#observacao"><span class="n">01</span><span>O que a teoria observa</span></a>
+      <a href="#espaco"><span class="n">02</span><span>Espaço amostral</span></a>
+      <a href="#eventos"><span class="n">03</span><span>Eventos</span></a>
+      <a href="#frequencia"><span class="n">04</span><span>Frequência relativa</span></a>
+      <a href="#classica"><span class="n">05</span><span>Definição clássica</span></a>
+      <a href="#contagem"><span class="n">06</span><span>Técnicas de contagem</span></a>
+      <a href="#bertrand"><span class="n">07</span><span>Paradoxo de Bertrand</span></a>
+      <a href="#axiomas"><span class="n">08</span><span>Axiomas de Kolmogorov</span></a>
+      <a href="#algebra"><span class="n">09</span><span>Álgebra da probabilidade</span></a>
+      <a href="#condicional"><span class="n">10</span><span>Probabilidade condicional</span></a>
+      <a href="#intersecao"><span class="n">11</span><span>Interseção de eventos</span></a>
+      <a href="#independencia"><span class="n">12</span><span>Independência</span></a>
+      <a href="#bayes"><span class="n">13</span><span>Teorema de Bayes</span></a>
+      <a href="#va"><span class="n">14</span><span>Variáveis aleatórias</span></a>
+    </nav>
+    <div class="rail-foot">
+      <button class="rail-btn accent" id="presentBtn" type="button">▶ Modo apresentação</button>
+      <button class="rail-btn" id="themeBtn" type="button">Tema: automático</button>
+      <a class="rail-btn" href="../index.html">← Início do curso</a>
+      <span>Prof. Glauber R. Leite</span>
+    </div>
+  </aside>
+
+  <main>
+
+    <!-- ============ CAPA ============ -->
+    <header class="hero">
+      <div class="wrap">
+        <div class="slide" data-sec="Abertura">
+          <div>
+            <div class="eyebrow">Aula · Probabilidade</div>
+            <h1>Como definir <em>probabilidade</em> sem cair em contradição</h1>
+            <p class="dek">
+              Duas tentativas, duas falhas, a saída axiomática de Kolmogorov — e o que
+              se deduz a partir dela.
+            </p>
+          </div>
+          <div class="hero-fig">
+            <canvas id="heroCanvas" aria-label="Frequência relativa de um evento oscilando e se aproximando de um valor constante conforme o número de observações cresce"></canvas>
+            <div class="hero-cap">
+              <span class="k-emp">frequência relativa observada</span>
+              <span class="k-teo">a constante de que a teoria se aproxima</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ============ 01 ============ -->
+    <section id="observacao">
+      <div class="wrap">
+        <div class="slide" data-sec="§ 01 · O que a teoria observa">
+          <div class="sec-head">
+            <span class="n">§ 01</span>
+            <h2>O que a teoria observa</h2>
+            <span class="sub">Ponto de partida: uma regularidade empírica, não uma definição</span>
+          </div>
+          <blockquote>
+            The theory of probability deals with averages of mass phenomena occurring
+            sequentially and simultaneously, e.g. electron emission, system failure,
+            turbulence, among many others. It has been <strong>observed</strong> that in these and
+            other fields certain averages <strong>approach a constant value</strong> as the number of
+            observation increases and this value remains the same (…).
+            <cite>Papoulis &amp; Pillai, <i>Probability, Random Variables, and Stochastic Processes</i>, 4ª ed.</cite>
+          </blockquote>
+          <p>
+            Objetivo: compreender, quantificar e modelar o tipo de variações que
+            encontramos com frequência.
+          </p>
+        </div>
+
+        <div class="slide" data-sec="§ 01 · O que a teoria observa">
+          <div class="defn">
+            <span class="lab">Definição — experimento aleatório</span>
+            <p>Um experimento que pode fornecer diferentes resultados, embora seja repetido
+            toda vez da mesma maneira, é chamado de <strong>experimento aleatório</strong>.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 02 ============ -->
+    <section id="espaco">
+      <div class="wrap">
+        <div class="slide" data-sec="§ 02 · Espaço amostral">
+          <div class="sec-head">
+            <span class="n">§ 02</span>
+            <h2>Espaço amostral</h2>
+            <span class="sub">O conjunto de tudo que pode acontecer</span>
+          </div>
+          <div class="defn">
+            <span class="lab">Definição — espaço amostral</span>
+            <p>O conjunto de todos os resultados possíveis de um experimento aleatório é
+            conhecido como <strong>espaço amostral</strong> do experimento, denotado por
+            <span class="v">S</span>.</p>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 02 · Espaço amostral">
+          <h3>Exemplo — câmera flash</h3>
+          <p>Experimento que registra o tempo de recarga de um flash, limitado entre 1,5 e 5 segundos.</p>
+          <div class="demo">
+            <div class="demo-head">
+              <span class="t">Câmera flash</span>
+              <span class="h">escolha o objetivo do estudo</span>
+            </div>
+            <div class="demo-body">
+              <div class="ctl">
+                <div class="seg" id="flashSeg">
+                  <button type="button" data-k="cont" aria-pressed="true">Medir o tempo</button>
+                  <button type="button" data-k="cat" aria-pressed="false">Classificar</button>
+                  <button type="button" data-k="bin" aria-pressed="false">Verificar requisito</button>
+                </div>
+              </div>
+              <div class="space-out" id="flashOut"></div>
+            </div>
+          </div>
+          <div class="note">
+            <span class="lab">Nota</span>
+            <p>A melhor escolha de um espaço amostral <strong>depende dos objetivos do estudo</strong>.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 03 ============ -->
+    <section id="eventos">
+      <div class="wrap">
+        <div class="slide" data-sec="§ 03 · Eventos">
+          <div class="sec-head">
+            <span class="n">§ 03</span>
+            <h2>Eventos</h2>
+            <span class="sub">Subconjuntos de <span class="v">S</span> — e a álgebra de conjuntos que vem junto</span>
+          </div>
+          <div class="defn">
+            <span class="lab">Definição — evento</span>
+            <p><strong>Evento</strong> é um subconjunto do espaço amostral de um experimento aleatório.</p>
+          </div>
+          <div class="defn">
+            <span class="lab">Operações</span>
+            <ul>
+              <li>A <strong>união</strong> de dois eventos é o evento que consiste em todos os resultados
+                contidos em cada um dos dois eventos:
+                <span class="v">E</span><sub>1</sub> ∪ <span class="v">E</span><sub>2</sub>.</li>
+              <li>A <strong>interseção</strong> é o evento que consiste em todos os resultados contidos
+                nos dois eventos, simultaneamente:
+                <span class="v">E</span><sub>1</sub> ∩ <span class="v">E</span><sub>2</sub>.</li>
+              <li>O <strong>complemento</strong> de um evento é o conjunto dos resultados no espaço
+                amostral que não estão no evento:
+                <span class="v">E</span>′ ou <span class="v">E</span><sup>c</sup>.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 03 · Eventos">
+          <div class="demo">
+            <div class="demo-head">
+              <span class="t">Operações com eventos</span>
+              <span class="h">clique para destacar a região</span>
+            </div>
+            <div class="demo-body">
+              <div class="ctl">
+                <div class="seg" id="vennSeg">
+                  <button type="button" data-k="uniao" aria-pressed="true">União</button>
+                  <button type="button" data-k="inter" aria-pressed="false">Interseção</button>
+                  <button type="button" data-k="compl" aria-pressed="false">Complemento</button>
+                  <button type="button" data-k="excl" aria-pressed="false">Excludentes</button>
+                </div>
+              </div>
+              <div class="venn-wrap">
+                <svg viewBox="0 0 320 190" role="img" aria-labelledby="vennTitle">
+                  <title id="vennTitle">Diagrama de Venn com dois eventos dentro do espaço amostral</title>
+                  <defs>
+                    <clipPath id="clipA"><circle id="cA" cx="130" cy="98" r="62"/></clipPath>
+                  </defs>
+                  <rect class="s-box" x="14" y="24" width="292" height="152"/>
+                  <text x="22" y="42" style="font-style:italic">S</text>
+                  <g id="vennFill"></g>
+                  <circle class="circ" id="rA" cx="130" cy="98" r="62"/>
+                  <circle class="circ" id="rB" cx="196" cy="98" r="62"/>
+                  <text id="lA" x="96" y="103" style="font-style:italic">E₁</text>
+                  <text id="lB" x="222" y="103" style="font-style:italic">E₂</text>
+                </svg>
+                <div class="venn-desc">
+                  <span class="expr" id="vennExpr"></span>
+                  <span id="vennTxt"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 03 · Eventos">
+          <h3>Situações especiais</h3>
+          <ul>
+            <li>Como <span class="v">E</span> ⊆ <span class="v">S</span>, temos o evento
+              <strong>certo</strong> <span class="v">E</span> = <span class="v">S</span> e o evento
+              <strong>impossível</strong> <span class="v">E</span> = <span class="v">S</span><sup>c</sup> = ∅.</li>
+            <li>Eventos <strong>excludentes</strong>:
+              <span class="v">E</span><sub>1</sub> ∩ <span class="v">E</span><sub>2</sub> = ∅.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 04 ============ -->
+    <section id="frequencia">
+      <div class="wrap">
+        <div class="slide" data-sec="§ 04 · Frequência relativa">
+          <div class="sec-head">
+            <span class="n">§ 04</span>
+            <h2>Tentativa 1 — frequência relativa</h2>
+            <span class="sub">Definir probabilidade pelo que se mede</span>
+          </div>
+          <div class="defn">
+            <span class="lab">Definição baseada na frequência relativa</span>
+            <p>A probabilidade <span class="v">P</span>(<span class="v">E</span>) de um evento
+            <span class="v">E</span> é o limite</p>
+            <div class="eq">
+              <span class="v">P</span>(<span class="v">E</span>) =
+              <span class="lim"><span>lim</span><span><span class="v">n</span> → ∞</span></span>
+              <span class="frac"><span><span class="v">n</span><sub>e</sub></span><span><span class="v">n</span></span></span>
+            </div>
+            <p>em que <span class="v">n</span><sub>e</sub> é o número de ocorrências de
+            <span class="v">E</span> e <span class="v">n</span> é o número de tentativas.</p>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 04 · Frequência relativa">
+          <div class="demo">
+            <div class="demo-head">
+              <span class="t">Frequência relativa ao vivo</span>
+              <span class="h">a razão se acomoda — mas nunca “chega”</span>
+            </div>
+            <div class="demo-body">
+              <div class="ctl">
+                <div class="seg" id="freqSeg">
+                  <button type="button" data-k="moeda" aria-pressed="true">Moeda · E = cara</button>
+                  <button type="button" data-k="dado" aria-pressed="false">Dado · E = sair 6</button>
+                </div>
+                <button class="b primary" id="freqRun" type="button">Rodar</button>
+                <button class="b" id="freqReset" type="button">Reiniciar</button>
+              </div>
+              <canvas class="plot" id="freqCanvas" aria-label="Gráfico da frequência relativa em função do número de tentativas"></canvas>
+              <div class="readout">
+                <div><span class="k">tentativas <span class="v">n</span></span><span class="val" id="roN">0</span></div>
+                <div><span class="k">ocorrências <span class="v">n</span><sub>e</sub></span><span class="val" id="roNe">0</span></div>
+                <div><span class="k">frequência <span class="v">n</span><sub>e</sub>/<span class="v">n</span></span><span class="val emp" id="roP">—</span></div>
+                <div><span class="k">valor de referência</span><span class="val teo" id="roT">0,5000</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 04 · Frequência relativa">
+          <div class="note problema">
+            <span class="lab">Limitação</span>
+            <p>Essa abordagem pode ser usada apenas como <strong>hipótese</strong>, mas não como base
+            de construção da teoria probabilística, por mais que sejam feitos muitos experimentos.</p>
+          </div>
+          <h3>O paralelo com a resistência</h3>
+          <p>Poderíamos tentar definir uma resistência <span class="v">R</span> pelo limite</p>
+          <div class="eq">
+            <span class="v">R</span> =
+            <span class="lim"><span>lim</span><span><span class="v">n</span> → ∞</span></span>
+            <span class="frac"><span><span class="v">v</span>(<span class="v">t</span>)</span><span><span class="v">i</span><sub><span class="v">n</span></sub>(<span class="v">t</span>)</span></span>
+          </div>
+          <div class="note">
+            <span class="lab">Ideia</span>
+            <p>A teoria resultante é complexa demais — melhor usar uma abordagem
+            <strong>axiomática</strong>, baseada nas leis de Kirchhoff.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 05 ============ -->
+    <section id="classica">
+      <div class="wrap">
+        <div class="slide" data-sec="§ 05 · Definição clássica">
+          <div class="sec-head">
+            <span class="n">§ 05</span>
+            <h2>Tentativa 2 — definição clássica</h2>
+            <span class="sub">Definir probabilidade antes de qualquer experimento</span>
+          </div>
+          <div class="defn">
+            <span class="lab">Definição clássica</span>
+            <p>A probabilidade <span class="v">P</span>(<span class="v">E</span>) de um evento
+            <span class="v">E</span> é determinada, <i>a priori</i>, sem experimentação, a partir da razão</p>
+            <div class="eq">
+              <span class="v">P</span>(<span class="v">E</span>) =
+              <span class="frac"><span><span class="v">N</span><sub><span class="v">E</span></sub></span><span><span class="v">N</span></span></span>
+            </div>
+            <p>em que <span class="v">N</span> é o número de resultados possíveis
+            <i>(dispostos de maneira igualmente provável)</i> e
+            <span class="v">N</span><sub><span class="v">E</span></sub> é o número de resultados
+            favoráveis para o evento <span class="v">E</span>.</p>
+          </div>
+          <div class="note problema">
+            <span class="lab">Limitação</span>
+            <p>O problema desta abordagem é a possibilidade de <strong>ambiguidade</strong>.</p>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 05 · Definição clássica">
+          <div class="defn">
+            <span class="lab">Resultados igualmente prováveis</span>
+            <p>Toda vez que um espaço amostral consistir em <span class="v">N</span> resultados
+            possíveis que forem igualmente prováveis, a probabilidade de cada resultado é
+            1/<span class="v">N</span>.</p>
+          </div>
+          <div class="defn">
+            <span class="lab">Probabilidade de um evento em espaço amostral discreto</span>
+            <p>Para um espaço amostral discreto, a probabilidade de um evento
+            <span class="v">E</span>, denotada por <span class="v">P</span>(<span class="v">E</span>),
+            é igual à soma das probabilidades dos resultados em <span class="v">E</span>.</p>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 05 · Definição clássica">
+          <div class="ex">
+            <span class="lab">Exemplo — em aberto</span>
+            <p>
+              A partir de um silo com 50 itens, seis deles são selecionados aleatoriamente
+              sem reposição. O silo contém três itens defeituosos e 47 não defeituosos.
+              Qual é a probabilidade de que exatamente dois itens defeituosos sejam
+              selecionados na amostra?
+            </p>
+            <p style="margin:0; color:var(--ink-mute)">
+              Como se trata de um espaço discreto, vamos recorrer a alguma técnica de
+              contagem. Depois voltamos para ele.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 06 ============ -->
+    <section id="contagem">
+      <div class="wrap">
+        <div class="slide" data-sec="§ 06 · Técnicas de contagem">
+          <div class="sec-head">
+            <span class="n">§ 06</span>
+            <h2>Técnicas de contagem</h2>
+            <span class="sub">Resolver o “dispostos de maneira igualmente provável”</span>
+          </div>
+          <div class="defn">
+            <span class="lab">Regra da multiplicação</span>
+            <p>Considere que uma operação possa ser descrita como uma sequência de
+            <span class="v">k</span> etapas, em que <span class="v">n</span><sub><span class="v">i</span></sub>
+            é o número de maneiras de completar a etapa
+            <span class="v">i</span> ∈ [1, <span class="v">k</span>]. Então:</p>
+            <div class="eq">
+              <span class="v">n</span><sub>total</sub> =
+              <span class="v">n</span><sub>1</sub> × <span class="v">n</span><sub>2</sub> × ⋯ × <span class="v">n</span><sub><span class="v">k</span></sub>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 06 · Técnicas de contagem">
+          <div class="defn">
+            <span class="lab">Permutações</span>
+            <p>Número de sequências <strong>ordenadas</strong> dos elementos de um conjunto. Seja
+            <span class="v">n</span> o número de elementos diferentes do conjunto:</p>
+            <div class="eq">
+              <span class="v">n</span>! = <span class="v">n</span> × (<span class="v">n</span>−1) × (<span class="v">n</span>−2) × ⋯ × 2 × 1
+            </div>
+            <p>Uma propriedade interessante do fatorial é a <strong>recursão</strong>.</p>
+          </div>
+          <div class="defn">
+            <span class="lab">Permutações de subconjuntos</span>
+            <p>Número de permutações de subconjuntos de <span class="v">r</span> elementos
+            selecionados de um conjunto de <span class="v">n</span> elementos diferentes:</p>
+            <div class="eq">
+              <span class="v">P</span><sup><span class="v">n</span></sup><sub><span class="v">r</span></sub> =
+              <span class="v">n</span> × (<span class="v">n</span>−1) × ⋯ × (<span class="v">n</span> − <span class="v">r</span> + 1)
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 06 · Técnicas de contagem">
+          <div class="defn">
+            <span class="lab">Permutações de objetos semelhantes</span>
+            <p>Número de permutações de <span class="v">n</span> = <span class="v">n</span><sub>1</sub> +
+            <span class="v">n</span><sub>2</sub> + ⋯ + <span class="v">n</span><sub><span class="v">r</span></sub>
+            objetos dos quais <span class="v">n</span><sub>1</sub> são de um tipo,
+            <span class="v">n</span><sub>2</sub> de um segundo tipo, …, e
+            <span class="v">n</span><sub><span class="v">r</span></sub> do <span class="v">r</span>-ésimo tipo:</p>
+            <div class="eq">
+              <span class="frac">
+                <span><span class="v">n</span>!</span>
+                <span><span class="v">n</span><sub>1</sub>! <span class="v">n</span><sub>2</sub>! ⋯ <span class="v">n</span><sub><span class="v">r</span></sub>!</span>
+              </span>
+            </div>
+          </div>
+          <div class="defn">
+            <span class="lab">Combinações</span>
+            <p>Número de subconjuntos de tamanho <span class="v">r</span> que podem ser
+            selecionados a partir de um conjunto de <span class="v">n</span> elementos:</p>
+            <div class="eq">
+              <span class="v">C</span><sup><span class="v">n</span></sup><sub><span class="v">r</span></sub> =
+              <span class="binom">
+                <span class="par">(</span>
+                <span class="col"><span class="v">n</span><span class="v">r</span></span>
+                <span class="par">)</span>
+              </span>
+              =
+              <span class="frac"><span><span class="v">n</span>!</span><span><span class="v">r</span>!(<span class="v">n</span> − <span class="v">r</span>)!</span></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 06 · Técnicas de contagem">
+          <div class="demo">
+            <div class="demo-head">
+              <span class="t">Calculadora</span>
+              <span class="h">a ordem importa?</span>
+            </div>
+            <div class="demo-body">
+              <div class="ctl">
+                <label class="inl"><span class="v">n</span> =
+                  <input type="number" id="inN" value="8" min="0" max="170" step="1"></label>
+                <label class="inl"><span class="v">r</span> =
+                  <input type="number" id="inR" value="4" min="0" max="170" step="1"></label>
+              </div>
+              <div class="calc-grid">
+                <div class="calc-cell">
+                  <span class="k">Fatorial</span>
+                  <span class="f"><span class="v">n</span>!</span>
+                  <span class="r" id="outFat">—</span>
+                </div>
+                <div class="calc-cell">
+                  <span class="k">Ordem importa</span>
+                  <span class="f"><span class="v">P</span><sup><span class="v">n</span></sup><sub><span class="v">r</span></sub></span>
+                  <span class="r" id="outPerm">—</span>
+                </div>
+                <div class="calc-cell">
+                  <span class="k">Ordem não importa</span>
+                  <span class="f"><span class="v">C</span><sup><span class="v">n</span></sup><sub><span class="v">r</span></sub></span>
+                  <span class="r" id="outComb">—</span>
+                </div>
+              </div>
+              <p id="calcMsg" style="margin-top:.8rem; font-family:var(--sans); font-size:.85rem; color:var(--ink-mute)"></p>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 06 · Técnicas de contagem">
+          <h3>Exercícios</h3>
+          <div class="ex" data-ex>
+            <span class="lab">Exercício 1 · placa de circuito</span>
+            <p>
+              Uma placa de circuito impresso tem oito localizações diferentes em que um
+              componente pode ser colocado. Se <strong>quatro componentes diferentes</strong> forem
+              colocados na placa, quantos projetos diferentes serão possíveis?
+            </p>
+            <button class="b" type="button" data-reveal>Mostrar resolução</button>
+            <div class="sol" hidden>
+              <p>Componentes diferentes ⇒ a ordem importa.</p>
+              <p><span class="v">P</span><sup>8</sup><sub>4</sub> = 8 × 7 × 6 × 5 =
+                <span class="res">1.680</span> projetos.</p>
+            </div>
+          </div>
+          <div class="ex" data-ex>
+            <span class="lab">Exercício 2 · placa de circuito</span>
+            <p>
+              Um componente pode ser colocado em oito localizações diferentes em uma placa de
+              circuito impresso. Se <strong>cinco componentes idênticos</strong> forem colocados na
+              placa, quantos projetos diferentes serão possíveis?
+            </p>
+            <button class="b" type="button" data-reveal>Mostrar resolução</button>
+            <div class="sol" hidden>
+              <p>Componentes idênticos ⇒ só importa <em>quais</em> posições, não a ordem.</p>
+              <p><span class="v">C</span><sup>8</sup><sub>5</sub> = 8!/(5!·3!) =
+                <span class="res">56</span> projetos.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 06 · Técnicas de contagem">
+          <div class="ex" data-ex>
+            <span class="lab">Exercício 3 · fechando o problema do silo</span>
+            <p>
+              Silo com 50 itens: 3 defeituosos e 47 não defeituosos. Amostra de seis itens,
+              sem reposição. <strong>(a)</strong> Quantas amostras contêm exatamente dois
+              defeituosos? <strong>(b)</strong> Qual a probabilidade desse evento?
+            </p>
+            <button class="b" type="button" data-reveal>Mostrar resolução</button>
+            <div class="sol" hidden>
+              <p>
+                A amostra é um subconjunto: escolhemos 2 dentre os 3 defeituosos
+                <strong>e</strong> 4 dentre os 47 não defeituosos.
+              </p>
+              <p>
+                <span class="v">N</span><sub><span class="v">E</span></sub> =
+                <span class="v">C</span><sup>3</sup><sub>2</sub> × <span class="v">C</span><sup>47</sup><sub>4</sub>
+                = 3 × 178.365 = <span class="res">535.095</span> amostras.
+              </p>
+              <p>
+                <span class="v">P</span>(<span class="v">E</span>) =
+                535.095 / <span class="v">C</span><sup>50</sup><sub>6</sub> =
+                535.095 / 15.890.700 ≈ <span class="res">0,0337</span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 07 ============ -->
+    <section id="bertrand">
+      <div class="wrap">
+        <div class="slide" data-sec="§ 07 · Paradoxo de Bertrand">
+          <div class="sec-head">
+            <span class="n">§ 07</span>
+            <h2>Paradoxo de Bertrand</h2>
+            <span class="sub">E quando o número de resultados possíveis é infinito?</span>
+          </div>
+          <blockquote>
+            We are given a circle <span class="v">C</span> of radius <span class="v">r</span> and we
+            wish to determine the probability <span class="v">p</span> that the length
+            <span class="v">l</span> of a “randomly selected” cord <span class="v">AB</span> is
+            greater than the length <span class="v">r</span>√3 of the inscribed equilateral triangle.
+            <cite>Papoulis &amp; Pillai</cite>
+          </blockquote>
+          <p>
+            Mostra um questionamento da unicidade da solução da formulação clássica para
+            problemas em que a quantidade de resultados possíveis é infinita.
+          </p>
+        </div>
+
+        <div class="slide" data-sec="§ 07 · Paradoxo de Bertrand">
+          <h3>Três métodos, três respostas</h3>
+          <div class="tbl-scroll">
+            <table class="tri">
+              <thead>
+                <tr><th>Método</th><th>Como a corda é sorteada</th><th>Favorável quando</th><th><span class="v">p</span></th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>I</td><td>Ponto médio uniforme no disco</td>
+                  <td>ponto médio dentro do círculo de raio <span class="v">r</span>/2</td>
+                  <td class="p">1/4</td>
+                </tr>
+                <tr>
+                  <td>II</td><td>Extremos uniformes na circunferência</td>
+                  <td>extremo <span class="v">B</span> no arco de 120°</td>
+                  <td class="p">1/3</td>
+                </tr>
+                <tr>
+                  <td>III</td><td>Distância uniforme num diâmetro</td>
+                  <td>|<span class="v">d</span>| &lt; <span class="v">r</span>/2</td>
+                  <td class="p">1/2</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 07 · Paradoxo de Bertrand">
+          <figure>
+            <img src="./media/bertrand_simulacao.png"
+                 alt="Três círculos lado a lado, um por método, com centenas de cordas sorteadas: no método I destaca-se o círculo interno de raio r/2, no método II o arco de 120 graus e o extremo fixo A, no método III a faixa vertical entre as retas a r/2 do centro.">
+            <figcaption>
+              <a href="./scripts/bertrand_simulacao.py">Simulação Monte Carlo</a> dos três métodos,
+              usando a definição por frequência relativa do § 04 para <em>estimar</em> cada
+              <span class="v">p</span>. Azul: corda favorável.
+            </figcaption>
+          </figure>
+        </div>
+
+        <div class="slide" data-sec="§ 07 · Paradoxo de Bertrand">
+          <h3>As três construções, animadas</h3>
+          <div class="vid-grid">
+            <figure>
+              <video src="./media/BertrandPontoMedio.mp4" controls preload="metadata" playsinline></video>
+              <figcaption>Método I · <span class="v">p</span> = 1/4</figcaption>
+            </figure>
+            <figure>
+              <video src="./media/BertrandExtremos.mp4" controls preload="metadata" playsinline></video>
+              <figcaption>Método II · <span class="v">p</span> = 1/3</figcaption>
+            </figure>
+            <figure>
+              <video src="./media/BertrandRaio.mp4" controls preload="metadata" playsinline></video>
+              <figcaption>Método III · <span class="v">p</span> = 1/2</figcaption>
+            </figure>
+            <figure>
+              <video src="./media/BertrandResumo.mp4" controls preload="metadata" playsinline></video>
+              <figcaption>Os três lado a lado</figcaption>
+            </figure>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 07 · Paradoxo de Bertrand">
+          <div class="note problema">
+            <span class="lab">O que o paradoxo mostra</span>
+            <p>
+              O problema é que <strong>“seleção ao acaso” precisa ser definida</strong>: cada um dos
+              três métodos corresponde a uma forma diferente de sortear a corda — ou seja, a uma
+              <strong>distribuição de probabilidade</strong> diferente. Não existe uma única resposta
+              “correta”; a resposta depende do mecanismo que gera a corda.
+            </p>
+            <p>
+              Voltaremos a esse conceito de distribuição de probabilidade mais adiante, e ele
+              vai ajudar a formalizar essa ideia.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 08 ============ -->
+    <section id="axiomas">
+      <div class="wrap">
+        <div class="slide" data-sec="§ 08 · Axiomas de Kolmogorov">
+          <div class="sec-head">
+            <span class="n">§ 08</span>
+            <h2>Axiomas de probabilidade</h2>
+            <span class="sub">Kolmogorov, 1933</span>
+          </div>
+          <div class="defn">
+            <span class="lab">Axiomas de probabilidade</span>
+            <p>
+              Probabilidade é um número que é atribuído a cada membro de uma coleção de
+              eventos, a partir de um experimento aleatório, que satisfaça as seguintes
+              propriedades:
+            </p>
+          </div>
+          <ol class="axiom-list">
+            <li>
+              <span class="ax-n">A1</span>
+              <div>
+                <div class="ax-eq"><span class="v">P</span>(<span class="v">S</span>) = 1</div>
+                em que <span class="v">S</span> é o espaço amostral
+              </div>
+            </li>
+            <li>
+              <span class="ax-n">A2</span>
+              <div>
+                <div class="ax-eq">0 ≤ <span class="v">P</span>(<span class="v">E</span>) ≤ 1</div>
+                para qualquer evento <span class="v">E</span>
+              </div>
+            </li>
+            <li>
+              <span class="ax-n">A3</span>
+              <div>
+                <div class="ax-eq">
+                  <span class="v">P</span>(<span class="v">E</span><sub>1</sub> ∪ <span class="v">E</span><sub>2</sub>) =
+                  <span class="v">P</span>(<span class="v">E</span><sub>1</sub>) + <span class="v">P</span>(<span class="v">E</span><sub>2</sub>)
+                </div>
+                para dois eventos <span class="v">E</span><sub>1</sub> e
+                <span class="v">E</span><sub>2</sub> com
+                <span class="v">E</span><sub>1</sub> ∩ <span class="v">E</span><sub>2</sub> = ∅
+              </div>
+            </li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 09 ============ -->
+    <section id="algebra">
+      <div class="wrap">
+        <div class="slide" data-sec="§ 09 · Álgebra da probabilidade">
+          <div class="sec-head">
+            <span class="n">§ 09</span>
+            <h2>Álgebra da probabilidade</h2>
+            <span class="sub">O que se deduz a partir de A1–A3</span>
+          </div>
+          <blockquote>
+            We roll two dice and we want to find the probability <span class="v">p</span> that the
+            sum of the numbers that show equals 7.
+            <br>(a) We could consider as possible outcomes the 11 sums.
+            <br>(b) We could count as possible outcomes all pairs of numbers not distinguishing
+            between the first and the second die.
+            <cite>Papoulis &amp; Pillai</cite>
+          </blockquote>
+          <div class="note problema">
+            <span class="lab">Atenção</span>
+            <p>Os resultados em (a) e (b) <strong>não são igualmente prováveis</strong>.</p>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 09 · Álgebra da probabilidade">
+          <div class="demo">
+            <div class="demo-head">
+              <span class="t">Dois dados · soma = 7</span>
+              <span class="h">três maneiras de contar, três respostas</span>
+            </div>
+            <div class="demo-body">
+              <div class="ctl">
+                <div class="seg" id="diceSeg">
+                  <button type="button" data-k="somas" aria-pressed="true">(a) as 11 somas</button>
+                  <button type="button" data-k="naoord" aria-pressed="false">(b) pares não ordenados</button>
+                  <button type="button" data-k="ord" aria-pressed="false">(c) pares ordenados</button>
+                </div>
+              </div>
+              <div class="dice-wrap">
+                <div class="dice-grid" id="diceGrid" role="img" aria-label="Grade 6 por 6 com os 36 pares ordenados de dois dados"></div>
+                <div class="dice-side">
+                  <div id="diceExtra"></div>
+                  <div class="readout" style="margin-top:.4rem">
+                    <div><span class="k">possíveis <span class="v">N</span></span><span class="val" id="dN">—</span></div>
+                    <div><span class="k">favoráveis <span class="v">N</span><sub><span class="v">E</span></sub></span><span class="val" id="dNe">—</span></div>
+                    <div><span class="k"><span class="v">p</span> resultante</span><span class="val teo" id="dP">—</span></div>
+                  </div>
+                  <div class="verdict" id="dVerdict"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 09 · Álgebra da probabilidade">
+          <div class="note">
+            <span class="lab">O mesmo padrão do § 07</span>
+            <p>
+              1/11, 1/7 e 1/6 para o mesmo experimento — como 1/4, 1/3 e 1/2 em Bertrand.
+              A diferença é que aqui <span class="v">S</span> é finito e dá para decidir:
+              só os <strong>36 pares ordenados</strong> são igualmente prováveis. É exatamente por
+              isso que a afirmação a seguir precisa da hipótese que ela carrega.
+            </p>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 09 · Álgebra da probabilidade">
+          <div class="defn">
+            <span class="lab">Afirmação</span>
+            <p>Toda vez que um espaço amostral consistir em <span class="v">N</span> resultados
+            possíveis que forem <strong>igualmente prováveis</strong>, a probabilidade de cada
+            resultado é 1/<span class="v">N</span>.</p>
+          </div>
+          <blockquote>
+            We must count all pairs of numbers distinguishing between the first and the second die.
+            <cite>Papoulis &amp; Pillai</cite>
+          </blockquote>
+          <div class="defn">
+            <span class="lab">Afirmação</span>
+            <p>Para um espaço amostral discreto, a probabilidade de um evento
+            <span class="v">E</span>, denotada por <span class="v">P</span>(<span class="v">E</span>),
+            é igual à soma das probabilidades dos resultados em <span class="v">E</span>.</p>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 09 · Álgebra da probabilidade">
+          <h3>Probabilidade de uma união</h3>
+          <div class="eq">
+            <span class="v">P</span>(<span class="v">A</span> ∪ <span class="v">B</span>) =
+            <span class="v">P</span>(<span class="v">A</span>) + <span class="v">P</span>(<span class="v">B</span>) −
+            <span class="v">P</span>(<span class="v">A</span> ∩ <span class="v">B</span>)
+          </div>
+          <p>
+            Para eventos mutuamente excludentes,
+            <span class="v">E</span><sub>1</sub> ∩ <span class="v">E</span><sub>2</sub> = ∅ ⟹
+            <span class="v">P</span>(<span class="v">E</span><sub>1</sub> ∩ <span class="v">E</span><sub>2</sub>) = 0,
+            e recaímos no axioma A3.
+          </p>
+          <div class="ex" data-ex>
+            <span class="lab">Exercício</span>
+            <p>
+              Como seria <span class="v">P</span>(<span class="v">A</span> ∪ <span class="v">B</span> ∪ <span class="v">C</span>)?
+              E se os eventos forem mutuamente excludentes?
+            </p>
+            <button class="b" type="button" data-reveal>Mostrar resolução</button>
+            <div class="sol" hidden>
+              <div class="eq" style="font-size:1.05rem">
+                <span class="v">P</span>(<span class="v">A</span>∪<span class="v">B</span>∪<span class="v">C</span>) =
+                <span class="v">P</span>(<span class="v">A</span>) + <span class="v">P</span>(<span class="v">B</span>) + <span class="v">P</span>(<span class="v">C</span>)
+                − <span class="v">P</span>(<span class="v">A</span>∩<span class="v">B</span>)
+                − <span class="v">P</span>(<span class="v">A</span>∩<span class="v">C</span>)
+                − <span class="v">P</span>(<span class="v">B</span>∩<span class="v">C</span>)
+                + <span class="v">P</span>(<span class="v">A</span>∩<span class="v">B</span>∩<span class="v">C</span>)
+              </div>
+              <p>
+                É o princípio da inclusão–exclusão: soma-se o que foi contado de menos e
+                subtrai-se o que foi contado a mais, alternadamente.
+              </p>
+              <p>
+                Se forem mutuamente excludentes, todas as interseções são vazias e sobra
+                <span class="v">P</span>(<span class="v">A</span>) + <span class="v">P</span>(<span class="v">B</span>) + <span class="v">P</span>(<span class="v">C</span>).
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 09 · Álgebra da probabilidade">
+          <div class="defn">
+            <span class="lab">Definição — partição</span>
+            <p>Uma <strong>partição</strong> <span class="v">U</span> de um conjunto
+            <span class="v">S</span> é uma coleção de conjuntos mutuamente excludentes
+            <span class="v">A</span><sub><span class="v">i</span></sub> de <span class="v">S</span> tal que:</p>
+            <div class="eq">
+              <span class="v">A</span><sub>1</sub> ∪ <span class="v">A</span><sub>2</sub> ∪ ⋯ ∪ <span class="v">A</span><sub><span class="v">n</span></sub> = <span class="v">S</span>
+              &nbsp;&nbsp;&nbsp;
+              <span class="v">A</span><sub><span class="v">i</span></sub> ∩ <span class="v">A</span><sub><span class="v">j</span></sub> = ∅,
+              &nbsp; <span class="v">i</span> ≠ <span class="v">j</span>
+            </div>
+            <div class="eq">
+              <span class="v">U</span> = [<span class="v">A</span><sub>1</sub>, <span class="v">A</span><sub>2</sub>, ⋯, <span class="v">A</span><sub><span class="v">n</span></sub>]
+            </div>
+          </div>
+          <p>Nesse caso:</p>
+          <div class="eq">
+            <span class="v">P</span>(<span class="v">A</span><sub>1</sub> ∪ <span class="v">A</span><sub>2</sub> ∪ ⋯ ∪ <span class="v">A</span><sub><span class="v">n</span></sub>) =
+            <span class="v">P</span>(<span class="v">A</span><sub>1</sub>) + <span class="v">P</span>(<span class="v">A</span><sub>2</sub>) + ⋯ + <span class="v">P</span>(<span class="v">A</span><sub><span class="v">n</span></sub>)
+            = <span class="v">P</span>(<span class="v">S</span>) = 1
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 10 ============ -->
+    <section id="condicional">
+      <div class="wrap">
+        <div class="slide" data-sec="§ 10 · Probabilidade condicional">
+          <div class="sec-head">
+            <span class="n">§ 10</span>
+            <h2>Probabilidade condicional</h2>
+            <span class="sub">Reavaliar probabilidades diante de nova informação</span>
+          </div>
+          <div class="defn">
+            <span class="lab">Definição — probabilidade condicional</span>
+            <p>A probabilidade condicional é um mecanismo de <strong>reavaliação</strong> de
+            probabilidades, de acordo com a disponibilidade de novas informações.</p>
+            <div class="eq">
+              <span class="v">P</span>(<span class="v">B</span>|<span class="v">A</span>) =
+              <span class="frac">
+                <span><span class="v">P</span>(<span class="v">A</span> ∩ <span class="v">B</span>)</span>
+                <span><span class="v">P</span>(<span class="v">A</span>)</span>
+              </span>
+              ,&nbsp;&nbsp; <span class="v">P</span>(<span class="v">A</span>) > 0
+            </div>
+            <p>É a probabilidade condicional de <span class="v">B</span> dado <span class="v">A</span>.</p>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 10 · Probabilidade condicional">
+          <div class="ex">
+            <span class="lab">Exercício</span>
+            <p>Mostre que probabilidades condicionais seguem os axiomas de probabilidade.</p>
+          </div>
+          <figure class="plain">
+            <img src="./media/diagrama_venn_excludentes_condicional.png"
+                 alt="Diagrama de Venn com os eventos A e B mutuamente excludentes dentro do espaço amostral, e um terceiro conjunto M sobrepondo os dois; destacam-se as regiões A∩M e B∩M, que também são mutuamente excludentes.">
+            <figcaption>
+              Se <span class="v">A</span> ∩ <span class="v">B</span> = ∅, então
+              (<span class="v">A</span>∩<span class="v">M</span>) ∩ (<span class="v">B</span>∩<span class="v">M</span>) = ∅ —
+              é o que garante A3 para a probabilidade condicionada a <span class="v">M</span>.
+            </figcaption>
+          </figure>
+        </div>
+
+        <div class="slide" data-sec="§ 10 · Probabilidade condicional">
+          <h3>Exemplo — mortalidade</h3>
+          <figure class="plain">
+            <img src="./media/exemplo_mortalidade.png"
+                 alt="Curva da função alfa de t, em forma de sino entre 0 e 100 anos, com a faixa entre 60 e 70 anos hachurada sob a curva.">
+            <figcaption>
+              α(<span class="v">t</span>) descreve a mortalidade por idade. A área hachurada
+              entre 60 e 70 será o numerador; o denominador é toda a área à direita de 60.
+            </figcaption>
+          </figure>
+        </div>
+
+        <div class="slide" data-sec="§ 10 · Probabilidade condicional">
+          <div class="ex" data-ex>
+            <span class="lab">Exemplo — mortalidade</span>
+            <p>
+              Denotamos por <span class="v">t</span> a idade de uma pessoa ao falecer. A
+              probabilidade <span class="v">t</span> ≤ <span class="v">t</span><sub>0</sub> é dada por
+            </p>
+            <div class="eq">
+              <span class="v">P</span>(<span class="v">t</span> ≤ <span class="v">t</span><sub>0</sub>) =
+              <span class="intg">∫</span><sub>0</sub><sup><span class="v">t</span><sub>0</sub></sup>
+              α(<span class="v">t</span>) <span class="v">dt</span>
+            </div>
+            <p>
+              em que α(<span class="v">t</span>) é uma função determinada pelos registros de
+              mortalidade. Assumimos que
+            </p>
+            <div class="eq">
+              α(<span class="v">t</span>) = 3 × 10<sup>−9</sup> <span class="v">t</span><sup>2</sup>(100 − <span class="v">t</span>)<sup>2</sup>,
+              &nbsp; 0 ≤ <span class="v">t</span> ≤ 100
+            </div>
+            <p>
+              e 0 caso contrário. <strong>Qual é a probabilidade de que uma pessoa venha a morrer
+              entre 60 e 70 anos, assumindo que ela estava viva aos 60?</strong>
+            </p>
+            <button class="b" type="button" data-reveal>Mostrar resolução</button>
+            <div class="sol" hidden>
+              <p>É uma condicional: <span class="v">A</span> = "viva aos 60" =
+                {<span class="v">t</span> > 60}, <span class="v">B</span> =
+                {60 &lt; <span class="v">t</span> ≤ 70}. Como <span class="v">B</span> ⊂ <span class="v">A</span>,
+                temos <span class="v">A</span> ∩ <span class="v">B</span> = <span class="v">B</span>.</p>
+              <div class="eq" style="font-size:1.05rem">
+                <span class="v">P</span>(<span class="v">B</span>|<span class="v">A</span>) =
+                <span class="frac">
+                  <span><span class="intg">∫</span><sub>60</sub><sup>70</sup> α(<span class="v">t</span>)<span class="v">dt</span></span>
+                  <span><span class="intg">∫</span><sub>60</sub><sup>100</sup> α(<span class="v">t</span>)<span class="v">dt</span></span>
+                </span>
+                =
+                <span class="frac"><span>0,1544</span><span>0,3174</span></span>
+                ≈ <span class="res">0,486</span>
+              </div>
+              <p>
+                Cerca de <strong>49 %</strong>. Note que a probabilidade <em>incondicional</em> de morrer
+                entre 60 e 70 é só 0,154 — a informação "estava viva aos 60" muda bastante a conta.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 11 ============ -->
+    <section id="intersecao">
+      <div class="wrap">
+        <div class="slide" data-sec="§ 11 · Interseção de eventos">
+          <div class="sec-head">
+            <span class="n">§ 11</span>
+            <h2>Interseção de eventos</h2>
+            <span class="sub">A regra da multiplicação e a probabilidade total</span>
+          </div>
+          <p>
+            Podemos reescrever a definição de probabilidade condicional para montar a
+            <strong>regra da multiplicação</strong>:
+          </p>
+          <div class="eq">
+            <span class="v">P</span>(<span class="v">A</span> ∩ <span class="v">B</span>) =
+            <span class="v">P</span>(<span class="v">A</span>|<span class="v">B</span>)
+            <span class="v">P</span>(<span class="v">B</span>)
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 11 · Interseção de eventos">
+          <div class="ex" data-ex>
+            <span class="lab">Exemplo — usinagem de pistões</span>
+            <p>
+              A probabilidade de que o primeiro estágio de uma operação, numericamente
+              controlada, de usinagem para pistões com alta rpm atenda às especificações é
+              igual a <strong>0,90</strong>. Falhas são causadas por variações no metal, alinhamento
+              de acessórios, condição da lâmina de corte, vibração e condições ambientais.
+              Dado que o primeiro estágio atende às especificações, a probabilidade de que o
+              segundo estágio atenda às especificações é de <strong>0,95</strong>.
+              Qual é a probabilidade de ambos os estágios atenderem às especificações?
+            </p>
+            <button class="b" type="button" data-reveal>Mostrar resolução</button>
+            <div class="sol" hidden>
+              <p>Sejam <span class="v">A</span> = "1º estágio ok" e <span class="v">B</span> = "2º estágio ok".</p>
+              <div class="eq" style="font-size:1.05rem">
+                <span class="v">P</span>(<span class="v">A</span> ∩ <span class="v">B</span>) =
+                <span class="v">P</span>(<span class="v">B</span>|<span class="v">A</span>)
+                <span class="v">P</span>(<span class="v">A</span>) = 0,95 × 0,90 =
+                <span class="res">0,855</span>
+              </div>
+              <p>
+                <strong>Interpretação prática:</strong> a probabilidade de cada estágio ser completado
+                com sucesso precisa ser grande para que um pistão atenda a todas as
+                especificações — os fatores se multiplicam, então erros pequenos em cada
+                etapa se acumulam rápido.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 11 · Interseção de eventos">
+          <div class="defn">
+            <span class="lab">Regra da probabilidade total</span>
+            <p>Suponha que <span class="v">E</span><sub>1</sub>, <span class="v">E</span><sub>2</sub>, ⋯,
+            <span class="v">E</span><sub><span class="v">k</span></sub> sejam
+            <span class="v">k</span> conjuntos participantes de uma partição
+            <span class="v">U</span> de <span class="v">S</span>. Então:</p>
+            <div class="eq">
+              <span class="v">P</span>(<span class="v">B</span>) =
+              <span class="v">P</span>(<span class="v">B</span> ∩ <span class="v">E</span><sub>1</sub>) +
+              <span class="v">P</span>(<span class="v">B</span> ∩ <span class="v">E</span><sub>2</sub>) + ⋯ +
+              <span class="v">P</span>(<span class="v">B</span> ∩ <span class="v">E</span><sub><span class="v">k</span></sub>)
+            </div>
+          </div>
+          <figure class="plain">
+            <img src="./media/regra_probabilidade_total.png"
+                 alt="Espaço amostral dividido em quatro regiões E1 a E4, com um conjunto B alongado atravessando todas elas; as interseções B∩E1 até B∩E4 aparecem sombreadas.">
+            <figcaption>
+              <span class="v">B</span> é fatiado pela partição: as fatias são excludentes, então
+              suas probabilidades somam.
+            </figcaption>
+          </figure>
+        </div>
+
+        <div class="slide" data-sec="§ 11 · Interseção de eventos">
+          <div class="demo">
+            <div class="demo-head">
+              <span class="t">Pistões · mexa nas probabilidades</span>
+              <span class="h">o quadrado tem área 1 — cada região é uma probabilidade</span>
+            </div>
+            <div class="demo-body">
+              <div class="sliders">
+                <div class="sld">
+                  <label for="sPA"><span class="v">P</span>(<span class="v">A</span>) · 1º estágio ok</label>
+                  <input type="range" id="sPA" min="0" max="1" step="0.01" value="0.90">
+                  <output id="oPA">0,90</output>
+                </div>
+                <div class="sld">
+                  <label for="sPBA"><span class="v">P</span>(<span class="v">B</span>|<span class="v">A</span>) · 2º, se 1º ok</label>
+                  <input type="range" id="sPBA" min="0" max="1" step="0.01" value="0.95">
+                  <output id="oPBA">0,95</output>
+                </div>
+                <div class="sld">
+                  <label for="sPBAc"><span class="v">P</span>(<span class="v">B</span>|<span class="v">A</span><sup>c</sup>) · 2º, se 1º falhou</label>
+                  <input type="range" id="sPBAc" min="0" max="1" step="0.01" value="0.70">
+                  <output id="oPBAc">0,70</output>
+                </div>
+              </div>
+
+              <div class="ctl">
+                <div class="seg" id="mosSeg">
+                  <button type="button" data-k="inter" aria-pressed="true">A ∩ B</button>
+                  <button type="button" data-k="uniao" aria-pressed="false">A ∪ B</button>
+                  <button type="button" data-k="b" aria-pressed="false">B</button>
+                  <button type="button" data-k="tudo" aria-pressed="false">tudo</button>
+                </div>
+                <button class="b" id="mosIndep" type="button">Tornar independentes</button>
+                <button class="b" id="mosReset" type="button">Valores do exemplo</button>
+              </div>
+
+              <div class="mos-wrap">
+                <svg viewBox="0 0 215 205" role="img" aria-labelledby="mosTitle">
+                  <title id="mosTitle">Quadrado de área 1 dividido em quatro regiões conforme as probabilidades</title>
+                  <g id="mosFill"></g>
+                  <rect class="mos-out" x="30" y="10" width="170" height="170"/>
+                  <text class="mos-lbl" id="mosLabA" x="70" y="193" text-anchor="middle">A</text>
+                  <text class="mos-lbl" id="mosLabAc" x="180" y="193" text-anchor="middle">Aᶜ</text>
+                  <text class="mos-lbl" x="24" y="14" text-anchor="end">1</text>
+                  <text class="mos-lbl" x="24" y="183" text-anchor="end">0</text>
+                </svg>
+
+                <div class="mos-side">
+                  <div class="res-line destaque">
+                    <span><span class="v">P</span>(<span class="v">A</span> ∩ <span class="v">B</span>)
+                      <small>= P(B|A)·P(A) — regra da multiplicação</small></span>
+                    <span class="n" id="mosInter">0,8550</span>
+                  </div>
+                  <div class="res-line">
+                    <span><span class="v">P</span>(<span class="v">B</span>)
+                      <small>= P(B|A)P(A) + P(B|Aᶜ)P(Aᶜ) — prob. total</small></span>
+                    <span class="n" id="mosB">0,9250</span>
+                  </div>
+                  <div class="res-line destaque">
+                    <span><span class="v">P</span>(<span class="v">A</span> ∪ <span class="v">B</span>)
+                      <small>= P(A) + P(B) − P(A∩B)</small></span>
+                    <span class="n" id="mosUniao">0,9700</span>
+                  </div>
+                  <div class="res-line">
+                    <span>1 − <span class="v">P</span>(<span class="v">A</span><sup>c</sup> ∩ <span class="v">B</span><sup>c</sup>)
+                      <small>o mesmo, pelo complemento</small></span>
+                    <span class="n" id="mosCompl">0,9700</span>
+                  </div>
+                  <div class="verdict" id="mosVerdict" style="margin-top:.7rem"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 11 · Interseção de eventos">
+          <div class="note">
+            <span class="lab">O que observar mexendo nos controles</span>
+            <p>
+              <strong>P(A ∩ B) nunca passa de P(A).</strong> Reduza o primeiro estágio para 0,50 e a
+              interseção cai junto, por mais perfeito que seja o segundo — é a interpretação
+              prática do exemplo: os estágios <em>multiplicam</em>.
+            </p>
+            <p>
+              <strong>P(A ∪ B) anda para o outro lado.</strong> Basta um dos dois dar certo, então a
+              união é sempre ≥ que cada parcela e cresce quando qualquer estágio melhora.
+            </p>
+            <p>
+              Igualando P(B|A) e P(B|A<sup>c</sup>), a informação sobre o 1º estágio deixa de
+              importar: os eventos ficam <strong>independentes</strong> e P(A∩B) = P(A)P(B) — o § 12.
+            </p>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 11 · Interseção de eventos">
+          <div class="ex" data-ex>
+            <span class="lab">Exemplo — transferência entre caixas</span>
+            <p>
+              A caixa 1 contém <span class="v">a</span> bolas brancas e <span class="v">b</span>
+              pretas; a caixa 2 contém <span class="v">c</span> brancas e <span class="v">d</span>
+              pretas. Uma bola de cor desconhecida é transferida da primeira caixa para a
+              segunda, e então uma bola é retirada da segunda. <strong>Qual a probabilidade de
+              ser branca?</strong>
+            </p>
+            <p style="color:var(--ink-mute)">
+              Se nada fosse transferido, a resposta seria simplesmente
+              <span class="v">c</span>/(<span class="v">c</span>+<span class="v">d</span>).
+              A transferência cria duas possibilidades mutuamente excludentes.
+            </p>
+            <button class="b" type="button" data-reveal>Mostrar resolução</button>
+            <div class="sol" hidden>
+              <p>Sejam os eventos da bola transferida — que formam uma partição:</p>
+              <div class="eq" style="font-size:1.05rem">
+                <span class="v">W</span> = {transferida é branca}
+                &nbsp;&nbsp;&nbsp;
+                <span class="v">B</span> = {transferida é preta}
+              </div>
+              <div class="eq" style="font-size:1.05rem">
+                <span class="v">P</span>(<span class="v">W</span>) =
+                <span class="frac"><span><span class="v">a</span></span><span><span class="v">a</span>+<span class="v">b</span></span></span>
+                &nbsp;&nbsp;&nbsp;
+                <span class="v">P</span>(<span class="v">B</span>) =
+                <span class="frac"><span><span class="v">b</span></span><span><span class="v">a</span>+<span class="v">b</span></span></span>
+              </div>
+              <p>
+                O evento de interesse é
+                <span class="v">A</span> = {bola branca é retirada da segunda caixa}, que só
+                pode ocorrer sob uma das duas possibilidades. Pela regra da probabilidade total:
+              </p>
+              <div class="eq" style="font-size:1.05rem">
+                <span class="v">P</span>(<span class="v">A</span>) =
+                <span class="v">P</span>(<span class="v">A</span>∩<span class="v">W</span>) +
+                <span class="v">P</span>(<span class="v">A</span>∩<span class="v">B</span>) =
+                <span class="v">P</span>(<span class="v">A</span>|<span class="v">W</span>)<span class="v">P</span>(<span class="v">W</span>) +
+                <span class="v">P</span>(<span class="v">A</span>|<span class="v">B</span>)<span class="v">P</span>(<span class="v">B</span>)
+              </div>
+              <p>Mas — e aqui está o ponto — a caixa 2 agora tem uma bola a mais:</p>
+              <div class="eq" style="font-size:1.05rem">
+                <span class="v">P</span>(<span class="v">A</span>|<span class="v">W</span>) =
+                <span class="frac"><span><span class="v">c</span>+1</span><span><span class="v">c</span>+<span class="v">d</span>+1</span></span>
+                &nbsp;&nbsp;&nbsp;
+                <span class="v">P</span>(<span class="v">A</span>|<span class="v">B</span>) =
+                <span class="frac"><span><span class="v">c</span></span><span><span class="v">c</span>+<span class="v">d</span>+1</span></span>
+              </div>
+              <div class="eq" style="font-size:1.05rem">
+                <span class="v">P</span>(<span class="v">A</span>) =
+                <span class="frac">
+                  <span><span class="v">a</span>(<span class="v">c</span>+1)</span>
+                  <span>(<span class="v">a</span>+<span class="v">b</span>)(<span class="v">c</span>+<span class="v">d</span>+1)</span>
+                </span>
+                +
+                <span class="frac">
+                  <span><span class="v">bc</span></span>
+                  <span>(<span class="v">a</span>+<span class="v">b</span>)(<span class="v">c</span>+<span class="v">d</span>+1)</span>
+                </span>
+                =
+                <span class="frac">
+                  <span><span class="v">ac</span> + <span class="v">bc</span> + <span class="v">a</span></span>
+                  <span>(<span class="v">a</span>+<span class="v">b</span>)(<span class="v">c</span>+<span class="v">d</span>+1)</span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 11 · Interseção de eventos">
+          <h3>Caso especial — partição por <span class="v">A</span> e <span class="v">A</span><sup>c</sup></h3>
+          <div class="eq">
+            <span class="v">P</span>(<span class="v">B</span>) =
+            <span class="v">P</span>(<span class="v">B</span> ∩ <span class="v">A</span>) +
+            <span class="v">P</span>(<span class="v">B</span> ∩ <span class="v">A</span><sup>c</sup>)
+          </div>
+          <div class="eq">
+            =
+            <span class="v">P</span>(<span class="v">B</span>|<span class="v">A</span>)<span class="v">P</span>(<span class="v">A</span>) +
+            <span class="v">P</span>(<span class="v">B</span>|<span class="v">A</span><sup>c</sup>)<span class="v">P</span>(<span class="v">A</span><sup>c</sup>)
+          </div>
+          <div class="note">
+            <span class="lab">Guarde esta</span>
+            <p>
+              É a forma que aparece no denominador do teorema de Bayes (§ 13) — normalmente é
+              assim que se calcula <span class="v">P</span>(<span class="v">B</span>) na prática,
+              quando só se conhecem as condicionais.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 12 ============ -->
+    <section id="independencia">
+      <div class="wrap">
+        <div class="slide" data-sec="§ 12 · Independência">
+          <div class="sec-head">
+            <span class="n">§ 12</span>
+            <h2>Independência</h2>
+            <span class="sub">Quando a informação não muda nada</span>
+          </div>
+          <p>
+            Em um caso especial, <span class="v">P</span>(<span class="v">B</span>|<span class="v">A</span>) =
+            <span class="v">P</span>(<span class="v">B</span>). Isso significa que o evento
+            <span class="v">A</span> <strong>não afeta</strong> a probabilidade de que o resultado de um
+            experimento esteja no evento <span class="v">B</span>.
+          </p>
+          <div class="defn">
+            <span class="lab">Definição — independência (dois eventos)</span>
+            <p>Dois eventos são <strong>independentes</strong> se qualquer uma das seguintes
+            afirmações for verdadeira:</p>
+            <ul>
+              <li><span class="v">P</span>(<span class="v">A</span>|<span class="v">B</span>) = <span class="v">P</span>(<span class="v">A</span>)</li>
+              <li><span class="v">P</span>(<span class="v">B</span>|<span class="v">A</span>) = <span class="v">P</span>(<span class="v">B</span>)</li>
+              <li><span class="v">P</span>(<span class="v">A</span> ∩ <span class="v">B</span>) = <span class="v">P</span>(<span class="v">A</span>)<span class="v">P</span>(<span class="v">B</span>)</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 12 · Independência">
+          <p>No caso de múltiplos eventos, podemos usar a última condição:</p>
+          <div class="eq">
+            <span class="v">P</span>(<span class="v">E</span><sub>1</sub> ∩ <span class="v">E</span><sub>2</sub> ∩ ⋯ ∩ <span class="v">E</span><sub><span class="v">n</span></sub>) =
+            <span class="v">P</span>(<span class="v">E</span><sub>1</sub>) × <span class="v">P</span>(<span class="v">E</span><sub>2</sub>) × ⋯ × <span class="v">P</span>(<span class="v">E</span><sub><span class="v">n</span></sub>)
+          </div>
+          <div class="note problema">
+            <span class="lab">Não confundir</span>
+            <p>
+              <strong>Excludentes ≠ independentes.</strong> Se
+              <span class="v">A</span> ∩ <span class="v">B</span> = ∅ e ambos têm probabilidade não
+              nula, então saber que <span class="v">A</span> ocorreu garante que
+              <span class="v">B</span> <em>não</em> ocorreu — ou seja,
+              <span class="v">P</span>(<span class="v">B</span>|<span class="v">A</span>) = 0 ≠
+              <span class="v">P</span>(<span class="v">B</span>). Eventos excludentes são, nesse
+              sentido, o oposto de independentes.
+            </p>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 12 · Independência">
+          <h3>Exemplo — os trens X e Y</h3>
+          <p>
+            Os trens <span class="v">X</span> e <span class="v">Y</span> chegam a uma estação
+            <em>ao acaso</em> entre 8h00 e 8h20. O trem <span class="v">X</span> para por
+            <strong>4 minutos</strong> e o trem <span class="v">Y</span> para por
+            <strong>5 minutos</strong>. As chegadas são independentes.
+          </p>
+          <ol>
+            <li>Especificar o experimento e a probabilidade geral <span class="v">P</span>(<span class="v">A</span> ∩ <span class="v">B</span>).</li>
+            <li>Qual a probabilidade de <span class="v">X</span> chegar antes de <span class="v">Y</span>?</li>
+            <li>Qual a probabilidade de os trens se encontrarem na estação?</li>
+            <li>Sabendo que se encontraram, qual a probabilidade de <span class="v">X</span> ter chegado antes?</li>
+          </ol>
+        </div>
+
+        <div class="slide" data-sec="§ 12 · Independência">
+          <div class="demo">
+            <div class="demo-head">
+              <span class="t">Probabilidade geométrica</span>
+              <span class="h">no plano, probabilidade = área ÷ 400</span>
+            </div>
+            <div class="demo-body">
+              <div class="ctl">
+                <div class="seg" id="geoSeg">
+                  <button type="button" data-k="ab" aria-pressed="true">(a) A ∩ B</button>
+                  <button type="button" data-k="c" aria-pressed="false">(b) X antes de Y</button>
+                  <button type="button" data-k="d" aria-pressed="false">(c) se encontram</button>
+                  <button type="button" data-k="cd" aria-pressed="false">(d) C ∩ D</button>
+                </div>
+              </div>
+              <div class="geo-wrap">
+                <svg viewBox="0 0 250 235" role="img" aria-labelledby="geoTitle">
+                  <title id="geoTitle">Quadrado de 20 por 20 minutos com a região do evento destacada</title>
+                  <rect class="tr-sq" x="42" y="18" width="180" height="180"/>
+                  <g id="geoFill"></g>
+                  <line class="tr-axis" x1="42" y1="198" x2="232" y2="198"/>
+                  <line class="tr-axis" x1="42" y1="198" x2="42" y2="10"/>
+                  <text class="tr-lbl" x="38" y="210" text-anchor="middle">0</text>
+                  <text class="tr-lbl" x="222" y="210" text-anchor="middle">20</text>
+                  <text class="tr-lbl" x="32" y="22" text-anchor="middle">20</text>
+                  <text class="tr-lbl" x="132" y="222" text-anchor="middle">x — chegada de X (min)</text>
+                  <text class="tr-lbl" x="14" y="108" text-anchor="middle" transform="rotate(-90 14 108)">y — chegada de Y</text>
+                </svg>
+                <div class="geo-side">
+                  <div id="geoDesc" style="color:var(--ink-soft)"></div>
+                  <div class="readout" style="margin-top:.5rem">
+                    <div><span class="k">área da região</span><span class="val" id="gArea">—</span></div>
+                    <div><span class="k">probabilidade</span><span class="val teo" id="gP">—</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 12 · Independência">
+          <div class="note">
+            <span class="lab">Por que área</span>
+            <p>
+              “Chegar ao acaso” é interpretado como: a probabilidade de um retângulo é a sua
+              área dividida por 400. A independência das chegadas é o que autoriza
+              <span class="v">P</span>(<span class="v">A</span>∩<span class="v">B</span>) =
+              <span class="v">P</span>(<span class="v">A</span>)<span class="v">P</span>(<span class="v">B</span>) —
+              e é daí que sai a regra da área para qualquer região.
+            </p>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 12 · Independência">
+          <div class="ex" data-ex>
+            <span class="lab">Trens — resolução</span>
+            <p>Os quatro itens, usando probabilidade = área ÷ 400:</p>
+            <button class="b" type="button" data-reveal>Mostrar resolução</button>
+            <div class="sol" hidden>
+              <p>
+                <strong>(a)</strong> Com <span class="v">A</span> = {<span class="v">t</span><sub>1</sub> ≤ <span class="v">x</span> ≤ <span class="v">t</span><sub>2</sub>}
+                (faixa vertical) e <span class="v">B</span> = {<span class="v">t</span><sub>3</sub> ≤ <span class="v">y</span> ≤ <span class="v">t</span><sub>4</sub>}
+                (faixa horizontal), a independência dá
+              </p>
+              <div class="eq" style="font-size:1.02rem">
+                <span class="v">P</span>(<span class="v">AB</span>) =
+                <span class="v">P</span>(<span class="v">A</span>)<span class="v">P</span>(<span class="v">B</span>) =
+                <span class="frac">
+                  <span>(<span class="v">t</span><sub>2</sub> − <span class="v">t</span><sub>1</sub>)(<span class="v">t</span><sub>4</sub> − <span class="v">t</span><sub>3</sub>)</span>
+                  <span>20 × 20</span>
+                </span>
+              </div>
+              <p>
+                <strong>(b)</strong> <span class="v">C</span> = {<span class="v">x</span> ≤ <span class="v">y</span>}
+                é um triângulo de área 200 ⟹
+                <span class="v">P</span>(<span class="v">C</span>) = 200/400 = <span class="res">0,5</span>.
+              </p>
+              <p>
+                <strong>(c)</strong> Para se encontrarem, <span class="v">x</span> &lt; <span class="v">y</span>+5
+                e <span class="v">y</span> &lt; <span class="v">x</span>+4, isto é
+                <span class="v">D</span> = {−4 ≤ <span class="v">x</span> − <span class="v">y</span> ≤ 5}.
+                São dois trapézios de base comum, área 159,5 ⟹
+                <span class="v">P</span>(<span class="v">D</span>) = 159,5/400 ≈ <span class="res">0,399</span>.
+              </p>
+              <p>
+                <strong>(d)</strong> <span class="v">CD</span> é um trapézio de área 72, logo
+              </p>
+              <div class="eq" style="font-size:1.02rem">
+                <span class="v">P</span>(<span class="v">C</span>|<span class="v">D</span>) =
+                <span class="frac">
+                  <span><span class="v">P</span>(<span class="v">CD</span>)</span>
+                  <span><span class="v">P</span>(<span class="v">D</span>)</span>
+                </span>
+                =
+                <span class="frac"><span>72</span><span>159,5</span></span>
+                ≈ <span class="res">0,451</span>
+              </div>
+              <p style="color:var(--ink-mute)">
+                Note que <span class="v">P</span>(<span class="v">C</span>) = 0,5 mas
+                <span class="v">P</span>(<span class="v">C</span>|<span class="v">D</span>) ≈ 0,451:
+                saber que os trens se encontraram <strong>muda</strong> a chance de <span class="v">X</span>
+                ter chegado antes. Ou seja, <span class="v">C</span> e <span class="v">D</span>
+                <em>não</em> são independentes.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 13 ============ -->
+    <section id="bayes">
+      <div class="wrap">
+        <div class="slide" data-sec="§ 13 · Teorema de Bayes">
+          <div class="sec-head">
+            <span class="n">§ 13</span>
+            <h2>Teorema de Bayes</h2>
+            <span class="sub">Inverter o condicionamento</span>
+          </div>
+          <p>
+            Iniciamos com a comutatividade da interseção:
+            <span class="v">P</span>(<span class="v">A</span> ∩ <span class="v">B</span>) =
+            <span class="v">P</span>(<span class="v">B</span> ∩ <span class="v">A</span>).
+            Aplicando a regra da multiplicação dos dois lados:
+          </p>
+          <div class="eq">
+            <span class="v">P</span>(<span class="v">A</span>|<span class="v">B</span>)<span class="v">P</span>(<span class="v">B</span>) =
+            <span class="v">P</span>(<span class="v">B</span>|<span class="v">A</span>)<span class="v">P</span>(<span class="v">A</span>)
+          </div>
+          <p>
+            Thomas Bayes tratou essa questão nos anos 1700 e desenvolveu o resultado
+            fundamental, conhecido como <strong>teorema de Bayes</strong>:
+          </p>
+          <div class="eq" style="font-size:1.35rem">
+            <span class="v">P</span>(<span class="v">A</span>|<span class="v">B</span>) =
+            <span class="frac">
+              <span><span class="v">P</span>(<span class="v">B</span>|<span class="v">A</span>)<span class="v">P</span>(<span class="v">A</span>)</span>
+              <span><span class="v">P</span>(<span class="v">B</span>)</span>
+            </span>
+            ,&nbsp;&nbsp; <span class="v">P</span>(<span class="v">B</span>) > 0
+          </div>
+          <div class="note">
+            <span class="lab">Onde entra o § 11</span>
+            <p>
+              Na prática, <span class="v">P</span>(<span class="v">B</span>) no denominador quase
+              sempre é calculado pela regra da probabilidade total.
+            </p>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 13 · Atividade para casa">
+          <div class="sec-head">
+            <span class="n">casa</span>
+            <h2>Atividade — teorema de Bayes</h2>
+            <span class="sub">Individual · entregar na próxima aula</span>
+          </div>
+          <div class="ex" data-ex>
+            <span class="lab">Questão 1 · duas linhas de montagem</span>
+            <p>
+              Uma fábrica monta placas em duas linhas. A <strong>linha 1</strong> produz 60 % das
+              placas e tem taxa de defeito de <strong>2 %</strong>. A <strong>linha 2</strong> produz
+              os 40 % restantes e tem taxa de defeito de <strong>5 %</strong>.
+            </p>
+            <p>
+              <strong>(a)</strong> Qual a probabilidade de uma placa escolhida ao acaso sair
+              defeituosa?<br>
+              <strong>(b)</strong> Uma placa foi sorteada e está defeituosa. Qual a probabilidade
+              de ter vindo da linha 2?
+            </p>
+            <p style="color:var(--ink-mute)">
+              Dica: o item (a) é a regra da probabilidade total (§ 11); o (b) é Bayes, usando
+              o resultado de (a) no denominador.
+            </p>
+            <button class="b" type="button" data-reveal>Conferir resultado</button>
+            <div class="sol" hidden>
+              <p>(a) <span class="res">0,032</span> &nbsp;·&nbsp; (b) <span class="res">0,625</span></p>
+              <p style="color:var(--ink-mute)">
+                Repare: a linha 2 faz só 40 % das placas, mas responde por 62,5 % dos defeitos.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 13 · Atividade para casa">
+          <div class="ex" data-ex>
+            <span class="lab">Questão 2 · detector de falha rara</span>
+            <p>
+              Um sistema de monitoramento verifica componentes. A falha que ele procura ocorre
+              em <strong>1 a cada 1000</strong> componentes. O detector acusa <strong>99 %</strong>
+              das falhas reais, e dá alarme falso em <strong>2 %</strong> dos componentes bons.
+            </p>
+            <p>
+              <strong>O detector acusou um componente. Qual a probabilidade de ele estar
+              realmente com falha?</strong> Comente o resultado em duas ou três linhas.
+            </p>
+            <button class="b" type="button" data-reveal>Conferir resultado</button>
+            <div class="sol" hidden>
+              <p><span class="res">≈ 0,047</span> — cerca de <strong>4,7 %</strong>.</p>
+              <p style="color:var(--ink-mute)">
+                Um detector de 99 % de acerto, e ainda assim 19 em cada 20 alarmes são falsos.
+                A razão é a raridade da falha: os 2 % de alarme falso incidem sobre um universo
+                enorme de componentes bons. É por isso que Bayes importa.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 14 ============ -->
+    <section id="va">
+      <div class="wrap">
+        <div class="slide" data-sec="§ 14 · Variáveis aleatórias">
+          <div class="sec-head">
+            <span class="n">§ 14</span>
+            <h2>Variáveis aleatórias</h2>
+            <span class="sub">Do espaço amostral para os números reais</span>
+          </div>
+          <div class="defn">
+            <span class="lab">Definição</span>
+            <p>Uma <strong>variável aleatória</strong> é uma função que confere um número real a cada
+            resultado no espaço amostral de um experimento aleatório.</p>
+          </div>
+          <div class="defn">
+            <span class="lab">Notação</span>
+            <p>Uma variável aleatória é denotada por uma <strong>letra maiúscula</strong>, tal como
+            <span class="v">X</span>. Depois de um experimento ser conduzido, o valor medido da
+            variável aleatória é denotado por uma <strong>letra minúscula</strong>, tal como
+            <span class="v">x</span> = 70 miliampères.</p>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 14 · Variáveis aleatórias">
+          <div class="defn">
+            <span class="lab">Discreta e contínua</span>
+            <p>Uma variável aleatória <strong>discreta</strong> é uma variável aleatória com uma faixa
+            finita (ou infinita contável). Uma variável aleatória <strong>contínua</strong> é uma
+            variável aleatória com um intervalo (tanto finito como infinito) de números reais
+            para sua faixa.</p>
+          </div>
+          <div class="cols2">
+            <div>
+              <h3 style="margin-top:0">Contínuas</h3>
+              <ul>
+                <li>corrente elétrica</li>
+                <li>comprimento</li>
+                <li>pressão</li>
+                <li>temperatura</li>
+                <li>tempo</li>
+                <li>tensão</li>
+                <li>peso</li>
+              </ul>
+            </div>
+            <div>
+              <h3 style="margin-top:0">Discretas</h3>
+              <ul>
+                <li>número de arranhões em uma superfície</li>
+                <li>proporção de partes defeituosas entre 1000 testadas</li>
+                <li>número de bits transmitidos que foram recebidos com erro</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 14 · Variáveis aleatórias">
+          <div class="note">
+            <span class="lab">Próximos passos</span>
+            <p>
+              Distribuições de probabilidade — e aí o paradoxo de Bertrand (§ 07) finalmente
+              ganha a linguagem para ser dito com precisão.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div class="hud" id="hud">
+  <span class="bar" id="hudBar"></span>
+  <span class="where" id="hudWhere"></span>
+  <span class="count" id="hudCount"></span>
+  <span class="sep"></span>
+  <button type="button" id="hudZoomOut" aria-label="Diminuir fonte">A−</button>
+  <span class="zoom" id="hudZoom">100%</span>
+  <button type="button" id="hudZoomIn" aria-label="Aumentar fonte">A+</button>
+  <span class="sep"></span>
+  <button type="button" id="hudPrev" aria-label="Slide anterior">←</button>
+  <button type="button" id="hudNext" aria-label="Próximo slide">→</button>
+  <button type="button" id="hudExit">Sair</button>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var root = document.documentElement;
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var nf = new Intl.NumberFormat("pt-BR");
+
+  function css(name) { return getComputedStyle(root).getPropertyValue(name).trim(); }
+
+  function wireSeg(id, cb) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener("click", function (ev) {
+      var b = ev.target.closest("button[data-k]");
+      if (!b) return;
+      Array.prototype.forEach.call(el.querySelectorAll("button[data-k]"), function (x) {
+        x.setAttribute("aria-pressed", String(x === b));
+      });
+      cb(b.getAttribute("data-k"));
+    });
+  }
+
+  /* Devolve null quando o canvas não tem caixa de layout (slide oculto).
+     Sem isso o buffer encolheria para 1px e o CSS o esticaria depois,
+     virando um bloco sólido — acontece, por exemplo, quando a resolução
+     muda ao plugar o projetor no meio da apresentação. */
+  function fit(canvas) {
+    var r = canvas.getBoundingClientRect();
+    if (r.width < 2 || r.height < 2) return null;
+    var dpr = window.devicePixelRatio || 1;
+    canvas.width = Math.round(r.width * dpr);
+    canvas.height = Math.round(r.height * dpr);
+    var ctx = canvas.getContext("2d");
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx: ctx, w: r.width, h: r.height };
+  }
+
+  /* ---------------- tema ---------------- */
+  var themeBtn = document.getElementById("themeBtn");
+  var modes = ["auto", "light", "dark"];
+  var labels = { auto: "Tema: automático", light: "Tema: claro", dark: "Tema: escuro" };
+  var mi = 0;
+  themeBtn.addEventListener("click", function () {
+    mi = (mi + 1) % modes.length;
+    var m = modes[mi];
+    if (m === "auto") root.removeAttribute("data-theme");
+    else root.setAttribute("data-theme", m);
+    themeBtn.textContent = labels[m];
+    redrawAll();
+  });
+
+  /* ---------------- capa ---------------- */
+  var heroCanvas = document.getElementById("heroCanvas");
+  var heroSeries = [], heroTarget = 0.5;
+
+  (function buildHero() {
+    var hits = 0, burn = 12;
+    for (var n = 1; n <= 900 + burn; n++) {
+      if (Math.random() < heroTarget) hits++;
+      if (n > burn) heroSeries.push(hits / n);
+    }
+  })();
+
+  function drawHero(progress) {
+    var f = fit(heroCanvas);
+    if (!f) return;
+    var ctx = f.ctx, w = f.w, h = f.h, pad = 10;
+    ctx.clearRect(0, 0, w, h);
+    var lo = 0.28, hi = 0.72;
+    function yv(p) { return pad + (1 - (p - lo) / (hi - lo)) * (h - 2 * pad); }
+
+    ctx.strokeStyle = css("--teorico"); ctx.globalAlpha = .55; ctx.lineWidth = 1;
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath(); ctx.moveTo(0, yv(heroTarget)); ctx.lineTo(w, yv(heroTarget)); ctx.stroke();
+    ctx.setLineDash([]); ctx.globalAlpha = 1;
+
+    var count = Math.max(2, Math.floor(heroSeries.length * progress));
+    ctx.strokeStyle = css("--empirico"); ctx.lineWidth = 1.4;
+    ctx.beginPath();
+    for (var i = 1; i < count; i++) {
+      var x = (i / (heroSeries.length - 1)) * w;
+      var y = yv(Math.min(hi, Math.max(lo, heroSeries[i])));
+      if (i === 1) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    if (count > 2) {
+      var lx = ((count - 1) / (heroSeries.length - 1)) * w;
+      var ly = yv(Math.min(hi, Math.max(lo, heroSeries[count - 1])));
+      ctx.fillStyle = css("--empirico");
+      ctx.beginPath(); ctx.arc(lx, ly, 2.6, 0, Math.PI * 2); ctx.fill();
+    }
+  }
+
+  var heroP = reduce ? 1 : 0;
+  function heroTick() {
+    if (heroP < 1) { heroP = Math.min(1, heroP + .006); drawHero(heroP); requestAnimationFrame(heroTick); }
+    else drawHero(1);
+  }
+
+  /* ---------------- §02 câmera flash ---------------- */
+  var flashSpaces = {
+    cont: "S = { x | 1,5 ≤ x ≤ 5 }   (segundos)",
+    cat:  "S = { baixo, médio, alto }",
+    bin:  "S = { satisfaz, não satisfaz }"
+  };
+  var flashOut = document.getElementById("flashOut");
+  wireSeg("flashSeg", function (k) { flashOut.textContent = flashSpaces[k]; });
+  flashOut.textContent = flashSpaces.cont;
+
+  /* ---------------- §03 Venn ---------------- */
+  var vennFill = document.getElementById("vennFill");
+  var vennExpr = document.getElementById("vennExpr");
+  var vennTxt = document.getElementById("vennTxt");
+  var rA = document.getElementById("rA"), rB = document.getElementById("rB");
+  var cA = document.getElementById("cA");
+  var lA = document.getElementById("lA"), lB = document.getElementById("lB");
+
+  var vennModes = {
+    uniao: { expr: "E₁ ∪ E₂", txt: "Todos os resultados contidos em pelo menos um dos dois eventos.",
+      fill: '<circle class="fillregion" cx="130" cy="98" r="62"/><circle class="fillregion" cx="196" cy="98" r="62"/>' },
+    inter: { expr: "E₁ ∩ E₂", txt: "Somente os resultados contidos nos dois eventos, simultaneamente.",
+      fill: '<g clip-path="url(#clipA)"><circle class="fillregion" cx="196" cy="98" r="62" style="opacity:.55"/></g>' },
+    compl: { expr: "E₁ᶜ", txt: "Os resultados do espaço amostral que não estão em E₁.", fill: '' },
+    excl:  { expr: "E₁ ∩ E₂ = ∅", txt: "Eventos mutuamente excludentes: não há resultado comum. É a hipótese do axioma A3.",
+      fill: '<circle class="fillregion" cx="98" cy="98" r="52"/><circle class="fillregion" cx="228" cy="98" r="52"/>' }
+  };
+
+  function setVenn(k) {
+    var m = vennModes[k];
+    vennExpr.textContent = m.expr;
+    vennTxt.textContent = m.txt;
+    var sep = (k === "excl");
+    var ax = sep ? 98 : 130, bx = sep ? 228 : 196, rr = sep ? 52 : 62;
+    [rA, cA].forEach(function (e) { e.setAttribute("cx", ax); e.setAttribute("r", rr); });
+    rB.setAttribute("cx", bx); rB.setAttribute("r", rr);
+    lA.setAttribute("x", sep ? 88 : 96);
+    lB.setAttribute("x", sep ? 218 : 222);
+    if (k === "compl") {
+      vennFill.innerHTML =
+        '<mask id="mA"><rect x="14" y="24" width="292" height="152" fill="white"/>' +
+        '<circle cx="130" cy="98" r="62" fill="black"/></mask>' +
+        '<rect class="fillregion" x="14" y="24" width="292" height="152" mask="url(#mA)"/>';
+    } else vennFill.innerHTML = m.fill;
+  }
+  wireSeg("vennSeg", setVenn);
+  setVenn("uniao");
+
+  /* ---------------- §04 frequência relativa ---------------- */
+  var freqCanvas = document.getElementById("freqCanvas");
+  var roN = document.getElementById("roN"), roNe = document.getElementById("roNe");
+  var roP = document.getElementById("roP"), roT = document.getElementById("roT");
+  var runBtn = document.getElementById("freqRun"), resetBtn = document.getElementById("freqReset");
+
+  var freqKind = "moeda";
+  var freqTargets = { moeda: .5, dado: 1 / 6 };
+  var series = [], n = 0, ne = 0, running = false, NMAX = 3000;
+
+  function fmt(x) { return x.toFixed(4).replace(".", ","); }
+
+  function freqReset() {
+    series = []; n = 0; ne = 0; running = false;
+    runBtn.textContent = "Rodar"; runBtn.disabled = false;
+    roN.textContent = "0"; roNe.textContent = "0"; roP.textContent = "—";
+    roT.textContent = fmt(freqTargets[freqKind]);
+    drawFreq();
+  }
+
+  function step(k) {
+    for (var i = 0; i < k && n < NMAX; i++) {
+      n++;
+      var hit = (freqKind === "moeda") ? (Math.random() < .5) : (Math.floor(Math.random() * 6) === 5);
+      if (hit) ne++;
+      series.push(ne / n);
+    }
+    roN.textContent = nf.format(n);
+    roNe.textContent = nf.format(ne);
+    roP.textContent = n ? fmt(ne / n) : "—";
+  }
+
+  function drawFreq() {
+    var f = fit(freqCanvas);
+    if (!f) return;
+    var ctx = f.ctx, w = f.w, h = f.h;
+    var padL = 46, padR = 10, padT = 12, padB = 22;
+    ctx.clearRect(0, 0, w, h);
+    var t = freqTargets[freqKind];
+    var span = (freqKind === "moeda") ? .35 : .17;
+    var lo = Math.max(0, t - span), hi = t + span;
+    function yv(p) { return padT + (1 - (p - lo) / (hi - lo)) * (h - padT - padB); }
+    function xv(i) { return padL + (i / (NMAX - 1)) * (w - padL - padR); }
+
+    ctx.strokeStyle = css("--rule"); ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(padL, padT); ctx.lineTo(padL, h - padB); ctx.lineTo(w - padR, h - padB);
+    ctx.stroke();
+
+    ctx.fillStyle = css("--ink-mute");
+    ctx.font = "11px monospace";
+    ctx.textAlign = "right";
+    ctx.fillText(hi.toFixed(2).replace(".", ","), padL - 6, padT + 8);
+    ctx.fillText(lo.toFixed(2).replace(".", ","), padL - 6, h - padB);
+    ctx.fillText("n = " + nf.format(NMAX), w - padR, h - padB + 15);
+    ctx.textAlign = "left";
+    ctx.fillText("0", padL + 2, h - padB + 15);
+
+    ctx.strokeStyle = css("--teorico"); ctx.lineWidth = 1.2;
+    ctx.setLineDash([5, 4]);
+    ctx.beginPath(); ctx.moveTo(padL, yv(t)); ctx.lineTo(w - padR, yv(t)); ctx.stroke();
+    ctx.setLineDash([]);
+
+    if (series.length > 1) {
+      ctx.strokeStyle = css("--empirico"); ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      for (var i = 1; i < series.length; i++) {
+        var y = yv(Math.min(hi, Math.max(lo, series[i])));
+        var x = xv(i);
+        if (i === 1) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+    }
+  }
+
+  function loop() {
+    if (!running) return;
+    step(18); drawFreq();
+    if (n >= NMAX) { running = false; runBtn.textContent = "Concluído"; runBtn.disabled = true; return; }
+    requestAnimationFrame(loop);
+  }
+
+  runBtn.addEventListener("click", function () {
+    if (n >= NMAX) return;
+    running = !running;
+    runBtn.textContent = running ? "Pausar" : "Continuar";
+    if (running) loop();
+  });
+  resetBtn.addEventListener("click", freqReset);
+  wireSeg("freqSeg", function (k) { freqKind = k; freqReset(); });
+
+  /* ---------------- §06 calculadora ---------------- */
+  var inN = document.getElementById("inN"), inR = document.getElementById("inR");
+  var outFat = document.getElementById("outFat"), outPerm = document.getElementById("outPerm"),
+      outComb = document.getElementById("outComb"), calcMsg = document.getElementById("calcMsg");
+
+  function factBig(k) { var r = 1n; for (var i = 2n; i <= k; i++) r *= i; return r; }
+  function grp(b) { return b.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "."); }
+  function shorten(b) {
+    var s = b.toString();
+    if (s.length <= 21) return grp(b);
+    return s.slice(0, 6).replace(/^(\d)(\d*)$/, "$1,$2") + " × 10^" + (s.length - 1);
+  }
+
+  function calc() {
+    var nv = parseInt(inN.value, 10), rv = parseInt(inR.value, 10);
+    if (!isFinite(nv) || !isFinite(rv) || nv < 0 || rv < 0) {
+      outFat.textContent = outPerm.textContent = outComb.textContent = "—";
+      calcMsg.textContent = "Informe inteiros não negativos.";
+      return;
+    }
+    if (nv > 170) { nv = 170; inN.value = 170; }
+    var N = BigInt(nv), Rr = BigInt(rv);
+    outFat.textContent = shorten(factBig(N));
+    if (rv > nv) {
+      outPerm.textContent = outComb.textContent = "0";
+      calcMsg.textContent = "Com r > n não há como selecionar r elementos distintos.";
+      return;
+    }
+    var p = factBig(N) / factBig(N - Rr);
+    outPerm.textContent = shorten(p);
+    outComb.textContent = shorten(p / factBig(Rr));
+    calcMsg.textContent = "Cada subconjunto de " + rv + " elementos pode ser ordenado de "
+      + grp(factBig(Rr)) + " maneiras — por isso P e C diferem pelo fator r!.";
+  }
+  inN.addEventListener("input", calc);
+  inR.addEventListener("input", calc);
+  calc();
+
+  /* ---------------- §09 dois dados ---------------- */
+  var diceGrid = document.getElementById("diceGrid");
+  var diceExtra = document.getElementById("diceExtra");
+  var dN = document.getElementById("dN"), dNe = document.getElementById("dNe"),
+      dP = document.getElementById("dP"), dVerdict = document.getElementById("dVerdict");
+
+  (function buildDice() {
+    var html = "";
+    for (var a = 1; a <= 6; a++) {
+      for (var b = 1; b <= 6; b++) {
+        html += '<div class="dice-cell" data-a="' + a + '" data-b="' + b + '">' + a + "," + b + "</div>";
+      }
+    }
+    diceGrid.innerHTML = html;
+  })();
+
+  var diceCells = Array.prototype.slice.call(diceGrid.querySelectorAll(".dice-cell"));
+
+  function setDice(mode) {
+    diceCells.forEach(function (c) {
+      var a = +c.getAttribute("data-a"), b = +c.getAttribute("data-b");
+      var soma7 = (a + b === 7);
+      c.classList.remove("fav", "dim");
+      if (mode === "naoord") {
+        if (a > b) c.classList.add("dim");
+        else if (soma7) c.classList.add("fav");
+      } else {
+        if (soma7) c.classList.add("fav");
+      }
+    });
+
+    if (mode === "somas") {
+      var chips = "";
+      for (var s = 2; s <= 12; s++) {
+        var qtd = 6 - Math.abs(7 - s);
+        chips += '<div class="sum-chip' + (s === 7 ? " fav" : "") + '">' + s + "<small>" + qtd + " casos</small></div>";
+      }
+      diceExtra.innerHTML =
+        '<div style="font-family:var(--sans); font-size:.8rem; color:var(--ink-mute)">' +
+        'As 11 somas, com quantos pares ordenados cada uma reúne:</div>' +
+        '<div class="sum-chips">' + chips + "</div>";
+      dN.textContent = "11"; dNe.textContent = "1"; dP.textContent = "1/11 ≈ 0,0909";
+      dVerdict.className = "verdict bad";
+      dVerdict.textContent = "As somas não são igualmente prováveis: a soma 7 reúne 6 pares, a soma 2 reúne 1.";
+    } else if (mode === "naoord") {
+      diceExtra.innerHTML =
+        '<div style="font-family:var(--sans); font-size:.8rem; color:var(--ink-mute)">' +
+        'Descartando a ordem, (1,6) e (6,1) viram o mesmo resultado — sobram 21 pares.</div>';
+      dN.textContent = "21"; dNe.textContent = "3"; dP.textContent = "3/21 = 1/7 ≈ 0,1429";
+      dVerdict.className = "verdict bad";
+      dVerdict.textContent = "Também não são igualmente prováveis: {1,6} pode ocorrer de 2 maneiras, mas {3,3} só de 1.";
+    } else {
+      diceExtra.innerHTML =
+        '<div style="font-family:var(--sans); font-size:.8rem; color:var(--ink-mute)">' +
+        'Distinguindo o primeiro do segundo dado: 36 resultados, todos com a mesma chance.</div>';
+      dN.textContent = "36"; dNe.textContent = "6"; dP.textContent = "6/36 = 1/6 ≈ 0,1667";
+      dVerdict.className = "verdict ok";
+      dVerdict.textContent = "Aqui sim os resultados são igualmente prováveis — é esta a contagem correta.";
+    }
+  }
+  wireSeg("diceSeg", setDice);
+  setDice("somas");
+
+  /* ---------------- §11 pistões (quadrado unitário) ---------------- */
+  var sPA = document.getElementById("sPA"), sPBA = document.getElementById("sPBA"),
+      sPBAc = document.getElementById("sPBAc");
+  var oPA = document.getElementById("oPA"), oPBA = document.getElementById("oPBA"),
+      oPBAc = document.getElementById("oPBAc");
+  var mosFill = document.getElementById("mosFill");
+  var mosLabA = document.getElementById("mosLabA"), mosLabAc = document.getElementById("mosLabAc");
+  /* prefixo "mos" nos ids: "rB" já é o círculo E₂ do Venn do § 03 */
+  var rInter = document.getElementById("mosInter"), rB = document.getElementById("mosB"),
+      rUniao = document.getElementById("mosUniao"), rCompl = document.getElementById("mosCompl");
+  var mosVerdict = document.getElementById("mosVerdict");
+  var mosMode = "inter";
+
+  var MX = 30, MY = 10, MS = 170;   /* canto e lado do quadrado, em unidades do viewBox */
+
+  function d2(x) { return x.toFixed(2).replace(".", ","); }
+  function d4(x) { return x.toFixed(4).replace(".", ","); }
+
+  /* Regiões destacadas em cada modo: o quadrado tem área 1, então
+     a área de cada retângulo é literalmente a probabilidade conjunta. */
+  var mosOn = {
+    inter: { ab: 1, abc: 0, acb: 0, acbc: 0 },
+    uniao: { ab: 1, abc: 1, acb: 1, acbc: 0 },
+    b:     { ab: 1, abc: 0, acb: 1, acbc: 0 },
+    tudo:  { ab: 1, abc: 1, acb: 1, acbc: 1 }
+  };
+
+  function drawMos() {
+    var pA = +sPA.value, pBA = +sPBA.value, pBAc = +sPBAc.value;
+    var pAc = 1 - pA;
+    var inter = pBA * pA, acb = pBAc * pAc;
+    var pB = inter + acb;
+    var uniao = pA + pB - inter;
+    var acbc = pAc * (1 - pBAc);
+
+    oPA.textContent = d2(pA); oPBA.textContent = d2(pBA); oPBAc.textContent = d2(pBAc);
+    rInter.textContent = d4(inter);
+    rB.textContent = d4(pB);
+    rUniao.textContent = d4(uniao);
+    rCompl.textContent = d4(1 - acbc);
+
+    var wA = MS * pA, wAc = MS - wA;
+    var hBA = MS * pBA, hBAc = MS * pBAc;
+    var on = mosOn[mosMode];
+
+    function rect(cls, x, y, w, h, ativo) {
+      if (w <= 0.4 || h <= 0.4) return "";
+      return '<rect class="mos-r ' + cls + (ativo ? "" : " dim") + '" x="' + x.toFixed(1) +
+        '" y="' + y.toFixed(1) + '" width="' + w.toFixed(1) + '" height="' + h.toFixed(1) + '"/>';
+    }
+
+    mosFill.innerHTML =
+      rect("mos-ab",   MX,      MY,           wA,  hBA,        on.ab) +
+      rect("mos-abc",  MX,      MY + hBA,     wA,  MS - hBA,   on.abc) +
+      rect("mos-acb",  MX + wA, MY,           wAc, hBAc,       on.acb) +
+      rect("mos-acbc", MX + wA, MY + hBAc,    wAc, MS - hBAc,  on.acbc);
+
+    mosLabA.setAttribute("x", MX + wA / 2);
+    mosLabAc.setAttribute("x", MX + wA + wAc / 2);
+    mosLabA.style.opacity = pA > .08 ? 1 : 0;
+    mosLabAc.style.opacity = pAc > .08 ? 1 : 0;
+
+    var indep = Math.abs(pBA - pBAc) < 1e-9;
+    if (indep) {
+      mosVerdict.className = "verdict ok";
+      mosVerdict.textContent = "P(B|A) = P(B|Aᶜ): os eventos são independentes, e P(A∩B) = P(A)P(B) = "
+        + d4(pA * pB) + ".";
+    } else {
+      mosVerdict.className = "verdict bad";
+      mosVerdict.textContent = "P(B|A) ≠ P(B|Aᶜ): saber o 1º estágio muda a chance do 2º — não são independentes. "
+        + "P(A)P(B) daria " + d4(pA * pB) + ", diferente de P(A∩B).";
+    }
+  }
+
+  [sPA, sPBA, sPBAc].forEach(function (s) { s.addEventListener("input", drawMos); });
+  wireSeg("mosSeg", function (k) { mosMode = k; drawMos(); });
+  document.getElementById("mosIndep").addEventListener("click", function () {
+    sPBAc.value = sPBA.value; drawMos();
+  });
+  document.getElementById("mosReset").addEventListener("click", function () {
+    sPA.value = "0.90"; sPBA.value = "0.95"; sPBAc.value = "0.70"; drawMos();
+  });
+  drawMos();
+
+  /* ---------------- §12 trens (probabilidade geométrica) ---------------- */
+  var geoFill = document.getElementById("geoFill");
+  var geoDesc = document.getElementById("geoDesc");
+  var gArea = document.getElementById("gArea"), gP = document.getElementById("gP");
+
+  /* quadrado 20×20 desenhado em 180px: 9px por minuto, y invertido */
+  function gx(x) { return 42 + x * 9; }
+  function gy(y) { return 198 - y * 9; }
+  function poly(pts) {
+    return '<polygon class="tr-region" points="' +
+      pts.map(function (p) { return gx(p[0]) + "," + gy(p[1]); }).join(" ") + '"/>';
+  }
+
+  var geoModes = {
+    ab: {
+      pts: [[4, 6], [9, 6], [9, 14], [4, 14]], area: 40,
+      desc: 'Um retângulo qualquer: <i>A</i> = faixa vertical (X chega entre t₁ e t₂), ' +
+            '<i>B</i> = faixa horizontal (Y entre t₃ e t₄). Aqui 5 × 8 minutos.'
+    },
+    c: {
+      pts: [[0, 0], [0, 20], [20, 20]], area: 200,
+      desc: '<i>C</i> = {x ≤ y}: X chega antes de Y. É exatamente metade do quadrado.'
+    },
+    d: {
+      pts: [[5, 0], [20, 15], [20, 20], [16, 20], [0, 4], [0, 0]], area: 159.5,
+      desc: '<i>D</i> = {−4 ≤ x − y ≤ 5}: os trens se encontram. Faixa diagonal formada ' +
+            'por dois trapézios de base comum.'
+    },
+    cd: {
+      pts: [[0, 0], [20, 20], [16, 20], [0, 4]], area: 72,
+      desc: '<i>CD</i> = {−4 ≤ x − y ≤ 0}: encontraram-se <strong>e</strong> X chegou antes. ' +
+            'É o numerador de P(C | D).'
+    }
+  };
+
+  function setGeo(k) {
+    var m = geoModes[k];
+    geoFill.innerHTML = poly(m.pts);
+    geoDesc.innerHTML = m.desc;
+    gArea.textContent = String(m.area).replace(".", ",");
+    gP.textContent = String(m.area).replace(".", ",") + "/400 = " + (m.area / 400).toFixed(4).replace(".", ",");
+  }
+  wireSeg("geoSeg", setGeo);
+  setGeo("ab");
+
+  /* ---------------- exercícios ---------------- */
+  Array.prototype.forEach.call(document.querySelectorAll("[data-reveal]"), function (btn) {
+    btn.addEventListener("click", function () {
+      var sol = btn.parentNode.querySelector(".sol");
+      if (sol.hasAttribute("hidden")) { sol.removeAttribute("hidden"); btn.textContent = "Ocultar resolução"; }
+      else { sol.setAttribute("hidden", ""); btn.textContent = "Mostrar resolução"; }
+    });
+  });
+
+  /* ---------------- navegação (documento) ---------------- */
+  var links = Array.prototype.slice.call(document.querySelectorAll("#toc a"));
+  var secs = links.map(function (a) { return document.querySelector(a.getAttribute("href")); });
+  if ("IntersectionObserver" in window) {
+    var io = new IntersectionObserver(function (entries) {
+      if (isPresent()) return;
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        var i = secs.indexOf(e.target);
+        links.forEach(function (a, j) { a.classList.toggle("on", j === i); });
+      });
+    }, { rootMargin: "-15% 0px -75% 0px" });
+    secs.forEach(function (s) { if (s) io.observe(s); });
+  }
+
+  /* ============================================================
+     MODO APRESENTAÇÃO
+     ============================================================ */
+  var slides = Array.prototype.slice.call(document.querySelectorAll(".slide"));
+  var cur = 0;
+  var hudWhere = document.getElementById("hudWhere");
+  var hudCount = document.getElementById("hudCount");
+  var hudBar = document.getElementById("hudBar");
+  var hudZoom = document.getElementById("hudZoom");
+
+  function isPresent() { return root.getAttribute("data-mode") === "present"; }
+
+  /* zoom da apresentação, lembrado entre sessões */
+  var ps = 1;
+  try {
+    var saved = parseFloat(localStorage.getItem("ecom020-ps"));
+    if (isFinite(saved) && saved >= .6 && saved <= 2.2) ps = saved;
+  } catch (e) {}
+
+  function applyPs() {
+    root.style.setProperty("--ps", String(ps));
+    hudZoom.textContent = Math.round(ps * 100) + "%";
+    try { localStorage.setItem("ecom020-ps", String(ps)); } catch (e) {}
+    redrawAll();
+  }
+  function bumpPs(d) { ps = Math.min(2.2, Math.max(.6, Math.round((ps + d) * 100) / 100)); applyPs(); }
+
+  document.getElementById("hudZoomIn").addEventListener("click", function () { bumpPs(.1); });
+  document.getElementById("hudZoomOut").addEventListener("click", function () { bumpPs(-.1); });
+
+  function show(i) {
+    cur = Math.max(0, Math.min(slides.length - 1, i));
+    slides.forEach(function (s, j) { s.classList.toggle("on", j === cur); });
+    hudWhere.innerHTML = "<b>" + (slides[cur].getAttribute("data-sec") || "") + "</b>";
+    hudCount.textContent = (cur + 1) + " / " + slides.length;
+    hudBar.style.width = (((cur + 1) / slides.length) * 100) + "%";
+    slides[cur].scrollTop = 0;
+    redrawAll();
+  }
+
+  function enterPresent() {
+    var best = 0, bestD = Infinity, mid = window.scrollY + window.innerHeight / 3;
+    slides.forEach(function (s, j) {
+      var el = s.firstElementChild;
+      if (!el) return;
+      var d = Math.abs(el.getBoundingClientRect().top + window.scrollY - mid);
+      if (d < bestD) { bestD = d; best = j; }
+    });
+    root.setAttribute("data-mode", "present");
+    if (root.requestFullscreen) root.requestFullscreen().catch(function () {});
+    applyPs();
+    show(best);
+  }
+
+  function exitPresent() {
+    root.removeAttribute("data-mode");
+    slides.forEach(function (s) { s.classList.remove("on"); });
+    if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(function () {});
+    var el = slides[cur] && slides[cur].firstElementChild;
+    if (el) el.scrollIntoView({ block: "center" });
+    redrawAll();
+  }
+
+  document.getElementById("presentBtn").addEventListener("click", enterPresent);
+  document.getElementById("hudExit").addEventListener("click", exitPresent);
+  document.getElementById("hudNext").addEventListener("click", function () { show(cur + 1); });
+  document.getElementById("hudPrev").addEventListener("click", function () { show(cur - 1); });
+
+  document.addEventListener("fullscreenchange", function () {
+    if (!document.fullscreenElement && isPresent()) exitPresent();
+  });
+
+  document.addEventListener("keydown", function (ev) {
+    if (ev.target.tagName === "INPUT") return;
+    if (!isPresent()) {
+      if (ev.key === "p" || ev.key === "P") { ev.preventDefault(); enterPresent(); }
+      return;
+    }
+    switch (ev.key) {
+      case "ArrowRight": case "PageDown": case " ": case "Enter":
+        ev.preventDefault(); show(cur + 1); break;
+      case "ArrowLeft": case "PageUp":
+        ev.preventDefault(); show(cur - 1); break;
+      case "Home": ev.preventDefault(); show(0); break;
+      case "End": ev.preventDefault(); show(slides.length - 1); break;
+      case "+": case "=": ev.preventDefault(); bumpPs(.1); break;
+      case "-": case "_": ev.preventDefault(); bumpPs(-.1); break;
+      case "0": ev.preventDefault(); ps = 1; applyPs(); break;
+      case "Escape": exitPresent(); break;
+    }
+  });
+
+  /* ---------------- redraw ---------------- */
+  function redrawAll() { drawHero(heroP); drawFreq(); }
+  window.addEventListener("resize", redrawAll);
+
+  hudZoom.textContent = Math.round(ps * 100) + "%";
+  freqReset();
+  heroTick();
+})();
+</script>

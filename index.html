@@ -1,0 +1,800 @@
+<meta charset="utf-8">
+<title>ECOM020 — Probabilidade e Estatística</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Disciplina ECOM020 — Probabilidade e Estatística, Engenharia de Computação, Instituto de Computação, UFAL. Prof. Glauber Rodrigues Leite.">
+<style>
+/* ============================================================
+   ECOM020 — Probabilidade e Estatística
+   Página inicial da disciplina.
+   Registro visual: caderno de laboratório / instrumentação,
+   o mesmo das aulas e das outras disciplinas.
+
+   Acentos com significado fixo (valem em todas as aulas):
+     --empirico (âmbar)  = medido, estimado, frequência observada
+     --teorico  (teal)   = exato, deduzido, axioma
+     --alerta   (vermelho) = limitação, ambiguidade, paradoxo
+   ============================================================ */
+
+:root {
+  --paper:      #f2f5f6;
+  --surface:    #ffffff;
+  --surface-2:  #e9eef0;
+  --ink:        #131b20;
+  --ink-soft:   #45565e;
+  --ink-mute:   #6d7f88;
+  --rule:       #d5dde1;
+  --rule-soft:  #e5eaed;
+
+  --teorico:    #0d6e7d;
+  --teorico-bg: #dfeef0;
+  --empirico:   #a8620a;
+  --empirico-bg:#f6ecdd;
+  --alerta:     #9d332e;
+  --alerta-bg:  #f7e7e5;
+
+  --serif: ui-serif, "Iowan Old Style", Charter, "Bitstream Charter", "Palatino Linotype", Palatino, Georgia, serif;
+  --sans:  ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --mono:  ui-monospace, "SF Mono", SFMono-Regular, "JetBrains Mono", Menlo, Consolas, monospace;
+
+  --measure: 74ch;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper:#0d1418; --surface:#131e23; --surface-2:#1a272d;
+    --ink:#e3eaed; --ink-soft:#b3c3ca; --ink-mute:#8598a1;
+    --rule:#263740; --rule-soft:#1c2a31;
+    --teorico:#55c0d2; --teorico-bg:#102a30;
+    --empirico:#e2a355; --empirico-bg:#2a2013;
+    --alerta:#e2867d; --alerta-bg:#2c1817;
+  }
+}
+:root[data-theme="dark"] {
+  --paper:#0d1418; --surface:#131e23; --surface-2:#1a272d;
+  --ink:#e3eaed; --ink-soft:#b3c3ca; --ink-mute:#8598a1;
+  --rule:#263740; --rule-soft:#1c2a31;
+  --teorico:#55c0d2; --teorico-bg:#102a30;
+  --empirico:#e2a355; --empirico-bg:#2a2013;
+  --alerta:#e2867d; --alerta-bg:#2c1817;
+}
+:root[data-theme="light"] {
+  --paper:#f2f5f6; --surface:#ffffff; --surface-2:#e9eef0;
+  --ink:#131b20; --ink-soft:#45565e; --ink-mute:#6d7f88;
+  --rule:#d5dde1; --rule-soft:#e5eaed;
+  --teorico:#0d6e7d; --teorico-bg:#dfeef0;
+  --empirico:#a8620a; --empirico-bg:#f6ecdd;
+  --alerta:#9d332e; --alerta-bg:#f7e7e5;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0; background: var(--paper); color: var(--ink);
+  font-family: var(--serif); font-size: 1.0625rem; line-height: 1.62;
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap { max-width: var(--measure); margin: 0 auto; padding: 0 1.75rem; }
+
+/* ---------- topo ---------- */
+
+.top {
+  position: sticky; top: 0; z-index: 5;
+  background: color-mix(in srgb, var(--paper) 88%, transparent);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--rule);
+}
+.top .wrap { display: flex; align-items: center; gap: 1rem; padding-top: .6rem; padding-bottom: .6rem; }
+.top .brand {
+  font-family: var(--mono); font-size: .7rem; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--ink-mute); flex: 1; min-width: 0;
+}
+.top .brand b { color: var(--ink); font-weight: 600; letter-spacing: .1em; }
+.btn-line {
+  font-family: var(--mono); font-size: .66rem; letter-spacing: .1em; text-transform: uppercase;
+  background: transparent; color: var(--ink-mute); border: 1px solid var(--rule);
+  padding: .38rem .6rem; cursor: pointer; text-decoration: none; white-space: nowrap;
+}
+.btn-line:hover { color: var(--ink); border-color: var(--ink-mute); }
+
+/* ---------- capa ---------- */
+
+.hero {
+  border-bottom: 1px solid var(--rule);
+  padding: 3.6rem 0 2.4rem;
+  background-image:
+    linear-gradient(to right, var(--rule-soft) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--rule-soft) 1px, transparent 1px);
+  background-size: 28px 28px; background-position: -1px -1px;
+}
+.eyebrow {
+  font-family: var(--mono); font-size: .7rem; letter-spacing: .16em;
+  text-transform: uppercase; color: var(--ink-mute);
+}
+h1 {
+  font-size: clamp(2.1rem, 5vw, 3.1rem); line-height: 1.08; font-weight: 600;
+  letter-spacing: -0.018em; margin: .7rem 0 0; text-wrap: balance; max-width: 18ch;
+}
+h1 em { font-style: italic; color: var(--teorico); }
+.dek { margin: 1.05rem 0 0; font-size: 1.12rem; color: var(--ink-soft); max-width: 54ch; }
+
+.hero-fig { margin-top: 2rem; }
+.hero-fig canvas {
+  display: block; width: 100%; height: 210px;
+  border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+}
+.hero-cap {
+  margin-top: .55rem; font-family: var(--sans); font-size: .78rem;
+  color: var(--ink-mute); display: flex; gap: 1.4rem; flex-wrap: wrap;
+}
+.hero-cap span::before {
+  content: ""; display: inline-block; width: 1.4rem; height: 0;
+  border-top: 2px solid currentColor; vertical-align: middle; margin-right: .4rem;
+}
+.hero-cap .k-emp { color: var(--empirico); }
+.hero-cap .k-teo { color: var(--teorico); }
+
+/* ---------- seções ---------- */
+
+section { padding: 3rem 0 0; }
+.sec-head { margin: 0 0 1.3rem; }
+.sec-head .n {
+  font-family: var(--mono); font-size: .7rem; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--ink-mute);
+}
+h2 {
+  font-size: clamp(1.5rem, 2.6vw, 1.9rem); line-height: 1.15; font-weight: 600;
+  letter-spacing: -0.012em; margin: .3rem 0 0; text-wrap: balance;
+}
+.sec-head .sub {
+  display: block; margin-top: .35rem; font-family: var(--sans);
+  font-size: .88rem; color: var(--ink-mute); max-width: 56ch;
+}
+h3 { font-family: var(--sans); font-size: .95rem; font-weight: 650; margin: 1.8rem 0 .6rem; }
+p { margin: 0 0 1.05rem; }
+ul, ol { margin: 0 0 1.05rem; padding-left: 1.25rem; }
+li { margin: 0 0 .4rem; }
+a { color: var(--teorico); text-underline-offset: 2px; }
+strong { font-weight: 650; }
+.v { font-style: italic; }
+code { font-family: var(--mono); font-size: .85em; }
+:focus-visible { outline: 2px solid var(--teorico); outline-offset: 2px; }
+
+/* ---------- aulas ---------- */
+
+.aula {
+  display: grid; grid-template-columns: 3.2rem 1fr; gap: 1rem;
+  border: 1px solid var(--rule); border-left: 2px solid var(--teorico);
+  background: var(--surface); padding: 1rem 1.15rem; margin-bottom: .8rem;
+}
+.aula.soon { border-left-color: var(--rule); opacity: .72; }
+.aula .num {
+  font-family: var(--mono); font-size: 1.5rem; color: var(--teorico);
+  line-height: 1; padding-top: .15rem;
+}
+.aula.soon .num { color: var(--ink-mute); }
+.aula .t { font-family: var(--sans); font-weight: 650; font-size: 1rem; margin: 0 0 .25rem; }
+.aula .d { font-family: var(--sans); font-size: .85rem; color: var(--ink-soft); margin: 0 0 .6rem; }
+.aula .links { display: flex; gap: .5rem; flex-wrap: wrap; }
+.aula .links a, .aula .links span {
+  font-family: var(--mono); font-size: .66rem; letter-spacing: .08em; text-transform: uppercase;
+  border: 1px solid var(--rule); padding: .3rem .55rem; text-decoration: none; color: var(--ink-soft);
+}
+.aula .links a:hover { border-color: var(--teorico); color: var(--teorico); }
+.aula .links span { color: var(--ink-mute); border-style: dashed; }
+
+/* ---------- ementa ---------- */
+
+.ementa { border-top: 1px solid var(--rule); margin: 0 0 1.2rem; }
+.ementa .it {
+  display: grid; grid-template-columns: 2.4rem 1fr auto; gap: .8rem; align-items: baseline;
+  padding: .5rem 0; border-bottom: 1px solid var(--rule-soft);
+  font-family: var(--sans); font-size: .9rem;
+}
+.ementa .it .n { font-family: var(--mono); font-size: .72rem; color: var(--ink-mute); }
+.ementa .it .tag {
+  font-family: var(--mono); font-size: .62rem; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--empirico);
+}
+.ementa .it.done { color: var(--ink); }
+.ementa .it.done .n { color: var(--teorico); }
+
+/* ---------- código ---------- */
+
+.repo { border-top: 1px solid var(--rule); margin: 0 0 1.2rem; }
+.repo .it {
+  display: grid; grid-template-columns: 13rem 1fr; gap: .9rem; align-items: baseline;
+  padding: .6rem 0; border-bottom: 1px solid var(--rule-soft);
+  font-family: var(--sans); font-size: .88rem; color: var(--ink-soft);
+}
+.repo .it a { font-family: var(--mono); font-size: .78rem; word-break: break-all; }
+@media (max-width: 40rem) { .repo .it { grid-template-columns: 1fr; gap: .2rem; } }
+
+/* ---------- caixas ---------- */
+
+.note {
+  border: 1px solid var(--rule); border-left: 2px solid var(--ink-mute);
+  padding: .85rem 1.1rem; margin: 0 0 1.1rem; background: var(--surface);
+}
+.note .lab {
+  display: block; font-family: var(--mono); font-size: .66rem; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--ink-mute); margin-bottom: .3rem;
+}
+.note p:last-child { margin-bottom: 0; }
+.note.emp { border-left-color: var(--empirico); background: var(--empirico-bg); }
+.note.emp .lab { color: var(--empirico); }
+
+.eq {
+  font-family: var(--serif); font-size: 1.2rem; line-height: 1.3;
+  text-align: center; margin: 1.3rem 0; overflow-x: auto; padding: .3rem 0;
+}
+.frac {
+  display: inline-flex; flex-direction: column; vertical-align: middle;
+  text-align: center; margin: 0 .18em;
+}
+.frac > span:first-child { border-bottom: 1px solid currentColor; padding: 0 .4em .12em; }
+.frac > span:last-child { padding: .12em .4em 0; }
+
+/* ---------- notação ---------- */
+
+.tbl-scroll { overflow-x: auto; }
+.tri { width: 100%; border-collapse: collapse; margin: 1.1rem 0; }
+.tri th, .tri td { text-align: left; padding: .5rem .7rem; border-bottom: 1px solid var(--rule); vertical-align: top; }
+.tri th {
+  font-family: var(--sans); font-size: .7rem; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--ink-mute); font-weight: 600; white-space: nowrap;
+}
+.tri td { font-family: var(--sans); font-size: .86rem; }
+.tri td.sym {
+  font-family: var(--serif); font-size: 1.05rem; white-space: nowrap; color: var(--ink);
+}
+.tri td.sym.teo { color: var(--teorico); }
+.tri td.sym.emp { color: var(--empirico); }
+.tri td.onde { font-family: var(--mono); font-size: .74rem; color: var(--ink-mute); white-space: nowrap; }
+
+.termos { margin: 1.2rem 0 0; padding: 0; list-style: none; }
+.termos li {
+  border-top: 1px solid var(--rule-soft); padding: .55rem 0; margin: 0;
+  font-family: var(--sans); font-size: .88rem; color: var(--ink-soft);
+}
+.termos li b { font-family: var(--sans); color: var(--ink); font-weight: 650; }
+
+/* ---------- bibliografia e docente ---------- */
+
+.ref { border-top: 1px solid var(--rule-soft); padding: .8rem 0; font-size: .95rem; }
+.ref:last-of-type { border-bottom: 1px solid var(--rule-soft); }
+.ref .tag {
+  font-family: var(--mono); font-size: .62rem; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--ink-mute); display: block; margin-bottom: .2rem;
+}
+
+.docente { display: grid; grid-template-columns: auto 1fr; gap: 1.2rem; align-items: start;
+  border: 1px solid var(--rule); background: var(--surface); padding: 1.2rem; }
+.docente .mark {
+  width: 3.4rem; height: 3.4rem; border: 1px solid var(--teorico); color: var(--teorico);
+  display: grid; place-items: center; font-family: var(--mono); font-size: 1.1rem;
+}
+.docente p { margin: 0 0 .6rem; font-size: .95rem; }
+.docente p:last-child { margin-bottom: 0; }
+
+footer {
+  margin-top: 4rem; border-top: 1px solid var(--rule); padding: 1.6rem 0 3rem;
+  font-family: var(--sans); font-size: .8rem; color: var(--ink-mute);
+}
+footer a { color: var(--ink-mute); }
+
+@media (max-width: 34rem) {
+  .aula { grid-template-columns: 1fr; gap: .4rem; }
+  .docente { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+html { scroll-behavior: smooth; }
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand"><b>ECOM020</b> · Eng. de Computação · IC/UFAL</div>
+    <a class="btn-line" href="https://github.com/glauberrleite/curso-probabilidade-e-estatistica">Repositório</a>
+    <button class="btn-line" id="themeBtn" type="button">Tema: automático</button>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <div class="eyebrow">Disciplina · Graduação</div>
+    <h1>Probabilidade e Estatística: <em>lidar com a variabilidade</em></h1>
+    <p class="dek">
+      Entender como lidar com a variabilidade, formalmente, permitindo tirar conclusões e
+      tomar decisões na presença de incerteza.
+    </p>
+    <div class="hero-fig">
+      <canvas id="convCanvas" aria-label="Várias sequências de frequência relativa oscilando e convergindo para uma mesma constante conforme o número de observações cresce"></canvas>
+      <div class="hero-cap">
+        <span class="k-emp">frequências relativas observadas</span>
+        <span class="k-teo">a constante de que a teoria se aproxima</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<main>
+
+  <section id="aulas">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="n">§ 01</span>
+        <h2>Aulas</h2>
+        <span class="sub">Cada aula tem as <i>notas</i> em Markdown (referência escrita) e os
+        <i>slides</i> em HTML, que rodam no navegador — tecla <code>P</code> entra no modo
+        apresentação. A numeração acompanha as pastas do repositório.</span>
+      </div>
+
+      <div class="aula">
+        <div class="num">00</div>
+        <div>
+          <p class="t">Introdução</p>
+          <p class="d">
+            O que é Estatística e qual o papel do engenheiro nela. Variabilidade, determinístico
+            versus estocástico, o esquema <span class="v">dados = modelo + resíduos</span>,
+            população e amostra, e os três tipos de coleta — retrospectivo, observacional e
+            experimento controlado.
+          </p>
+          <div class="links">
+            <a href="https://github.com/glauberrleite/curso-probabilidade-e-estatistica/blob/main/00-intro/README.md">Notas</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="aula">
+        <div class="num">01</div>
+        <div>
+          <p class="t">Probabilidade</p>
+          <p class="d">
+            Duas tentativas de definir probabilidade, duas falhas, e a saída axiomática de
+            Kolmogorov — mais tudo que se deduz dela: álgebra da probabilidade, condicional,
+            interseção, independência e Bayes. Com simulação de frequência relativa ao vivo,
+            diagrama de Venn interativo, calculadora de contagem, o paradoxo de Bertrand
+            animado e demos dos dois dados, dos pistões e dos trens.
+          </p>
+          <div class="links">
+            <a href="./01-probabilidade/aula.html">Slides</a>
+            <a href="https://github.com/glauberrleite/curso-probabilidade-e-estatistica/blob/main/01-probabilidade/README.md">Notas</a>
+            <a href="https://github.com/glauberrleite/curso-probabilidade-e-estatistica/tree/main/01-probabilidade/scripts">Scripts</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="aula">
+        <div class="num">02</div>
+        <div>
+          <p class="t">Variáveis aleatórias discretas</p>
+          <p class="d">
+            Distribuições de probabilidade e por que elas se reaproveitam entre domínios.
+            Funções de probabilidade e suas três condições, o exemplo das pastilhas
+            semicondutoras (a distribuição geométrica) e a função de distribuição cumulativa.
+            Com demos de <span class="v">f</span>(<span class="v">x</span>) e da escada de
+            <span class="v">F</span>(<span class="v">x</span>).
+          </p>
+          <div class="links">
+            <a href="./02-variaveis-aleatorias-discretas/aula.html">Slides</a>
+            <a href="https://github.com/glauberrleite/curso-probabilidade-e-estatistica/blob/main/02-variaveis-aleatorias-discretas/README.md">Notas</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="aula soon">
+        <div class="num">03</div>
+        <div>
+          <p class="t">Variáveis aleatórias contínuas</p>
+          <p class="d">
+            Função densidade de probabilidade, a passagem do somatório para a integral, e por que
+            <span class="v">P</span>(<span class="v">X</span> = <span class="v">x</span>) = 0
+            deixa de ser um problema.
+          </p>
+          <div class="links"><span>Em breve</span></div>
+        </div>
+      </div>
+
+      <div class="aula soon">
+        <div class="num">04</div>
+        <div>
+          <p class="t">Distribuições de probabilidade</p>
+          <p class="d">
+            As distribuições nomeadas e onde cada uma se aplica: binomial, hipergeométrica,
+            Poisson, uniforme, exponencial e normal.
+          </p>
+          <div class="links"><span>Em breve</span></div>
+        </div>
+      </div>
+
+      <div class="aula soon">
+        <div class="num">05</div>
+        <div>
+          <p class="t">Estatística descritiva</p>
+          <p class="d">
+            Medidas de tendência central e de dispersão, histogramas, diagramas de dispersão e
+            o que cada gráfico esconde.
+          </p>
+          <div class="links"><span>Em breve</span></div>
+        </div>
+      </div>
+
+      <div class="aula soon">
+        <div class="num">06</div>
+        <div>
+          <p class="t">Estimação e distribuição amostral</p>
+          <p class="d">
+            Estimadores, suas propriedades, e o teorema central do limite — a ponte entre a
+            amostra e a população anunciada na introdução.
+          </p>
+          <div class="links"><span>Em breve</span></div>
+        </div>
+      </div>
+
+      <div class="aula soon">
+        <div class="num">07</div>
+        <div>
+          <p class="t">Intervalos estatísticos e testes de hipótese</p>
+          <p class="d">
+            Intervalos de confiança, hipótese nula, erros do tipo I e II, e como decidir na
+            presença de variabilidade.
+          </p>
+          <div class="links"><span>Em breve</span></div>
+        </div>
+      </div>
+
+      <div class="aula soon">
+        <div class="num">08</div>
+        <div>
+          <p class="t">Regressão</p>
+          <p class="d">
+            Ajuste de modelos, mínimos quadrados e a leitura dos resíduos — voltando ao esquema
+            <span class="v">dados = modelo + resíduos</span> da aula 00.
+          </p>
+          <div class="links"><span>Em breve</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="ementa">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="n">§ 02</span>
+        <h2>Ementa</h2>
+        <span class="sub">O percurso segue majoritariamente Montgomery &amp; Runger (2021), com
+        Bussab &amp; Morettin (2017) e Magalhães &amp; Lima (2005) como apoio.</span>
+      </div>
+      <div class="ementa">
+        <div class="it done"><span class="n">01</span><span>Probabilidade</span><span class="tag">aulas 00–01</span></div>
+        <div class="it done"><span class="n">02</span><span>Variáveis aleatórias discretas</span><span class="tag">aula 02</span></div>
+        <div class="it"><span class="n">03</span><span>Variáveis aleatórias contínuas</span><span class="tag"></span></div>
+        <div class="it"><span class="n">04</span><span>Distribuições de probabilidade</span><span class="tag"></span></div>
+        <div class="it"><span class="n">05</span><span>Estatística descritiva</span><span class="tag"></span></div>
+        <div class="it"><span class="n">06</span><span>Estimação de parâmetros e distribuição amostral</span><span class="tag"></span></div>
+        <div class="it"><span class="n">07</span><span>Intervalos estatísticos</span><span class="tag"></span></div>
+        <div class="it"><span class="n">08</span><span>Testes de hipótese</span><span class="tag"></span></div>
+        <div class="it"><span class="n">09</span><span>Regressão</span><span class="tag"></span></div>
+        <div class="it"><span class="n">10</span><span>Tópicos especiais</span><span class="tag"></span></div>
+        <div class="it"><span class="n">11</span><span>Utilização de ferramentas computacionais</span><span class="tag"></span></div>
+      </div>
+      <div class="note">
+        <span class="lab">Objetivo da disciplina</span>
+        <p>Entender como lidar com a <strong>variabilidade</strong>, formalmente, permitindo tirar
+        conclusões e tomar decisões.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="codigo">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="n">§ 03</span>
+        <h2>Código e simulações</h2>
+        <span class="sub">Material de apoio das aulas, direto no repositório.</span>
+      </div>
+      <div class="repo">
+        <div class="it">
+          <a href="https://github.com/glauberrleite/curso-probabilidade-e-estatistica/tree/main/01-probabilidade/scripts">01-probabilidade/scripts/</a>
+          <span>Paradoxo de Bertrand: simulação Monte Carlo dos três métodos em
+            <code>numpy</code>, e as animações em <a href="https://www.manim.community/">Manim</a>.</span>
+        </div>
+      </div>
+      <div class="note emp">
+        <span class="lab">Como usar as páginas de aula</span>
+        <p>Elas funcionam <strong>sem internet</strong>: basta abrir o arquivo <code>.html</code> no
+        navegador, ou clonar o repositório. Em sala, a tecla <code>P</code> entra em tela cheia;
+        <code>←</code> e <code>→</code> navegam, <code>A−</code>/<code>A+</code> ajustam o corpo do
+        texto para a projeção.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="avaliacao">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="n">§ 04</span>
+        <h2>Avaliação</h2>
+        <span class="sub">Duas médias, com provas e atividades práticas</span>
+      </div>
+      <ul>
+        <li><span class="v">P</span><sub>1</sub> — Prova 1: nota de 0 a 10.</li>
+        <li><span class="v">P</span><sub>2</sub> — Prova 2: nota de 0 a 10.</li>
+        <li><span class="v">C</span> — Atividade de código: 0 a 2.</li>
+        <li><span class="v">P</span><sub>3</sub> — Prova 3: nota de 0 a 10.</li>
+        <li><span class="v">R</span> — Atividade de relatório: 0 a 10.</li>
+      </ul>
+      <div class="eq">
+        <span class="v">AV</span><sub>1</sub> =
+        <span class="frac"><span><span class="v">P</span><sub>1</sub> + <span class="v">P</span><sub>2</sub></span><span>2</span></span>
+        + <span class="v">C</span>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <span class="v">AV</span><sub>2</sub> =
+        <span class="frac"><span><span class="v">P</span><sub>3</sub> + <span class="v">R</span></span><span>2</span></span>
+      </div>
+    </div>
+  </section>
+
+  <section id="bibliografia">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="n">§ 05</span>
+        <h2>Bibliografia</h2>
+      </div>
+      <div class="ref">
+        <span class="tag">Básica · livro-texto</span>
+        <strong>MONTGOMERY, D. C.; RUNGER, G. C.</strong> <i>Estatística Aplicada e Probabilidade
+        para Engenheiros</i>. 7. ed. Rio de Janeiro: LTC, 2021.
+      </div>
+      <div class="ref">
+        <span class="tag">Básica</span>
+        <strong>BUSSAB, W. O.; MORETTIN, P. A.</strong> <i>Estatística Básica</i>. 9. ed.
+        São Paulo: Saraiva, 2017.
+      </div>
+      <div class="ref">
+        <span class="tag">Complementar</span>
+        <strong>MAGALHÃES, M. N.; LIMA, A. C. P.</strong> <i>Noções de Probabilidade e
+        Estatística</i>. 7. ed. São Paulo: EDUSP, 2005.
+      </div>
+      <div class="ref">
+        <span class="tag">Apoio · fundamentos</span>
+        <strong>PAPOULIS, A.; PILLAI, S. U.</strong> <i>Probability, Random Variables, and
+        Stochastic Processes</i>. 4. ed. McGraw-Hill, 2002. Usado na aula 01 para a discussão
+        das definições de probabilidade e do paradoxo de Bertrand.
+      </div>
+    </div>
+  </section>
+
+  <section id="notacao">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="n">§ 06</span>
+        <h2>Notação e glossário</h2>
+        <span class="sub">Os símbolos e termos usados na disciplina inteira.</span>
+      </div>
+      <div class="tbl-scroll">
+        <table class="tri">
+          <thead>
+            <tr><th>Símbolo</th><th>Nome</th><th>Onde entra</th><th>O que é</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="sym teo"><span class="v">S</span></td>
+              <td>espaço amostral</td><td class="onde">aula 01</td>
+              <td>conjunto de todos os resultados possíveis de um experimento aleatório</td>
+            </tr>
+            <tr>
+              <td class="sym teo"><span class="v">E</span>, <span class="v">E</span><sup>c</sup></td>
+              <td>evento e complemento</td><td class="onde">aula 01</td>
+              <td>subconjunto de <span class="v">S</span>; o complemento é o que sobra dele</td>
+            </tr>
+            <tr>
+              <td class="sym teo"><span class="v">P</span>(<span class="v">E</span>)</td>
+              <td>probabilidade</td><td class="onde">aula 01</td>
+              <td>número que satisfaz os três axiomas de Kolmogorov</td>
+            </tr>
+            <tr>
+              <td class="sym teo"><span class="v">P</span>(<span class="v">B</span>|<span class="v">A</span>)</td>
+              <td>probabilidade condicional</td><td class="onde">aula 01</td>
+              <td>reavaliação de <span class="v">P</span>(<span class="v">B</span>) diante da informação <span class="v">A</span></td>
+            </tr>
+            <tr>
+              <td class="sym"><span class="v">C</span><sup><span class="v">n</span></sup><sub><span class="v">r</span></sub></td>
+              <td>combinações</td><td class="onde">aula 01</td>
+              <td>subconjuntos de tamanho <span class="v">r</span> — a ordem <strong>não</strong> importa</td>
+            </tr>
+            <tr>
+              <td class="sym"><span class="v">P</span><sup><span class="v">n</span></sup><sub><span class="v">r</span></sub></td>
+              <td>permutações de subconjuntos</td><td class="onde">aula 01</td>
+              <td>sequências de tamanho <span class="v">r</span> — a ordem importa</td>
+            </tr>
+            <tr>
+              <td class="sym teo"><span class="v">X</span>, <span class="v">x</span></td>
+              <td>variável aleatória e valor medido</td><td class="onde">aulas 01–02</td>
+              <td>maiúscula é a função; minúscula é o valor observado depois do experimento</td>
+            </tr>
+            <tr>
+              <td class="sym teo"><span class="v">f</span>(<span class="v">x</span>)</td>
+              <td>função de probabilidade</td><td class="onde">aula 02</td>
+              <td><span class="v">P</span>(<span class="v">X</span> = <span class="v">x</span>), com <span class="v">f</span> ≥ 0 e soma 1</td>
+            </tr>
+            <tr>
+              <td class="sym emp"><span class="v">F</span>(<span class="v">x</span>)</td>
+              <td>distribuição cumulativa</td><td class="onde">aula 02</td>
+              <td><span class="v">P</span>(<span class="v">X</span> ≤ <span class="v">x</span>); no caso discreto, uma escada</td>
+            </tr>
+            <tr>
+              <td class="sym emp"><span class="v">N</span>, <span class="v">n</span></td>
+              <td>população e amostra</td><td class="onde">aula 00</td>
+              <td>o conjunto completo e o subconjunto de onde se infere</td>
+            </tr>
+            <tr>
+              <td class="sym emp">μ, σ<sup>2</sup>, σ</td>
+              <td>média, variância, desvio padrão</td><td class="onde">a partir da aula 02</td>
+              <td>onde a distribuição se concentra e o quanto ela se espalha</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Termos</h3>
+      <ul class="termos">
+        <li><b>Variabilidade</b> — sucessivas observações de um sistema ou fenômeno não produzem
+          exatamente o mesmo resultado. É o objeto da disciplina inteira.</li>
+        <li><b>Experimento aleatório</b> — pode fornecer resultados diferentes mesmo repetido
+          sempre da mesma maneira.</li>
+        <li><b>Excludentes × independentes</b> — não são a mesma coisa. Excludentes não podem
+          ocorrer juntos; independentes não se informam mutuamente. Dois eventos excludentes com
+          probabilidade não nula são o <i>oposto</i> de independentes.</li>
+        <li><b>Frequência relativa × definição clássica</b> — as duas maneiras intuitivas de
+          atribuir probabilidade. Nenhuma serve como fundamento; ambas são formas de
+          <i>escolher</i> uma atribuição que satisfaça os axiomas.</li>
+        <li><b>Distribuição de probabilidade</b> — a descrição das probabilidades associadas aos
+          valores possíveis de uma variável aleatória. É o que permite reaproveitar um modelo
+          entre domínios diferentes.</li>
+        <li><b>Outlier</b> — dado atípico, que se afasta significativamente do padrão geral do
+          conjunto.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="docente">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="n">§ 07</span>
+        <h2>Docente</h2>
+      </div>
+      <div class="docente">
+        <div class="mark">GL</div>
+        <div>
+          <p><strong>Prof. Glauber Rodrigues Leite</strong> — Instituto de Computação,
+          Universidade Federal de Alagoas.</p>
+          <p>Pesquisa e ensino em sistemas inteligentes, robótica e aprendizado de máquina.
+          Página pessoal: <a href="https://glauberrleite.com/">glauberrleite.com</a>.</p>
+          <p>Dúvidas sobre a disciplina: preferencialmente por
+          <a href="https://github.com/glauberrleite/curso-probabilidade-e-estatistica/issues">issues no repositório</a>,
+          para que a resposta fique disponível à turma inteira.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap">
+      Material sob licença MIT · código-fonte em
+      <a href="https://github.com/glauberrleite/curso-probabilidade-e-estatistica">github.com/glauberrleite/curso-probabilidade-e-estatistica</a><br>
+      As páginas de aula funcionam sem internet: basta abrir o arquivo <code>.html</code> no navegador.
+    </div>
+  </footer>
+
+</main>
+
+<script>
+(function () {
+  "use strict";
+
+  var root = document.documentElement;
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function css(n) { return getComputedStyle(root).getPropertyValue(n).trim(); }
+
+  /* ---------------- tema ---------------- */
+  var modes = ["auto", "light", "dark"];
+  var labels = { auto: "Tema: automático", light: "Tema: claro", dark: "Tema: escuro" };
+  var mi = 0, btn = document.getElementById("themeBtn");
+  btn.addEventListener("click", function () {
+    mi = (mi + 1) % modes.length;
+    var m = modes[mi];
+    if (m === "auto") root.removeAttribute("data-theme");
+    else root.setAttribute("data-theme", m);
+    btn.textContent = labels[m];
+    draw(prog);
+  });
+
+  /* ---------------- convergência de frequências relativas ----------------
+     A tese da disciplina: médias de fenômenos de massa se aproximam de uma
+     constante. Várias trajetórias partindo de lugares diferentes, todas
+     desabando para o mesmo valor.                                          */
+  var cv = document.getElementById("convCanvas");
+  var ALVO = 0.5, N = 1400, TRILHAS = 5;
+  var trilhas = [];
+
+  (function build() {
+    for (var t = 0; t < TRILHAS; t++) {
+      var hits = 0, serie = [], burn = 6;
+      for (var n = 1; n <= N + burn; n++) {
+        if (Math.random() < ALVO) hits++;
+        if (n > burn) serie.push(hits / n);
+      }
+      trilhas.push(serie);
+    }
+  })();
+
+  function fit(canvas) {
+    var r = canvas.getBoundingClientRect();
+    if (r.width < 2 || r.height < 2) return null;
+    var dpr = window.devicePixelRatio || 1;
+    canvas.width = Math.round(r.width * dpr);
+    canvas.height = Math.round(r.height * dpr);
+    var ctx = canvas.getContext("2d");
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, r.width, r.height);
+    return { ctx: ctx, w: r.width, h: r.height };
+  }
+
+  var prog = reduce ? 1 : 0;
+
+  function draw(pr) {
+    var f = fit(cv);
+    if (!f) return;
+    var ctx = f.ctx, w = f.w, h = f.h;
+    var padT = 14, padB = 22, padL = 8, padR = 8;
+    var lo = 0.18, hi = 0.82;
+    function Y(v) { return padT + (1 - (v - lo) / (hi - lo)) * (h - padT - padB); }
+    function X(i) { return padL + (i / (N - 1)) * (w - padL - padR); }
+
+    /* linha do valor teórico */
+    ctx.strokeStyle = css("--teorico"); ctx.lineWidth = 1.2;
+    ctx.setLineDash([5, 4]); ctx.globalAlpha = .8;
+    ctx.beginPath(); ctx.moveTo(padL, Y(ALVO)); ctx.lineTo(w - padR, Y(ALVO)); ctx.stroke();
+    ctx.setLineDash([]); ctx.globalAlpha = 1;
+
+    var conta = Math.max(2, Math.floor(N * pr));
+
+    ctx.strokeStyle = css("--empirico");
+    for (var t = 0; t < TRILHAS; t++) {
+      ctx.globalAlpha = .28 + .12 * t;
+      ctx.lineWidth = t === TRILHAS - 1 ? 1.6 : 1;
+      ctx.beginPath();
+      for (var i = 1; i < conta; i++) {
+        var v = Math.min(hi, Math.max(lo, trilhas[t][i]));
+        if (i === 1) ctx.moveTo(X(i), Y(v)); else ctx.lineTo(X(i), Y(v));
+      }
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+
+    /* eixo n */
+    ctx.fillStyle = css("--ink-mute");
+    ctx.font = "11px monospace";
+    ctx.textAlign = "left";
+    ctx.fillText("n = 1", padL, h - 6);
+    ctx.textAlign = "right";
+    ctx.fillText("n = " + N, w - padR, h - 6);
+    /* rótulo do alvo à direita: à esquerda ele cairia em cima das trajetórias */
+    ctx.fillStyle = css("--teorico");
+    ctx.fillText("P(E) = 0,5", w - padR, Y(ALVO) - 7);
+  }
+
+  function tick() {
+    if (prog < 1) { prog = Math.min(1, prog + .006); draw(prog); requestAnimationFrame(tick); }
+    else draw(1);
+  }
+
+  window.addEventListener("resize", function () { draw(prog); });
+  draw(prog);
+  if (!reduce) tick();
+})();
+</script>
