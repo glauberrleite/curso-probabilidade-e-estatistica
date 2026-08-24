@@ -262,6 +262,7 @@ $$P(D) = \frac{159.5}{400}$$
 
 (*d*) Assuming that the trains met, we shall determine the probability that train $X$ arrived before train $Y$. We wish to find the conditional probability $P(C \mid D)$. The event $CD$ is a trapezoid as shown and its area equals 72. Hence
 $$P(C \mid D) = \frac{P(CD)}{P(D)} = \frac{72}{159.5}$$
+
 ---
 
 # Teorema de Bayes

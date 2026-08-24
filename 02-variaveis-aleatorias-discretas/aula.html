@@ -1,7 +1,7 @@
 <meta charset="utf-8">
-<title>Variáveis aleatórias discretas — distribuições, f(x) e F(x)</title>
+<title>Variáveis aleatórias discretas — distribuições, f(x), F(x), média e variância</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="ECOM020 — Probabilidade e Estatística. Aula 02: distribuições de probabilidade, funções de probabilidade e funções de distribuição cumulativa.">
+<meta name="description" content="ECOM020 — Probabilidade e Estatística. Aula 02: variáveis aleatórias discretas, funções de probabilidade, distribuição cumulativa, média e variância.">
 <style>
 /* ============================================================
    ECOM020 — Probabilidade e Estatística · Aula 02
@@ -210,6 +210,15 @@ strong { font-weight: 650; }
 .defn p:last-child { margin-bottom: 0; }
 .defn ol, .defn ul { margin: .5rem 0 0; }
 
+blockquote {
+  margin: 0 0 1.1rem; padding: 0 0 0 1.2rem;
+  border-left: 1px solid var(--rule); color: var(--ink-soft);
+}
+blockquote cite {
+  display: block; margin-top: .5rem; font-style: normal;
+  font-family: var(--sans); font-size: .78rem; color: var(--ink-mute);
+}
+
 .note {
   border: 1px solid var(--rule); border-left: 2px solid var(--ink-mute);
   padding: .8rem 1.1rem; margin: 0 0 1.1rem; background: var(--surface);
@@ -239,6 +248,8 @@ strong { font-weight: 650; }
 .sum { display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; margin: 0 .2em; }
 .sum .big { font-size: 1.7em; line-height: .78; }
 .sum .lim { font-size: .55em; line-height: 1.1; }
+.cases { display: inline-grid; grid-template-columns: auto auto; gap: .1em 1.2em; text-align: left; font-size: .82em; }
+.cases .c { font-family: var(--mono); font-variant-numeric: tabular-nums; }
 
 /* ---------- demos ---------- */
 
@@ -310,6 +321,8 @@ canvas.plot { display: block; width: 100%; height: 200px; }
 .verdict { font-family: var(--sans); font-size: .82rem; margin-top: .8rem; padding: .5rem .7rem; border-left: 2px solid; }
 .verdict.ok { color: var(--teorico); border-color: var(--teorico); background: var(--teorico-bg); }
 
+/* ---------- exercícios ---------- */
+
 .ex {
   border: 1px solid var(--rule); border-left: 2px solid var(--empirico);
   padding: .95rem 1.1rem; margin: 0 0 .9rem; background: var(--surface);
@@ -322,6 +335,50 @@ canvas.plot { display: block; width: 100%; height: 200px; }
 .ex .sol { margin-top: .8rem; padding-top: .8rem; border-top: 1px solid var(--rule-soft); }
 .ex .sol[hidden] { display: none; }
 .ex .sol .res { font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: 1.15rem; color: var(--empirico); }
+
+/* lista compacta do exercício 3.1 */
+.faixas { border-top: 1px solid var(--rule); }
+.faixa {
+  border-bottom: 1px solid var(--rule-soft); padding: .6rem 0;
+  display: grid; grid-template-columns: 3.2rem 1fr; gap: .7rem; align-items: start;
+}
+.faixa .id { font-family: var(--mono); font-size: .72rem; color: var(--empirico); padding-top: .2rem; }
+.faixa .q { font-family: var(--sans); font-size: .88rem; color: var(--ink-soft); margin: 0 0 .4rem; }
+.faixa .r { display: none; font-size: .92rem; }
+.faixa.aberta .r { display: block; }
+.faixa .r .fx {
+  font-family: var(--mono); font-variant-numeric: tabular-nums;
+  color: var(--empirico); font-size: 1rem; display: block; margin-bottom: .2rem;
+}
+.faixa .r .por { font-family: var(--sans); font-size: .82rem; color: var(--ink-mute); }
+.faixa button {
+  font-family: var(--sans); font-size: .72rem; padding: .22rem .55rem;
+  border: 1px solid var(--rule); background: var(--surface); color: var(--ink-soft); cursor: pointer;
+}
+.faixa button:hover { border-color: var(--empirico); color: var(--empirico); }
+
+/* ---------- tabelas ---------- */
+
+.tbl-scroll { overflow-x: auto; }
+.tri { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+.tri th, .tri td { text-align: left; padding: .38rem .6rem; border-bottom: 1px solid var(--rule); }
+.tri th {
+  font-family: var(--sans); font-size: .68rem; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--ink-mute); font-weight: 600; white-space: nowrap;
+}
+.tri td { font-family: var(--sans); font-size: .85rem; }
+.tri td.num {
+  font-family: var(--mono); font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap;
+}
+.tri td.num.f { color: var(--teorico); }
+.tri td.num.F { color: var(--empirico); }
+.tri tr.tot td { font-weight: 650; border-top: 1px solid var(--ink); }
+
+/* ---------- figuras ---------- */
+
+figure { margin: 1.3rem 0; }
+figure img { display: block; width: 100%; height: auto; border: 1px solid var(--rule); background: #fff; }
+figcaption { font-family: var(--sans); font-size: .78rem; color: var(--ink-mute); margin-top: .5rem; }
 
 /* ============================================================
    MODO APRESENTAÇÃO
@@ -348,7 +405,8 @@ canvas.plot { display: block; width: 100%; height: 200px; }
 :root[data-mode="present"] .slide.on > * { width: 100%; max-width: 52rem; }
 :root[data-mode="present"] .slide.on > .sec-head { margin-bottom: .2rem; }
 :root[data-mode="present"] .defn,
-:root[data-mode="present"] .note { margin-bottom: 0; }
+:root[data-mode="present"] .note,
+:root[data-mode="present"] blockquote { margin-bottom: 0; }
 
 :root[data-mode="present"] h1 { font-size: 3rem; max-width: 22ch; }
 :root[data-mode="present"] h2 { font-size: 2rem; }
@@ -359,6 +417,8 @@ canvas.plot { display: block; width: 100%; height: 200px; }
 :root[data-mode="present"] .hero-fig canvas { height: clamp(110px, 16vh, 260px); }
 :root[data-mode="present"] .sliders { gap: .35rem; margin-bottom: .6rem; }
 :root[data-mode="present"] .ctl { margin-bottom: .6rem; }
+:root[data-mode="present"] figure img { max-height: 46vh; object-fit: contain; }
+:root[data-mode="present"] .faixa { padding: .45rem 0; }
 
 :root[data-mode="present"] .hud {
   display: flex; align-items: center; gap: .7rem;
@@ -403,11 +463,13 @@ html { scroll-behavior: smooth; }
       Aula 02 · Eng. de Computação · UFAL
     </div>
     <nav id="toc">
-      <a href="#distribuicoes"><span class="n">01</span><span>Distribuições de probabilidade</span></a>
-      <a href="#fx"><span class="n">02</span><span>Funções de probabilidade</span></a>
-      <a href="#exemplo"><span class="n">03</span><span>Exemplo: pastilhas</span></a>
-      <a href="#Fx"><span class="n">04</span><span>Distribuição cumulativa</span></a>
-      <a href="#proximos"><span class="n">05</span><span>Próximos passos</span></a>
+      <a href="#motivacao"><span class="n">01</span><span>O que é variável aleatória</span></a>
+      <a href="#faixa"><span class="n">02</span><span>A faixa da variável</span></a>
+      <a href="#distribuicoes"><span class="n">03</span><span>Distribuições de probabilidade</span></a>
+      <a href="#fx"><span class="n">04</span><span>Funções de probabilidade</span></a>
+      <a href="#Fx"><span class="n">05</span><span>Distribuição cumulativa</span></a>
+      <a href="#media"><span class="n">06</span><span>Média e variância</span></a>
+      <a href="#distros"><span class="n">07</span><span>Algumas distribuições</span></a>
     </nav>
     <div class="rail-foot">
       <button class="rail-btn accent" id="presentBtn" type="button">▶ Modo apresentação</button>
@@ -427,8 +489,8 @@ html { scroll-behavior: smooth; }
             <div class="eyebrow">Aula 02 · Variáveis aleatórias discretas</div>
             <h1>A <em>distribuição</em> é o que se reaproveita</h1>
             <p class="dek">
-              De uma lista de valores possíveis e suas probabilidades até a função acumulada
-              <span class="v">F</span>(<span class="v">x</span>).
+              Do resultado do experimento a um número, e daí à distribuição, à acumulada
+              <span class="v">F</span>(<span class="v">x</span>) e aos dois números que a resumem.
             </p>
           </div>
           <div class="hero-fig">
@@ -443,13 +505,130 @@ html { scroll-behavior: smooth; }
     </header>
 
     <!-- ============ 01 ============ -->
-    <section id="distribuicoes">
+    <section id="motivacao">
       <div class="wrap">
-        <div class="slide" data-sec="§ 01 · Distribuições de probabilidade">
+        <div class="slide" data-sec="§ 01 · O que é variável aleatória">
           <div class="sec-head">
             <span class="n">§ 01</span>
+            <h2>O que é uma variável aleatória</h2>
+            <span class="sub">Uma função que leva o resultado do experimento a um número</span>
+          </div>
+          <blockquote>
+            We are given an experiment specified by the space <span class="v">S</span>
+            (or Ω), the field of subsets of <span class="v">S</span> called events, and the
+            probability assigned to these events. To every outcome ξ of this experiment, we assign
+            a number <span class="v">x</span>(ξ). We have thus created a
+            <strong>function</strong> <span class="v">x</span> with domain the set
+            <span class="v">S</span> and range a set of numbers. This function is called
+            <strong>random variable</strong> if it satisfies certain mild conditions to be soon given.
+            <cite>Papoulis &amp; Pillai</cite>
+          </blockquote>
+        </div>
+
+        <div class="slide" data-sec="§ 01 · O que é variável aleatória">
+          <blockquote>
+            A random variable is a number <span class="v">x</span>(ξ) assigned to every outcome ξ
+            of an experiment. This number could be the gain in a game of chance, the voltage of a
+            random source, the cost of a random component, or any other numerical quantity that is
+            of interest in the performance of the experiment.
+            <cite>Papoulis &amp; Pillai</cite>
+          </blockquote>
+          <div class="note problema">
+            <span class="lab">Detalhe de notação</span>
+            <p>
+              O <strong>Papoulis</strong> usa a forma <span class="v">x</span>(ξ) ou
+              <span class="v">x</span>, deixando visível que é uma <em>função</em> do resultado.
+              O <strong>Montgomery</strong> usa simplesmente <span class="v">X</span>.
+            </p>
+            <p>
+              Vamos seguir o Montgomery, mas vale ter em mente o que a notação do Papoulis
+              lembra: <span class="v">X</span> não é um número, é uma <strong>regra</strong> que
+              atribui um número a cada resultado.
+            </p>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 01 · O que é variável aleatória">
+          <h3>A analogia da viga</h3>
+          <p>
+            Suponha que um carregamento em uma viga longa e delgada coloque massa somente em
+            <strong>pontos discretos</strong>. O carregamento pode ser descrito por uma função que
+            especifica a massa em cada um desses pontos.
+          </p>
+          <figure>
+            <img src="./media/carregamento_viga.png"
+                 alt="Viga horizontal com setas verticais de comprimentos diferentes apontando para baixo em pontos discretos ao longo do eixo x, representando massas concentradas.">
+            <figcaption>
+              Cada seta é uma massa concentrada num ponto. Trocando “massa” por “probabilidade”,
+              é exatamente a distribuição de uma variável aleatória discreta — e o total das
+              massas, que vale 1, é a segunda condição da função de probabilidade.
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 02 ============ -->
+    <section id="faixa">
+      <div class="wrap">
+        <div class="slide" data-sec="§ 02 · A faixa da variável">
+          <div class="sec-head">
+            <span class="n">§ 02</span>
+            <h2>Modelando: qual é a faixa?</h2>
+            <span class="sub">Antes de atribuir probabilidades, decidir quais valores são possíveis</span>
+          </div>
+          <p>
+            Para cada enunciado a seguir, determine a <strong>faixa</strong> — o conjunto de
+            valores possíveis da variável aleatória. É o primeiro passo de qualquer modelagem:
+            sem a faixa, não há o que somar.
+          </p>
+          <div class="note">
+            <span class="lab">Como atacar</span>
+            <p>
+              Pergunte-se sempre duas coisas: <strong>qual o menor valor possível?</strong> e
+              <strong>o que impede de crescer para sempre?</strong> A resposta da segunda é o que
+              separa faixa finita de infinita contável.
+            </p>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 02 · A faixa da variável">
+          <h3>Exercício 3.1 · itens 1 a 4</h3>
+          <div class="faixas" id="faixas1"></div>
+        </div>
+
+        <div class="slide" data-sec="§ 02 · A faixa da variável">
+          <h3>Exercício 3.1 · itens 5 a 8</h3>
+          <div class="faixas" id="faixas2"></div>
+        </div>
+
+        <div class="slide" data-sec="§ 02 · A faixa da variável">
+          <div class="note">
+            <span class="lab">O padrão por trás dos oito</span>
+            <p>
+              <strong>Faixa finita</strong> quando existe um teto físico: o número de conexões da
+              placa (3.1.1), o tamanho da amostra (3.1.2), o total de pessoas ou nucleotídeos
+              (3.1.6, 3.1.7), os minutos do expediente (3.1.8) — e, no caso mais interessante,
+              o <em>pior caso</em> de uma busca sem reposição (3.1.3).
+            </p>
+            <p>
+              <strong>Faixa infinita contável</strong> quando nada limita por cima: ciclos de
+              processamento (3.1.4) e falhas na superfície (3.1.5). Continua discreta — é o mesmo
+              caso das pastilhas que veremos no § 04.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 03 ============ -->
+    <section id="distribuicoes">
+      <div class="wrap">
+        <div class="slide" data-sec="§ 03 · Distribuições de probabilidade">
+          <div class="sec-head">
+            <span class="n">§ 03</span>
             <h2>Distribuições de probabilidade</h2>
-            <span class="sub">Motivação: a mesma distribuição serve a domínios diferentes</span>
+            <span class="sub">A mesma distribuição serve a domínios diferentes</span>
           </div>
           <p>
             A ideia é que podemos <strong>reusar</strong> a distribuição com que uma variável
@@ -473,7 +652,7 @@ html { scroll-behavior: smooth; }
           </p>
         </div>
 
-        <div class="slide" data-sec="§ 01 · Distribuições de probabilidade">
+        <div class="slide" data-sec="§ 03 · Distribuições de probabilidade">
           <div class="note">
             <span class="lab">De onde viemos</span>
             <p>
@@ -490,12 +669,12 @@ html { scroll-behavior: smooth; }
       </div>
     </section>
 
-    <!-- ============ 02 ============ -->
+    <!-- ============ 04 ============ -->
     <section id="fx">
       <div class="wrap">
-        <div class="slide" data-sec="§ 02 · Funções de probabilidade">
+        <div class="slide" data-sec="§ 04 · Funções de probabilidade">
           <div class="sec-head">
-            <span class="n">§ 02</span>
+            <span class="n">§ 04</span>
             <h2>Funções de probabilidade</h2>
             <span class="sub">Três condições — e nenhuma delas é decorativa</span>
           </div>
@@ -531,20 +710,10 @@ html { scroll-behavior: smooth; }
             </p>
           </div>
         </div>
-      </div>
-    </section>
 
-    <!-- ============ 03 ============ -->
-    <section id="exemplo">
-      <div class="wrap">
-        <div class="slide" data-sec="§ 03 · Exemplo: pastilhas">
-          <div class="sec-head">
-            <span class="n">§ 03</span>
-            <h2>Exemplo — pastilhas semicondutoras</h2>
-            <span class="sub">Um espaço amostral infinito que ainda assim é discreto</span>
-          </div>
+        <div class="slide" data-sec="§ 04 · Funções de probabilidade">
           <div class="ex">
-            <span class="lab">Enunciado</span>
+            <span class="lab">Exemplo — pastilhas semicondutoras</span>
             <p>
               Seja a variável aleatória <span class="v">X</span> o número de pastilhas de
               semicondutores que necessitam ser analisadas, de modo a detectar uma grande
@@ -556,7 +725,7 @@ html { scroll-behavior: smooth; }
           </div>
         </div>
 
-        <div class="slide" data-sec="§ 03 · Exemplo: pastilhas">
+        <div class="slide" data-sec="§ 04 · Funções de probabilidade">
           <h3>Montando o espaço amostral</h3>
           <p>
             Seja <span class="v">p</span> uma pastilha em que uma grande partícula esteja
@@ -586,7 +755,7 @@ html { scroll-behavior: smooth; }
           </div>
         </div>
 
-        <div class="slide" data-sec="§ 03 · Exemplo: pastilhas">
+        <div class="slide" data-sec="§ 04 · Funções de probabilidade">
           <h3>Verificando as duas primeiras condições</h3>
           <p>
             A condição 1 é imediata:
@@ -599,11 +768,7 @@ html { scroll-behavior: smooth; }
             <span class="sum">
               <span class="lim">∞</span><span class="big">∑</span><span class="lim"><span class="v">x</span>=1</span>
             </span>
-            <span class="v">f</span>(<span class="v">x</span>) =
-            <span class="sum">
-              <span class="lim">∞</span><span class="big">∑</span><span class="lim"><span class="v">x</span>=1</span>
-            </span>
-            0,99<sup><span class="v">x</span>−1</sup> × 0,01 = 0,01
+            <span class="v">f</span>(<span class="v">x</span>) = 0,01
             <span class="sum">
               <span class="lim">∞</span><span class="big">∑</span><span class="lim"><span class="v">x</span>=1</span>
             </span>
@@ -623,7 +788,7 @@ html { scroll-behavior: smooth; }
           </div>
         </div>
 
-        <div class="slide" data-sec="§ 03 · Exemplo: pastilhas">
+        <div class="slide" data-sec="§ 04 · Funções de probabilidade">
           <div class="demo">
             <div class="demo-head">
               <span class="t">A distribuição · mexa em p</span>
@@ -654,7 +819,7 @@ html { scroll-behavior: smooth; }
           </div>
         </div>
 
-        <div class="slide" data-sec="§ 03 · Exemplo: pastilhas">
+        <div class="slide" data-sec="§ 04 · Funções de probabilidade">
           <div class="note">
             <span class="lab">Interpretação prática</span>
             <p>
@@ -667,7 +832,7 @@ html { scroll-behavior: smooth; }
             <span class="lab">Onde isso reaparece</span>
             <p>
               Essa é a <strong>distribuição geométrica</strong>: “quantas tentativas até o primeiro
-              sucesso”. É o primeiro caso do reaproveitamento anunciado no § 01 — o mesmo modelo
+              sucesso”. É o primeiro caso do reaproveitamento anunciado no § 03 — o mesmo modelo
               serve para tentativas até a primeira falha de um componente, até o primeiro pacote
               perdido numa rede, até o primeiro bit com erro.
             </p>
@@ -676,12 +841,12 @@ html { scroll-behavior: smooth; }
       </div>
     </section>
 
-    <!-- ============ 04 ============ -->
+    <!-- ============ 05 ============ -->
     <section id="Fx">
       <div class="wrap">
-        <div class="slide" data-sec="§ 04 · Distribuição cumulativa">
+        <div class="slide" data-sec="§ 05 · Distribuição cumulativa">
           <div class="sec-head">
-            <span class="n">§ 04</span>
+            <span class="n">§ 05</span>
             <h2>Funções de distribuição cumulativa</h2>
             <span class="sub">Somar é legítimo porque os eventos são excludentes</span>
           </div>
@@ -716,7 +881,7 @@ html { scroll-behavior: smooth; }
           </div>
         </div>
 
-        <div class="slide" data-sec="§ 04 · Distribuição cumulativa">
+        <div class="slide" data-sec="§ 05 · Distribuição cumulativa">
           <div class="demo">
             <div class="demo-head">
               <span class="t">f(x) e F(x) lado a lado</span>
@@ -752,14 +917,116 @@ html { scroll-behavior: smooth; }
           </div>
         </div>
 
-        <div class="slide" data-sec="§ 04 · Distribuição cumulativa">
+        <div class="slide" data-sec="§ 05 · Distribuição cumulativa">
+          <div class="ex">
+            <span class="lab">Exercício — poços do Condado de Baltimore</span>
+            <p>
+              A tabela mostra a profundidade típica (arredondada para o pé mais próximo) para
+              poços sem falhas em formações geológicas no Condado de Baltimore. Seja
+              <span class="v">X</span> a profundidade de um poço sem falhas escolhido
+              aleatoriamente. <strong>Determine a função distribuição cumulativa de
+              <span class="v">X</span>.</strong>
+            </p>
+            <p style="margin:0; color:var(--ink-mute); font-size:.9rem">
+              Fonte: <i>The Journal of Data Science</i>, 2009, Vol. 7, pp. 111–127.
+            </p>
+          </div>
+          <div class="tbl-scroll">
+            <table class="tri">
+              <thead>
+                <tr><th>Grupo da formação geológica</th><th>Poços sem falhas</th><th>Profundidade (pés)</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Gnaisse</td><td class="num">1.515</td><td class="num">255</td></tr>
+                <tr><td>Granito</td><td class="num">26</td><td class="num">218</td></tr>
+                <tr><td>Xisto Loch Raven</td><td class="num">3.290</td><td class="num">317</td></tr>
+                <tr><td>Mineral de silicato</td><td class="num">349</td><td class="num">231</td></tr>
+                <tr><td>Mármore</td><td class="num">280</td><td class="num">267</td></tr>
+                <tr><td>Xisto</td><td class="num">1.343</td><td class="num">255</td></tr>
+                <tr><td>Outros xistos</td><td class="num">887</td><td class="num">267</td></tr>
+                <tr><td>Serpentina</td><td class="num">36</td><td class="num">217</td></tr>
+                <tr class="tot"><td>Total</td><td class="num">7.726</td><td class="num">—</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 05 · Distribuição cumulativa">
+          <h3>Passo 1 — as probabilidades pontuais</h3>
+          <p>
+            Cada profundidade recebe a razão entre os poços com aquela profundidade e o total.
+            <strong>Atenção:</strong> formações diferentes compartilham a mesma profundidade —
+            elas precisam ser somadas antes.
+          </p>
+          <div class="tbl-scroll">
+            <table class="tri">
+              <thead>
+                <tr><th><span class="v">x</span> (pés)</th><th>Poços que contribuem</th><th>Nº</th><th><span class="v">f</span>(<span class="v">x</span>)</th><th><span class="v">F</span>(<span class="v">x</span>)</th></tr>
+              </thead>
+              <tbody>
+                <tr><td class="num">217</td><td>Serpentina</td><td class="num">36</td><td class="num f">0,0047</td><td class="num F">0,0047</td></tr>
+                <tr><td class="num">218</td><td>Granito</td><td class="num">26</td><td class="num f">0,0034</td><td class="num F">0,0080</td></tr>
+                <tr><td class="num">231</td><td>Mineral de silicato</td><td class="num">349</td><td class="num f">0,0452</td><td class="num F">0,0532</td></tr>
+                <tr><td class="num">255</td><td>Gnaisse + Xisto</td><td class="num">2.858</td><td class="num f">0,3700</td><td class="num F">0,4231</td></tr>
+                <tr><td class="num">267</td><td>Mármore + Outros xistos</td><td class="num">1.167</td><td class="num f">0,1511</td><td class="num F">0,5742</td></tr>
+                <tr><td class="num">317</td><td>Xisto Loch Raven</td><td class="num">3.290</td><td class="num f">0,4259</td><td class="num F">1,0000</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="verdict ok">
+            Verificação: 0,0047 + 0,0034 + 0,0452 + 0,3700 + 0,1511 + 0,4259 ≈ 1,0000 ✓
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 05 · Distribuição cumulativa">
+          <h3>Passo 2 — a função em degraus</h3>
+          <div class="eq">
+            <span class="v">F</span>(<span class="v">x</span>) =
+            <span class="cases">
+              <span class="c">0</span><span>, <span class="v">x</span> &lt; 217</span>
+              <span class="c">0,0047</span><span>, 217 ≤ <span class="v">x</span> &lt; 218</span>
+              <span class="c">0,0080</span><span>, 218 ≤ <span class="v">x</span> &lt; 231</span>
+              <span class="c">0,0532</span><span>, 231 ≤ <span class="v">x</span> &lt; 255</span>
+              <span class="c">0,4231</span><span>, 255 ≤ <span class="v">x</span> &lt; 267</span>
+              <span class="c">0,5742</span><span>, 267 ≤ <span class="v">x</span> &lt; 317</span>
+              <span class="c">1</span><span>, <span class="v">x</span> ≥ 317</span>
+            </span>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 05 · Distribuição cumulativa">
+          <div class="demo">
+            <div class="demo-head">
+              <span class="t">A escada dos poços</span>
+              <span class="h">saltos desiguais, patamares entre eles</span>
+            </div>
+            <div class="demo-body">
+              <div class="sliders">
+                <div class="sld">
+                  <label for="sPoco">profundidade <span class="v">x</span></label>
+                  <input type="range" id="sPoco" min="200" max="340" step="1" value="255">
+                  <output id="oPoco">255</output>
+                </div>
+              </div>
+              <canvas class="plot" id="pocoCanvas" aria-label="Função cumulativa em degraus dos poços, com saltos nas seis profundidades observadas"></canvas>
+              <div class="readout">
+                <div><span class="k"><span class="v">f</span>(<span class="v">x</span>) · salto aqui</span><span class="val f" id="pF">—</span></div>
+                <div><span class="k"><span class="v">F</span>(<span class="v">x</span>) = <span class="v">P</span>(<span class="v">X</span> ≤ <span class="v">x</span>)</span><span class="val F" id="pFF">—</span></div>
+              </div>
+              <div class="verdict ok" id="pocoVerdict"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 05 · Distribuição cumulativa">
           <div class="note">
             <span class="lab">O que a escada mostra</span>
             <p>
               <span class="v">F</span> é <strong>não decrescente</strong>, dá um salto de exatamente
               <span class="v">f</span>(<span class="v">x</span><sub><span class="v">i</span></sub>) em
               cada valor possível, e é <strong>constante entre eles</strong> — o gráfico é uma
-              escada, não uma curva.
+              escada, não uma curva. O maior salto está em 317 pés, refletindo o peso do Xisto
+              Loch Raven no total.
             </p>
             <p>
               O salto é a probabilidade pontual. Guardar isso agora evita a confusão clássica
@@ -772,28 +1039,228 @@ html { scroll-behavior: smooth; }
       </div>
     </section>
 
-    <!-- ============ 05 ============ -->
-    <section id="proximos">
+    <!-- ============ 06 ============ -->
+    <section id="media">
       <div class="wrap">
-        <div class="slide" data-sec="§ 05 · Próximos passos">
+        <div class="slide" data-sec="§ 06 · Média e variância">
           <div class="sec-head">
-            <span class="n">§ 05</span>
-            <h2>Próximos passos</h2>
-            <span class="sub">Média e variância</span>
+            <span class="n">§ 06</span>
+            <h2>Média e variância</h2>
+            <span class="sub">Resumir a distribuição inteira em dois números</span>
           </div>
           <p>
-            Com a distribuição descrita por <span class="v">f</span>(<span class="v">x</span>),
-            o passo seguinte é resumi-la em poucos números: onde ela se concentra
-            (<strong>média</strong>) e o quanto se espalha (<strong>variância</strong>) — a
-            variabilidade que abriu a disciplina, agora calculável.
+            Dois números são frequentemente usados para resumir uma distribuição de probabilidades
+            de <span class="v">X</span>. A <strong>média</strong> é uma medida do centro ou meio da
+            distribuição; a <strong>variância</strong>, uma medida da dispersão ou variabilidade.
           </p>
+          <div class="note problema">
+            <span class="lab">Cuidado</span>
+            <p>
+              Duas distribuições <strong>diferentes</strong> podem ter a mesma média e a mesma
+              variância. São resumos simples e úteis — não substituem a distribuição.
+            </p>
+          </div>
+          <div class="defn">
+            <span class="lab">Definição — valor esperado</span>
+            <p>
+              Se <span class="v">X</span> é uma variável aleatória discreta com função de
+              probabilidade <span class="v">f</span>(<span class="v">x</span>), o valor esperado de
+              qualquer função <span class="v">h</span>(<span class="v">X</span>) é:
+            </p>
+            <div class="eq">
+              <span class="v">E</span>[<span class="v">h</span>(<span class="v">X</span>)] =
+              <span class="sum"><span class="lim">&nbsp;</span><span class="big">∑</span><span class="lim"><span class="v">x</span></span></span>
+              <span class="v">h</span>(<span class="v">x</span>) <span class="v">f</span>(<span class="v">x</span>)
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 06 · Média e variância">
+          <h3>Aplicando na média</h3>
+          <p>
+            Com <span class="v">h</span>(<span class="v">x</span>) = <span class="v">x</span>,
+            temos o valor esperado conhecido como <strong>média</strong> (μ):
+          </p>
+          <div class="eq">
+            μ = <span class="v">E</span>[<span class="v">X</span>] =
+            <span class="sum"><span class="lim">&nbsp;</span><span class="big">∑</span><span class="lim"><span class="v">x</span></span></span>
+            <span class="v">x</span> <span class="v">f</span>(<span class="v">x</span>)
+          </div>
+          <p>
+            Ou seja: a média é uma <strong>média ponderada</strong> pela função de probabilidade.
+            No caso trivial de <span class="v">n</span> valores igualmente prováveis,
+            <span class="v">f</span>(<span class="v">x</span><sub><span class="v">i</span></sub>) = 1/<span class="v">n</span>, e
+          </p>
+          <div class="eq">
+            <span class="v">E</span>[<span class="v">X</span>] =
+            <span class="sum"><span class="lim"><span class="v">n</span></span><span class="big">∑</span><span class="lim"><span class="v">i</span></span></span>
+            <span class="v">x</span><sub><span class="v">i</span></sub> <span class="v">f</span>(<span class="v">x</span><sub><span class="v">i</span></sub>) =
+            <span class="frac"><span>1</span><span><span class="v">n</span></span></span>
+            <span class="sum"><span class="lim"><span class="v">n</span></span><span class="big">∑</span><span class="lim"><span class="v">i</span></span></span>
+            <span class="v">x</span><sub><span class="v">i</span></sub>
+          </div>
+          <p>que é a média aritmética conhecida.</p>
+        </div>
+
+        <div class="slide" data-sec="§ 06 · Média e variância">
+          <h3>A média como ponto de equilíbrio</h3>
+          <p>
+            Voltando à viga: se as probabilidades são massas, a média é o ponto onde a viga
+            <strong>equilibra</strong>.
+          </p>
+          <figure>
+            <img src="./media/equilibrio_viga.png"
+                 alt="Duas réguas numeradas de 0 a 10 com setas verticais representando massas; em ambas o fulcro triangular está na mesma posição, por volta de 6,2, mas na primeira as massas estão espalhadas e na segunda concentradas em torno do fulcro.">
+            <figcaption>
+              Nos dois casos o fulcro está no <strong>mesmo lugar</strong> — mesma média. O que
+              muda é o quanto as massas se afastam dele: é isso que a variância vai medir.
+            </figcaption>
+          </figure>
+        </div>
+
+        <div class="slide" data-sec="§ 06 · Média e variância">
+          <div class="demo">
+            <div class="demo-head">
+              <span class="t">A viga · mesma média, dispersões diferentes</span>
+              <span class="h">o fulcro não se move</span>
+            </div>
+            <div class="demo-body">
+              <div class="sliders">
+                <div class="sld">
+                  <label for="sDisp">dispersão</label>
+                  <input type="range" id="sDisp" min="0" max="1" step="0.01" value="0">
+                  <output id="oDisp">0,00</output>
+                </div>
+              </div>
+              <canvas class="plot" id="vigaCanvas" aria-label="Viga horizontal com massas verticais em posições de 0 a 5, fulcro triangular na média e faixa indicando um desvio padrão para cada lado"></canvas>
+              <div class="readout">
+                <div><span class="k">média μ</span><span class="val f" id="vMu">—</span></div>
+                <div><span class="k">variância V(X)</span><span class="val F" id="vVar">—</span></div>
+                <div><span class="k">desvio padrão σ</span><span class="val F" id="vSig">—</span></div>
+              </div>
+              <div class="verdict ok" id="vigaVerdict"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 06 · Média e variância">
+          <h3>Aplicando na variância</h3>
+          <p>
+            Queremos medir o distanciamento da média. Para um valor
+            <span class="v">x</span>, esse distanciamento é
+            <span class="v">x</span> − μ. Mas precisamos evitar que um desvio positivo
+            <strong>compense</strong> um negativo — por isso elevamos ao quadrado:
+            <span class="v">h</span>(<span class="v">x</span>) = (<span class="v">x</span> − μ)².
+          </p>
+          <div class="eq">
+            <span class="v">V</span>(<span class="v">X</span>) =
+            <span class="v">E</span>[(<span class="v">X</span> − μ)²] =
+            <span class="sum"><span class="lim">&nbsp;</span><span class="big">∑</span><span class="lim"><span class="v">x</span></span></span>
+            (<span class="v">x</span> − μ)² <span class="v">f</span>(<span class="v">x</span>) =
+            <span class="sum"><span class="lim">&nbsp;</span><span class="big">∑</span><span class="lim"><span class="v">x</span></span></span>
+            <span class="v">x</span>² <span class="v">f</span>(<span class="v">x</span>) − μ²
+          </div>
+          <p>
+            No caso trivial de valores igualmente prováveis, recai na forma conhecida:
+          </p>
+          <div class="eq">
+            <span class="v">V</span>(<span class="v">X</span>) =
+            <span class="frac"><span>1</span><span><span class="v">n</span></span></span>
+            <span class="sum"><span class="lim"><span class="v">n</span></span><span class="big">∑</span><span class="lim"><span class="v">i</span></span></span>
+            (<span class="v">x</span><sub><span class="v">i</span></sub> − μ)²
+          </div>
+          <div class="defn">
+            <span class="lab">Desvio padrão</span>
+            <p>
+              Para preservar a unidade da variável — que fica ao quadrado na variância:
+              σ = √<span class="v">V</span>(<span class="v">X</span>).
+            </p>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 06 · Média e variância">
+          <div class="ex" data-ex>
+            <span class="lab">Exercício — inspeção de pastilhas</span>
+            <p>
+              Uma inspeção visual numa localização das pastilhas de um processo de fabricação de
+              semicondutores resultou na tabela abaixo. As pastilhas são independentes quanto às
+              partículas contaminadas, e são selecionadas <strong>até que uma com cinco ou mais
+              partículas ocorra</strong>. Calcule a média e a variância de <span class="v">X</span>.
+            </p>
+            <div class="tbl-scroll">
+              <table class="tri">
+                <thead>
+                  <tr><th>Número de partículas contaminadas</th><th>Proporção de pastilhas</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>0</td><td class="num">0,30</td></tr>
+                  <tr><td>1</td><td class="num">0,20</td></tr>
+                  <tr><td>2</td><td class="num">0,15</td></tr>
+                  <tr><td>3</td><td class="num">0,10</td></tr>
+                  <tr><td>4</td><td class="num">0,05</td></tr>
+                  <tr><td>5 ou mais</td><td class="num">0,20</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <button class="b" type="button" data-reveal>Mostrar resolução</button>
+            <div class="sol" hidden>
+              <p>
+                A tabela serve só para extrair <strong>uma</strong> probabilidade: a de a pastilha
+                ter 5 ou mais partículas, <span class="v">p</span> = 0,20. Como as pastilhas são
+                independentes e paramos na primeira que satisfaz, <span class="v">X</span> é a
+                mesma <strong>geométrica</strong> do § 04:
+              </p>
+              <div class="eq" style="font-size:1.05rem">
+                <span class="v">f</span>(<span class="v">x</span>) = (0,80)<sup><span class="v">x</span>−1</sup> × 0,20
+              </div>
+              <p>
+                Somando as séries (ou usando os resultados da geométrica,
+                μ = 1/<span class="v">p</span> e
+                <span class="v">V</span> = (1−<span class="v">p</span>)/<span class="v">p</span>²):
+              </p>
+              <p>
+                μ = 1/0,20 = <span class="res">5</span> pastilhas &nbsp;·&nbsp;
+                <span class="v">V</span>(<span class="v">X</span>) = 0,80/0,04 = <span class="res">20</span> &nbsp;·&nbsp;
+                σ = √20 ≈ <span class="res">4,47</span>
+              </p>
+              <p style="color:var(--ink-mute)">
+                Leitura: em média inspecionam-se 5 pastilhas até achar uma bem contaminada, mas o
+                desvio padrão é quase igual à média — a geométrica é bem espalhada, e não é raro
+                precisar de muito mais que 5.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 07 ============ -->
+    <section id="distros">
+      <div class="wrap">
+        <div class="slide" data-sec="§ 07 · Algumas distribuições">
+          <div class="sec-head">
+            <span class="n">§ 07</span>
+            <h2>Algumas distribuições</h2>
+            <span class="sub">O reaproveitamento do § 03, agora com nome</span>
+          </div>
+          <p>
+            Com <span class="v">f</span>(<span class="v">x</span>),
+            <span class="v">F</span>(<span class="v">x</span>), μ e σ² definidos em geral, o passo
+            seguinte é catalogar as distribuições que aparecem com mais frequência — cada uma com
+            seu mecanismo gerador característico.
+          </p>
+          <ul>
+            <li><strong>Discreta uniforme</strong> — todos os valores igualmente prováveis.</li>
+            <li><strong>Binomial</strong> — número de sucessos em <span class="v">n</span> tentativas independentes.</li>
+            <li><strong>Geométrica e binomial negativa</strong> — tentativas <em>até</em> o primeiro (ou o <span class="v">r</span>-ésimo) sucesso. Já a encontramos duas vezes hoje.</li>
+            <li><strong>Hipergeométrica</strong> — amostragem <em>sem</em> reposição; é o caso do silo da aula 01.</li>
+            <li><strong>Poisson</strong> — contagens em um intervalo de tempo ou espaço.</li>
+          </ul>
           <div class="note">
             <span class="lab">Em construção</span>
             <p>
-              Esta é a versão inicial da aula, cobrindo distribuições, funções de probabilidade e
-              a função cumulativa. As seções de <strong>média e variância</strong> e as
-              distribuições discretas nomeadas (binomial, hipergeométrica, Poisson) entram nas
-              próximas versões.
+              Esta parte entra na próxima versão da aula. Repare que <strong>duas</strong> delas já
+              apareceram naturalmente antes de terem nome — é o argumento do § 03 se cumprindo.
             </p>
           </div>
         </div>
@@ -896,7 +1363,6 @@ html { scroll-behavior: smooth; }
     }
     ctx.globalAlpha = 1;
 
-    /* acumulada por cima, em âmbar */
     ctx.strokeStyle = css("--empirico");
     ctx.lineWidth = 1.6;
     ctx.beginPath();
@@ -915,7 +1381,67 @@ html { scroll-behavior: smooth; }
     else drawHero(1);
   }
 
-  /* ---------------- §03 pmf ---------------- */
+  /* ---------------- §02 faixas (exercício 3.1) ---------------- */
+  var ITENS = [
+    ["3.1.1", "Número de conexões soldadas não conformes em uma placa de circuito impresso com 1000 conexões.",
+      "x ∈ {0, 1, 2, …, 1000}",
+      "Vai de nenhuma até o total de conexões disponíveis na placa."],
+    ["3.1.2", "Batelada de 500 peças contém dez não conformes. X é o número de peças não conformes em uma amostra de cinco.",
+      "x ∈ {0, 1, 2, 3, 4, 5}",
+      "O teto é o tamanho da amostra. Como há 10 não conformes no lote (mais que a amostra), todas as cinco podem ser defeituosas."],
+    ["3.1.3", "Mesma batelada; peças são selecionadas sucessivamente, sem reposição, até obter uma não conforme. X é o número de peças selecionadas.",
+      "x ∈ {1, 2, 3, …, 491}",
+      "O melhor caso é acertar de primeira. O pior é retirar as 490 conformes antes: a 491ª é obrigatoriamente não conforme."],
+    ["3.1.4", "Número de ciclos do computador requeridos para completar um cálculo aritmético selecionado.",
+      "x ∈ {1, 2, 3, …}",
+      "Um cálculo requer um número inteiro de ciclos a partir de 1, sem limite superior definido no enunciado."],
+    ["3.1.5", "Número de falhas na superfície em uma grande serpentina de aço galvanizado.",
+      "x ∈ {0, 1, 2, …}",
+      "Pode não haver falha alguma, e nada fixa um teto antecipadamente."],
+    ["3.1.6", "Grupo de 10.000 pessoas testado quanto ao gene Ifi202. X é o número de portadores.",
+      "x ∈ {0, 1, 2, …, 10000}",
+      "De ninguém até a totalidade das pessoas testadas."],
+    ["3.1.7", "Mutações em uma sequência de 40.000 nucleotídeos após exposição à radiação. Cada nucleotídeo pode sofrer mutação.",
+      "x ∈ {0, 1, 2, …, 40000}",
+      "Cada nucleotídeo pode ou não sofrer mutação, então o teto é o tamanho da sequência."],
+    ["3.1.8", "Clínica programa 30 minutos por visita, mas algumas requerem tempo extra. X é o número de pacientes tratados em um dia de oito horas.",
+      "x ∈ {0, 1, 2, …, 16}",
+      "480 minutos ÷ 30 = 16 no máximo absoluto. Como algumas visitas passam do tempo, o real pode ser menor, até zero."]
+  ];
+
+  function montaFaixas(alvo, de, ate) {
+    var el = document.getElementById(alvo);
+    if (!el) return;
+    var html = "";
+    for (var i = de; i <= ate; i++) {
+      var it = ITENS[i];
+      html +=
+        '<div class="faixa">' +
+          '<span class="id">' + it[0] + "</span>" +
+          "<div>" +
+            '<p class="q">' + it[1] + "</p>" +
+            '<button type="button" data-faixa>Mostrar faixa</button>' +
+            '<div class="r">' +
+              '<span class="fx">' + it[2] + "</span>" +
+              '<span class="por">' + it[3] + "</span>" +
+            "</div>" +
+          "</div>" +
+        "</div>";
+    }
+    el.innerHTML = html;
+  }
+  montaFaixas("faixas1", 0, 3);
+  montaFaixas("faixas2", 4, 7);
+
+  document.addEventListener("click", function (ev) {
+    var b = ev.target.closest("[data-faixa]");
+    if (!b) return;
+    var box = b.closest(".faixa");
+    var aberto = box.classList.toggle("aberta");
+    b.textContent = aberto ? "Ocultar" : "Mostrar faixa";
+  });
+
+  /* ---------------- §04 pmf ---------------- */
   var sP = document.getElementById("sP"), sN = document.getElementById("sN");
   var oP = document.getElementById("oP"), oN = document.getElementById("oN");
   var rF1 = document.getElementById("rF1"), rF2 = document.getElementById("rF2"),
@@ -940,7 +1466,6 @@ html { scroll-behavior: smooth; }
     var maxf = pmf(1, p);
     var bw = (w - padL - padR) / N;
 
-    /* eixos */
     ctx.strokeStyle = css("--rule"); ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(padL, padT); ctx.lineTo(padL, h - padB); ctx.lineTo(w - padR, h - padB);
@@ -963,10 +1488,9 @@ html { scroll-behavior: smooth; }
       ctx.fillRect(x + bw * .15, h - padB - bh, Math.max(1, bw * .7), bh);
     }
   }
-
   [sP, sN].forEach(function (s) { s.addEventListener("input", drawPmf); });
 
-  /* ---------------- §04 f e F ---------------- */
+  /* ---------------- §05 f e F ---------------- */
   var sK = document.getElementById("sK"), sP2 = document.getElementById("sP2");
   var oK = document.getElementById("oK"), oP2 = document.getElementById("oP2");
   var cF = document.getElementById("cF"), cFF = document.getElementById("cFF"),
@@ -1002,7 +1526,6 @@ html { scroll-behavior: smooth; }
     ctx.textAlign = "left";
     ctx.fillText("x = 1", padL + 2, h - padB + 14);
 
-    /* barras de f(x), normalizadas pelo maior valor para caberem no quadro */
     if (cdfMode !== "F") {
       for (var i = 1; i <= N; i++) {
         var bh = H * (pmf(i, p) / maxf) * .55;
@@ -1014,7 +1537,6 @@ html { scroll-behavior: smooth; }
       ctx.globalAlpha = 1;
     }
 
-    /* escada de F(x) */
     if (cdfMode !== "f") {
       ctx.strokeStyle = css("--empirico");
       ctx.lineWidth = 1.8;
@@ -1024,30 +1546,198 @@ html { scroll-behavior: smooth; }
       for (i = 1; i <= N; i++) {
         var xL = padL + (i - 1) * bw + bw * .5;
         var y = h - padB - H * cdf(i, p);
-        ctx.lineTo(xL, yPrev);   /* patamar */
-        ctx.lineTo(xL, y);       /* salto = f(i) */
+        ctx.lineTo(xL, yPrev);
+        ctx.lineTo(xL, y);
         yPrev = y;
       }
       ctx.lineTo(w - padR, yPrev);
       ctx.stroke();
 
-      /* ponto em F(k) */
       var xk = padL + (k - 1) * bw + bw * .5;
       var yk = h - padB - H * cdf(k, p);
       ctx.fillStyle = css("--empirico");
       ctx.beginPath(); ctx.arc(xk, yk, 3.4, 0, Math.PI * 2); ctx.fill();
     }
 
-    /* marcador vertical do x escolhido */
     var xm = padL + (k - 1) * bw + bw * .5;
     ctx.strokeStyle = css("--ink-mute"); ctx.lineWidth = 1;
     ctx.setLineDash([3, 3]);
     ctx.beginPath(); ctx.moveTo(xm, padT); ctx.lineTo(xm, h - padB); ctx.stroke();
     ctx.setLineDash([]);
   }
-
   [sK, sP2].forEach(function (s) { s.addEventListener("input", drawCdf); });
   wireSeg("cdfSeg", function (k) { cdfMode = k; drawCdf(); });
+
+  /* ---------------- §05 escada dos poços ---------------- */
+  /* profundidade -> nº de poços (formações de mesma profundidade já somadas) */
+  var POCOS = [[217, 36], [218, 26], [231, 349], [255, 2858], [267, 1167], [317, 3290]];
+  var TOTPOCOS = 7726;
+  var sPoco = document.getElementById("sPoco"), oPoco = document.getElementById("oPoco");
+  var pF = document.getElementById("pF"), pFF = document.getElementById("pFF");
+  var pocoVerdict = document.getElementById("pocoVerdict");
+  var pocoCanvas = document.getElementById("pocoCanvas");
+
+  function drawPoco() {
+    var x = +sPoco.value;
+    oPoco.textContent = String(x);
+
+    var acum = 0, salto = 0;
+    for (var i = 0; i < POCOS.length; i++) {
+      if (POCOS[i][0] <= x) acum += POCOS[i][1] / TOTPOCOS;
+      if (POCOS[i][0] === x) salto = POCOS[i][1] / TOTPOCOS;
+    }
+    pF.textContent = salto > 0 ? d4(salto) : "0 (sem salto aqui)";
+    pFF.textContent = d4(acum);
+    pocoVerdict.textContent = salto > 0
+      ? "x = " + x + " é uma das profundidades observadas: F salta " + d4(salto) + " exatamente aqui."
+      : "x = " + x + " não é uma profundidade observada: F fica constante, num patamar da escada.";
+
+    var f = fit(pocoCanvas);
+    if (!f) return;
+    var ctx = f.ctx, w = f.w, h = f.h;
+    var padL = 46, padR = 12, padT = 12, padB = 22;
+    var x0 = 200, x1 = 340;
+    function X(v) { return padL + ((v - x0) / (x1 - x0)) * (w - padL - padR); }
+    function Y(v) { return h - padB - v * (h - padT - padB); }
+
+    ctx.strokeStyle = css("--rule"); ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(padL, padT); ctx.lineTo(padL, h - padB); ctx.lineTo(w - padR, h - padB);
+    ctx.stroke();
+
+    ctx.fillStyle = css("--ink-mute");
+    ctx.font = "11px monospace";
+    ctx.textAlign = "right";
+    ctx.fillText("1", padL - 6, padT + 9);
+    ctx.fillText("0", padL - 6, h - padB);
+    ctx.textAlign = "center";
+    ctx.fillText("200", X(200), h - padB + 15);
+    ctx.fillText("340 pés", X(335), h - padB + 15);
+
+    /* escada */
+    ctx.strokeStyle = css("--empirico"); ctx.lineWidth = 2;
+    ctx.beginPath();
+    var yPrev = Y(0), ac = 0;
+    ctx.moveTo(X(x0), yPrev);
+    for (i = 0; i < POCOS.length; i++) {
+      var xi = X(POCOS[i][0]);
+      ctx.lineTo(xi, yPrev);
+      ac += POCOS[i][1] / TOTPOCOS;
+      var yi = Y(ac);
+      ctx.lineTo(xi, yi);
+      yPrev = yi;
+    }
+    ctx.lineTo(X(x1), yPrev);
+    ctx.stroke();
+
+    /* pontos nos saltos */
+    ctx.fillStyle = css("--teorico");
+    ac = 0;
+    for (i = 0; i < POCOS.length; i++) {
+      ac += POCOS[i][1] / TOTPOCOS;
+      ctx.beginPath(); ctx.arc(X(POCOS[i][0]), Y(ac), 3, 0, Math.PI * 2); ctx.fill();
+    }
+
+    /* marcador do x atual */
+    ctx.strokeStyle = css("--ink-mute"); ctx.lineWidth = 1;
+    ctx.setLineDash([3, 3]);
+    ctx.beginPath(); ctx.moveTo(X(x), padT); ctx.lineTo(X(x), h - padB); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = css("--empirico");
+    ctx.beginPath(); ctx.arc(X(x), Y(acum), 4, 0, Math.PI * 2); ctx.fill();
+  }
+  sPoco.addEventListener("input", drawPoco);
+
+  /* ---------------- §06 viga ---------------- */
+  /* Mistura de duas distribuições com a MESMA média (2,5). Como E é linear em f,
+     qualquer combinação convexa preserva a média — só a dispersão muda. */
+  var VIGA_X = [0, 1, 2, 3, 4, 5];
+  var VIGA_A = [.05, .15, .30, .30, .15, .05];   /* concentrada */
+  var VIGA_B = [.30, .10, .10, .10, .10, .30];   /* espalhada  */
+  var sDisp = document.getElementById("sDisp"), oDisp = document.getElementById("oDisp");
+  var vMu = document.getElementById("vMu"), vVar = document.getElementById("vVar"),
+      vSig = document.getElementById("vSig"), vigaVerdict = document.getElementById("vigaVerdict");
+  var vigaCanvas = document.getElementById("vigaCanvas");
+
+  function drawViga() {
+    var t = +sDisp.value;
+    oDisp.textContent = d2(t);
+
+    var fs = VIGA_A.map(function (a, i) { return (1 - t) * a + t * VIGA_B[i]; });
+    var mu = 0, e2 = 0;
+    VIGA_X.forEach(function (x, i) { mu += x * fs[i]; e2 += x * x * fs[i]; });
+    var vr = e2 - mu * mu, sg = Math.sqrt(vr);
+
+    vMu.textContent = d4(mu);
+    vVar.textContent = d4(vr);
+    vSig.textContent = d4(sg);
+    vigaVerdict.textContent = "A média fica cravada em " + d2(mu)
+      + " o tempo todo — o fulcro não anda. O que muda é σ, agora " + d2(sg) + ".";
+
+    var f = fit(vigaCanvas);
+    if (!f) return;
+    var ctx = f.ctx, w = f.w, h = f.h;
+    var padL = 40, padR = 40, padB = 46, topo = 18;
+    var yViga = h - padB;
+    function X(v) { return padL + (v / 5) * (w - padL - padR); }
+    var maxf = Math.max.apply(null, fs);
+
+    /* faixa de ±1 desvio padrão */
+    ctx.fillStyle = css("--empirico"); ctx.globalAlpha = .13;
+    ctx.fillRect(X(Math.max(0, mu - sg)), topo, X(Math.min(5, mu + sg)) - X(Math.max(0, mu - sg)), yViga - topo);
+    ctx.globalAlpha = 1;
+
+    /* massas: setas para baixo, comprimento ∝ f(x) */
+    ctx.strokeStyle = css("--teorico"); ctx.fillStyle = css("--teorico"); ctx.lineWidth = 2.4;
+    VIGA_X.forEach(function (x, i) {
+      var len = (yViga - topo - 8) * (fs[i] / maxf);
+      var px = X(x), py0 = yViga - len, py1 = yViga - 3;
+      ctx.beginPath(); ctx.moveTo(px, py0); ctx.lineTo(px, py1); ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(px, yViga); ctx.lineTo(px - 4, py1 - 4); ctx.lineTo(px + 4, py1 - 4);
+      ctx.closePath(); ctx.fill();
+      ctx.font = "10px monospace"; ctx.textAlign = "center";
+      ctx.fillText(d2(fs[i]), px, py0 - 5);
+    });
+
+    /* a viga */
+    ctx.strokeStyle = css("--ink"); ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(padL - 12, yViga); ctx.lineTo(w - padR + 12, yViga); ctx.stroke();
+
+    /* marcas do eixo */
+    ctx.fillStyle = css("--ink-mute"); ctx.font = "11px monospace"; ctx.textAlign = "center";
+    VIGA_X.forEach(function (x) {
+      ctx.beginPath();
+      ctx.moveTo(X(x), yViga); ctx.lineTo(X(x), yViga + 5);
+      ctx.strokeStyle = css("--rule"); ctx.lineWidth = 1; ctx.stroke();
+      ctx.fillText(String(x), X(x), yViga + 17);
+    });
+
+    /* fulcro na média */
+    var fx = X(mu);
+    ctx.fillStyle = css("--empirico");
+    ctx.beginPath();
+    ctx.moveTo(fx, yViga + 2); ctx.lineTo(fx - 9, yViga + 20); ctx.lineTo(fx + 9, yViga + 20);
+    ctx.closePath(); ctx.fill();
+    ctx.textAlign = "center"; ctx.font = "11px monospace";
+    ctx.fillText("μ = " + d2(mu), fx, yViga + 34);
+
+    /* rótulo do σ */
+    ctx.fillStyle = css("--empirico"); ctx.globalAlpha = .85;
+    ctx.textAlign = "left"; ctx.font = "10px monospace";
+    ctx.fillText("μ ± σ", X(Math.min(5, mu + sg)) + 4, topo + 10);
+    ctx.globalAlpha = 1;
+  }
+  sDisp.addEventListener("input", drawViga);
+
+  /* ---------------- exercícios com resolução ---------------- */
+  Array.prototype.forEach.call(document.querySelectorAll("[data-reveal]"), function (btn) {
+    btn.addEventListener("click", function () {
+      var sol = btn.parentNode.querySelector(".sol");
+      if (sol.hasAttribute("hidden")) { sol.removeAttribute("hidden"); btn.textContent = "Ocultar resolução"; }
+      else { sol.setAttribute("hidden", ""); btn.textContent = "Mostrar resolução"; }
+    });
+  });
 
   /* ---------------- navegação (documento) ---------------- */
   var links = Array.prototype.slice.call(document.querySelectorAll("#toc a"));
@@ -1156,12 +1846,11 @@ html { scroll-behavior: smooth; }
   });
 
   /* ---------------- redraw ---------------- */
-  function redrawAll() { drawHero(heroP); drawPmf(); drawCdf(); }
+  function redrawAll() { drawHero(heroP); drawPmf(); drawCdf(); drawPoco(); drawViga(); }
   window.addEventListener("resize", redrawAll);
 
   hudZoom.textContent = Math.round(ps * 100) + "%";
-  drawPmf();
-  drawCdf();
+  drawPmf(); drawCdf(); drawPoco(); drawViga();
   heroTick();
 })();
 </script>
