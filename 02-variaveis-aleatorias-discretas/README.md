@@ -242,11 +242,40 @@ Considere que as pastilhas sejam independentes em relação às partículas cont
 
 ## Distribuição Discreta Uniforme
 
+Uma variável aleatória $X$ tem uma distribuição discreta uniforme se cada um dos $n$ valores em sua faixa, isto é, $x_1$, $x_2$, $\dots$, $x_n$ tiver igual probabilidade. Então,
+$$f(x_i) = \frac{1}{n}$$
+
 ## Distribuição Binomial
+
+Um experimento aleatório consiste em $n$ tentativa de Bernoulli, de modo que
+1. As tentativas sejam independentes.
+2. Cada tentativa resulte em somente dois resultados possíveis, designados como "sucesso" e "falha".
+3. A probabilidade de sucesso em cada tentativa, denotada por $p$, permaneça constante.
+
+A variável aleatória $X$, que é igual ao número de tentativas que resultam em sucesso, é uma variável aleatória binomial com parâmetros $0 < p < 1$ e $n = 1, 2, \dots$. A função de probabilidade de $X$ é:
+$$f(x) = \begin{pmatrix}n \\ x\end{pmatrix} p^x (1 - p)^{n - x} \quad x = 0, 1, \dots, n$$
 
 ## Distribuição Geométrica e Binomial Negativa
 
+Em uma série de tentativas de Bernoulli (tentativas independentes, com probabilidade constante $p$ de um sucesso), seja a variável aleatória $X$ o número de tentativas até que o primeiro sucesso ocorra. Então $X$ é uma variável aleatória geométrica, com parâmetro $0 < p < 1$ e 
+$$f(x) = (1- p)^{x-1} p \quad x = 1, 2, \dots$$
+
+Uma generalização da distribuição geométrica é a Binomial Negativa: Em uma série de tentativas de Bernoulli, seja a variável aleatória $X$ o número de tentativas até que $r$ sucessos ocorram. Então $X$ é uma variável aleatória binomial negativa, com parâmetros $0 < p < 1$ e $r = 1, 2, \dots$. e
+$$f(x) = \begin{pmatrix}x-1 \\ r-1\end{pmatrix} (1 - p)^{x - r} p^r \quad x = r, r+1, r+2, \dots$$
+
 ## Distribuição Hipergeométrica
+
+Um conjunto de $N$ objetos contém
+1. $K$ objetos classificados como sucessos
+2. $N - K$ objetos classificados como falhas
+Uma amostra com $n$ objetos é selecionada aleatoriamente (sem reposição) a partir de $N$ objetos, em que $K \leq N$ e $n \leq N$.
+
+A variável aleatória $X$ que iguala o número de sucessos na amostra é uma variável aleatória hipergeométrica e 
+$$f(x) = \frac{\begin{pmatrix}K \\ x\end{pmatrix} \begin{pmatrix}N - K \\ n - x\end{pmatrix}}{\begin{pmatrix}N \\ n\end{pmatrix}}$$
+
+$$x = \max\{0, n + K - N\} \text{ para } \min\{K, n \}$$
 
 ## Distribuição de Poisson
 
+A variável aleatória $X$, que é igual ao número de eventos no intervalo, é uma variável aleatória de Poisson, com parâmetro $0 < \lambda$ e 
+$$f(x) = \frac{e^{-\lambda T} (\lambda T)^x}{x!} \quad x = 0, 1, \dots$$

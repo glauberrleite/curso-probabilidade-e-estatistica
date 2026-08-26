@@ -250,6 +250,9 @@ blockquote cite {
 .sum .lim { font-size: .55em; line-height: 1.1; }
 .cases { display: inline-grid; grid-template-columns: auto auto; gap: .1em 1.2em; text-align: left; font-size: .82em; }
 .cases .c { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.binom { display: inline-flex; align-items: center; vertical-align: middle; }
+.binom .par { font-size: 2.1em; font-weight: 200; line-height: .8; }
+.binom .col { display: inline-flex; flex-direction: column; text-align: center; padding: 0 .12em; font-size: .92em; line-height: 1.15; }
 
 /* ---------- demos ---------- */
 
@@ -374,6 +377,16 @@ canvas.plot { display: block; width: 100%; height: 200px; }
 .tri td.num.F { color: var(--empirico); }
 .tri tr.tot td { font-weight: 650; border-top: 1px solid var(--ink); }
 
+/* ---------- explorador de distribuições ---------- */
+
+.par-grupo { display: none; }
+.par-grupo.on { display: flex; flex-direction: column; gap: .5rem; }
+.dist-nome {
+  font-family: var(--serif); font-size: 1.05rem; color: var(--ink);
+  margin-bottom: .5rem;
+}
+.dist-nome .fx { color: var(--teorico); }
+
 /* ---------- figuras ---------- */
 
 figure { margin: 1.3rem 0; }
@@ -412,6 +425,11 @@ figcaption { font-family: var(--sans); font-size: .78rem; color: var(--ink-mute)
 :root[data-mode="present"] h2 { font-size: 2rem; }
 :root[data-mode="present"] .dek { font-size: 1.35rem; max-width: 44ch; }
 :root[data-mode="present"] .eq { font-size: 1.65rem; margin: .9rem 0; }
+:root[data-mode="present"] .defn .eq { margin: .55rem 0; }
+/* binomial mais baixo: a hipergeométrica empilha dois deles numa fração, e é a
+   entrelinha das duas linhas do .col que define a altura. */
+:root[data-mode="present"] .binom .par { font-size: 1.8em; }
+:root[data-mode="present"] .binom .col { line-height: 1; }
 :root[data-mode="present"] h3 { margin-top: 0; }
 :root[data-mode="present"] canvas.plot { height: clamp(190px, 30vh, 430px); }
 :root[data-mode="present"] .hero-fig canvas { height: clamp(110px, 16vh, 260px); }
@@ -1249,18 +1267,360 @@ html { scroll-behavior: smooth; }
             seguinte é catalogar as distribuições que aparecem com mais frequência — cada uma com
             seu mecanismo gerador característico.
           </p>
-          <ul>
-            <li><strong>Discreta uniforme</strong> — todos os valores igualmente prováveis.</li>
-            <li><strong>Binomial</strong> — número de sucessos em <span class="v">n</span> tentativas independentes.</li>
-            <li><strong>Geométrica e binomial negativa</strong> — tentativas <em>até</em> o primeiro (ou o <span class="v">r</span>-ésimo) sucesso. Já a encontramos duas vezes hoje.</li>
-            <li><strong>Hipergeométrica</strong> — amostragem <em>sem</em> reposição; é o caso do silo da aula 01.</li>
-            <li><strong>Poisson</strong> — contagens em um intervalo de tempo ou espaço.</li>
-          </ul>
           <div class="note">
-            <span class="lab">Em construção</span>
+            <span class="lab">Repare</span>
             <p>
-              Esta parte entra na próxima versão da aula. Repare que <strong>duas</strong> delas já
-              apareceram naturalmente antes de terem nome — é o argumento do § 03 se cumprindo.
+              <strong>Duas</strong> delas já apareceram nesta disciplina antes de terem nome: a
+              geométrica no exemplo das pastilhas (§ 04) e a hipergeométrica no problema do silo
+              da aula 01. É o argumento do § 03 se cumprindo — a mesma distribuição reaparece em
+              domínios diferentes.
+            </p>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 07 · Discreta uniforme">
+          <h3>Distribuição discreta uniforme</h3>
+          <div class="defn">
+            <span class="lab">Definição</span>
+            <p>
+              Uma variável aleatória <span class="v">X</span> tem uma
+              <strong>distribuição discreta uniforme</strong> se cada um dos
+              <span class="v">n</span> valores em sua faixa —
+              <span class="v">x</span><sub>1</sub>, <span class="v">x</span><sub>2</sub>, …,
+              <span class="v">x</span><sub><span class="v">n</span></sub> — tiver igual
+              probabilidade. Então,
+            </p>
+            <div class="eq">
+              <span class="v">f</span>(<span class="v">x</span><sub><span class="v">i</span></sub>) =
+              <span class="frac"><span>1</span><span><span class="v">n</span></span></span>
+            </div>
+          </div>
+          <div class="note">
+            <span class="lab">De onde já conhecemos</span>
+            <p>
+              É o caso trivial do § 06: com todos os valores igualmente prováveis, a média vira a
+              média aritmética. É também a hipótese da <em>definição clássica</em> de probabilidade
+              da aula 01 — “resultados igualmente prováveis” é exatamente uma uniforme discreta.
+            </p>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 07 · Binomial">
+          <h3>Distribuição binomial</h3>
+          <div class="defn">
+            <span class="lab">Tentativas de Bernoulli</span>
+            <p>Um experimento aleatório consiste em <span class="v">n</span> tentativas de Bernoulli, de modo que:</p>
+            <ol>
+              <li>as tentativas sejam <strong>independentes</strong>;</li>
+              <li>cada tentativa resulte em somente dois resultados possíveis, designados como
+                “sucesso” e “falha”;</li>
+              <li>a probabilidade de sucesso em cada tentativa, denotada por
+                <span class="v">p</span>, permaneça <strong>constante</strong>.</li>
+            </ol>
+          </div>
+          <div class="defn">
+            <span class="lab">Definição</span>
+            <p>
+              A variável aleatória <span class="v">X</span>, que é igual ao <strong>número de
+              tentativas que resultam em sucesso</strong>, é uma variável aleatória binomial com
+              parâmetros 0 &lt; <span class="v">p</span> &lt; 1 e
+              <span class="v">n</span> = 1, 2, …
+            </p>
+            <div class="eq">
+              <span class="v">f</span>(<span class="v">x</span>) =
+              <span class="binom">
+                <span class="par">(</span>
+                <span class="col"><span class="v">n</span><span class="v">x</span></span>
+                <span class="par">)</span>
+              </span>
+              <span class="v">p</span><sup><span class="v">x</span></sup>
+              (1 − <span class="v">p</span>)<sup><span class="v">n</span>−<span class="v">x</span></sup>
+              &nbsp;&nbsp; <span class="v">x</span> = 0, 1, …, <span class="v">n</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 07 · Geométrica e binomial negativa">
+          <h3>Distribuição geométrica</h3>
+          <div class="defn">
+            <span class="lab">Definição</span>
+            <p>
+              Em uma série de tentativas de Bernoulli, seja <span class="v">X</span> o
+              <strong>número de tentativas até que o primeiro sucesso ocorra</strong>. Então
+              <span class="v">X</span> é uma variável aleatória geométrica, com parâmetro
+              0 &lt; <span class="v">p</span> &lt; 1 e
+            </p>
+            <div class="eq">
+              <span class="v">f</span>(<span class="v">x</span>) =
+              (1 − <span class="v">p</span>)<sup><span class="v">x</span>−1</sup>
+              <span class="v">p</span>
+              &nbsp;&nbsp; <span class="v">x</span> = 1, 2, …
+            </div>
+          </div>
+          <div class="note">
+            <span class="lab">Já apareceu duas vezes</span>
+            <p>
+              É exatamente a <span class="v">f</span>(<span class="v">x</span>) que deduzimos no
+              § 04 para as pastilhas (com <span class="v">p</span> = 0,01) e a do exercício de
+              média e variância do § 06 (com <span class="v">p</span> = 0,20, dando μ = 5 e
+              <span class="v">V</span> = 20).
+            </p>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 07 · Geométrica e binomial negativa">
+          <h3>Distribuição binomial negativa</h3>
+          <div class="defn">
+            <span class="lab">Definição</span>
+            <p>
+              Uma <strong>generalização</strong> da geométrica. Em uma série de tentativas de
+              Bernoulli, seja <span class="v">X</span> o número de tentativas até que
+              <span class="v">r</span> <strong>sucessos</strong> ocorram. Então
+              <span class="v">X</span> é binomial negativa, com parâmetros
+              0 &lt; <span class="v">p</span> &lt; 1 e <span class="v">r</span> = 1, 2, … e
+            </p>
+            <div class="eq">
+              <span class="v">f</span>(<span class="v">x</span>) =
+              <span class="binom">
+                <span class="par">(</span>
+                <span class="col"><span><span class="v">x</span>−1</span><span><span class="v">r</span>−1</span></span>
+                <span class="par">)</span>
+              </span>
+              (1 − <span class="v">p</span>)<sup><span class="v">x</span>−<span class="v">r</span></sup>
+              <span class="v">p</span><sup><span class="v">r</span></sup>
+              &nbsp;&nbsp; <span class="v">x</span> = <span class="v">r</span>, <span class="v">r</span>+1, …
+            </div>
+          </div>
+          <div class="note">
+            <span class="lab">Confira</span>
+            <p>
+              Fazendo <span class="v">r</span> = 1, o coeficiente vira
+              <span class="v">C</span><sup><span class="v">x</span>−1</sup><sub>0</sub> = 1 e sobra
+              (1−<span class="v">p</span>)<sup><span class="v">x</span>−1</sup><span class="v">p</span>:
+              a <strong>geométrica é o caso <span class="v">r</span> = 1</strong>.
+            </p>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 07 · Hipergeométrica">
+          <h3>Distribuição hipergeométrica</h3>
+          <div class="defn">
+            <span class="lab">Definição</span>
+            <p>Um conjunto de <span class="v">N</span> objetos contém:</p>
+            <ol>
+              <li><span class="v">K</span> objetos classificados como <strong>sucessos</strong>;</li>
+              <li><span class="v">N</span> − <span class="v">K</span> objetos classificados como <strong>falhas</strong>.</li>
+            </ol>
+            <p>
+              Uma amostra com <span class="v">n</span> objetos é selecionada aleatoriamente
+              <strong>sem reposição</strong>, em que <span class="v">K</span> ≤ <span class="v">N</span>
+              e <span class="v">n</span> ≤ <span class="v">N</span>. A variável
+              <span class="v">X</span> que iguala o número de sucessos na amostra é hipergeométrica:
+            </p>
+            <div class="eq">
+              <span class="v">f</span>(<span class="v">x</span>) =
+              <span class="frac">
+                <span>
+                  <span class="binom"><span class="par">(</span><span class="col"><span class="v">K</span><span class="v">x</span></span><span class="par">)</span></span>
+                  <span class="binom"><span class="par">(</span><span class="col"><span><span class="v">N</span>−<span class="v">K</span></span><span><span class="v">n</span>−<span class="v">x</span></span></span><span class="par">)</span></span>
+                </span>
+                <span>
+                  <span class="binom"><span class="par">(</span><span class="col"><span class="v">N</span><span class="v">n</span></span><span class="par">)</span></span>
+                </span>
+              </span>
+            </div>
+            <div class="eq" style="font-size:1rem">
+              <span class="v">x</span> = max{0, <span class="v">n</span> + <span class="v">K</span> − <span class="v">N</span>}
+              &nbsp;até&nbsp; min{<span class="v">K</span>, <span class="v">n</span>}
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 07 · Hipergeométrica">
+          <div class="note">
+            <span class="lab">O silo da aula 01 era isto</span>
+            <p>
+              Lá tínhamos <span class="v">N</span> = 50 itens, <span class="v">K</span> = 3
+              defeituosos, amostra de <span class="v">n</span> = 6 <em>sem reposição</em>, e
+              queríamos exatamente 2 defeituosos. Resolvemos por contagem:
+            </p>
+            <div class="eq" style="font-size:1.05rem">
+              <span class="frac">
+                <span><span class="v">C</span><sup>3</sup><sub>2</sub> × <span class="v">C</span><sup>47</sup><sub>4</sub></span>
+                <span><span class="v">C</span><sup>50</sup><sub>6</sub></span>
+              </span>
+              =
+              <span class="frac"><span>535.095</span><span>15.890.700</span></span>
+              ≈ 0,0337
+            </div>
+            <p>
+              É <strong>exatamente</strong> a fórmula acima com <span class="v">x</span> = 2. O que
+              era um exercício de combinatória agora tem nome, parâmetros e fórmulas prontas de
+              média e variância.
+            </p>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 07 · Poisson">
+          <h3>Distribuição de Poisson</h3>
+          <p>
+            Considere eventos que ocorrem ao acaso ao longo de um intervalo — de tempo, de
+            comprimento, de área — com uma taxa média λ por unidade, e seja
+            <span class="v">T</span> o tamanho do intervalo observado.
+          </p>
+          <div class="defn">
+            <span class="lab">Definição</span>
+            <p>
+              A variável aleatória <span class="v">X</span>, que é igual ao <strong>número de
+              eventos no intervalo</strong>, é uma variável aleatória de Poisson, com parâmetro
+              0 &lt; λ e
+            </p>
+            <div class="eq">
+              <span class="v">f</span>(<span class="v">x</span>) =
+              <span class="frac">
+                <span><span class="v">e</span><sup>−λ<span class="v">T</span></sup> (λ<span class="v">T</span>)<sup><span class="v">x</span></sup></span>
+                <span><span class="v">x</span>!</span>
+              </span>
+              &nbsp;&nbsp; <span class="v">x</span> = 0, 1, …
+            </div>
+          </div>
+          <div class="note">
+            <span class="lab">Onde entra</span>
+            <p>
+              É o modelo das <strong>contagens sem teto</strong> — como as falhas na serpentina de
+              aço do exercício 3.1.5 (§ 02), que tinham faixa infinita contável justamente por não
+              haver limite superior natural.
+            </p>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 07 · Explorador">
+          <div class="demo">
+            <div class="demo-head">
+              <span class="t">Explorador de distribuições</span>
+              <span class="h">painel = calculado nas barras · rodapé = fórmula fechada</span>
+            </div>
+            <div class="demo-body">
+              <div class="ctl">
+                <div class="seg" id="distSeg">
+                  <button type="button" data-k="unif" aria-pressed="true">Uniforme</button>
+                  <button type="button" data-k="bin" aria-pressed="false">Binomial</button>
+                  <button type="button" data-k="geo" aria-pressed="false">Geométrica</button>
+                  <button type="button" data-k="nbin" aria-pressed="false">Bin. negativa</button>
+                  <button type="button" data-k="hgeo" aria-pressed="false">Hipergeom.</button>
+                  <button type="button" data-k="pois" aria-pressed="false">Poisson</button>
+                </div>
+              </div>
+
+              <div class="dist-nome" id="distNome"></div>
+
+              <div class="par-grupo on" data-dist="unif">
+                <div class="sld">
+                  <label for="pUnN">valores 1 a <span class="v">n</span></label>
+                  <input type="range" id="pUnN" min="2" max="12" step="1" value="6">
+                  <output id="oUnN">6</output>
+                </div>
+              </div>
+
+              <div class="par-grupo" data-dist="bin">
+                <div class="sld">
+                  <label for="pBinN">tentativas <span class="v">n</span></label>
+                  <input type="range" id="pBinN" min="1" max="40" step="1" value="10">
+                  <output id="oBinN">10</output>
+                </div>
+                <div class="sld">
+                  <label for="pBinP">sucesso <span class="v">p</span></label>
+                  <input type="range" id="pBinP" min="0.02" max="0.98" step="0.01" value="0.30">
+                  <output id="oBinP">0,30</output>
+                </div>
+              </div>
+
+              <div class="par-grupo" data-dist="geo">
+                <div class="sld">
+                  <label for="pGeoP">sucesso <span class="v">p</span></label>
+                  <input type="range" id="pGeoP" min="0.02" max="0.90" step="0.01" value="0.20">
+                  <output id="oGeoP">0,20</output>
+                </div>
+              </div>
+
+              <div class="par-grupo" data-dist="nbin">
+                <div class="sld">
+                  <label for="pNbR">sucessos <span class="v">r</span></label>
+                  <input type="range" id="pNbR" min="1" max="8" step="1" value="3">
+                  <output id="oNbR">3</output>
+                </div>
+                <div class="sld">
+                  <label for="pNbP">sucesso <span class="v">p</span></label>
+                  <input type="range" id="pNbP" min="0.05" max="0.90" step="0.01" value="0.25">
+                  <output id="oNbP">0,25</output>
+                </div>
+              </div>
+
+              <div class="par-grupo" data-dist="hgeo">
+                <div class="sld">
+                  <label for="pHgN">total <span class="v">N</span></label>
+                  <input type="range" id="pHgN" min="10" max="80" step="1" value="50">
+                  <output id="oHgN">50</output>
+                </div>
+                <div class="sld">
+                  <label for="pHgK">sucessos <span class="v">K</span></label>
+                  <input type="range" id="pHgK" min="1" max="40" step="1" value="3">
+                  <output id="oHgK">3</output>
+                </div>
+                <div class="sld">
+                  <label for="pHgn">amostra <span class="v">n</span></label>
+                  <input type="range" id="pHgn" min="1" max="40" step="1" value="6">
+                  <output id="oHgn">6</output>
+                </div>
+              </div>
+
+              <div class="par-grupo" data-dist="pois">
+                <div class="sld">
+                  <label for="pPoisL">λ<span class="v">T</span></label>
+                  <input type="range" id="pPoisL" min="0.2" max="20" step="0.2" value="4">
+                  <output id="oPoisL">4,0</output>
+                </div>
+              </div>
+
+              <canvas class="plot" id="distCanvas" aria-label="Gráfico de barras da função de probabilidade da distribuição selecionada"></canvas>
+              <div class="readout">
+                <div><span class="k">soma (barras)</span><span class="val" id="dSoma">—</span></div>
+                <div><span class="k">μ (barras)</span><span class="val f" id="dMu">—</span></div>
+                <div><span class="k"><span class="v">V</span> (barras)</span><span class="val F" id="dVar">—</span></div>
+                <div><span class="k">σ (barras)</span><span class="val F" id="dSig">—</span></div>
+              </div>
+              <div class="verdict ok" id="distVerdict"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 07 · Como escolher">
+          <h3>Como escolher a distribuição</h3>
+          <div class="tbl-scroll">
+            <table class="tri">
+              <thead>
+                <tr><th>Distribuição</th><th>Pergunta que ela responde</th><th>Parâmetros</th><th>Média</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Uniforme</td><td>Todos os valores têm a mesma chance?</td><td class="num"><span class="v">n</span></td><td class="num f">média dos valores</td></tr>
+                <tr><td>Binomial</td><td>Quantos <strong>sucessos</strong> em <span class="v">n</span> tentativas?</td><td class="num"><span class="v">n</span>, <span class="v">p</span></td><td class="num f"><span class="v">np</span></td></tr>
+                <tr><td>Geométrica</td><td>Quantas <strong>tentativas</strong> até o 1º sucesso?</td><td class="num"><span class="v">p</span></td><td class="num f">1/<span class="v">p</span></td></tr>
+                <tr><td>Bin. negativa</td><td>Quantas <strong>tentativas</strong> até o <span class="v">r</span>-ésimo sucesso?</td><td class="num"><span class="v">r</span>, <span class="v">p</span></td><td class="num f"><span class="v">r</span>/<span class="v">p</span></td></tr>
+                <tr><td>Hipergeométrica</td><td>Quantos sucessos em <span class="v">n</span> retiradas <strong>sem reposição</strong>?</td><td class="num"><span class="v">N</span>, <span class="v">K</span>, <span class="v">n</span></td><td class="num f"><span class="v">nK</span>/<span class="v">N</span></td></tr>
+                <tr><td>Poisson</td><td>Quantos <strong>eventos</strong> num intervalo?</td><td class="num">λ<span class="v">T</span></td><td class="num f">λ<span class="v">T</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="note">
+            <span class="lab">As duas perguntas que separam quase tudo</span>
+            <p>
+              <strong>Conta sucessos ou tentativas?</strong> Sucessos → binomial ou
+              hipergeométrica. Tentativas → geométrica ou binomial negativa.
+            </p>
+            <p>
+              <strong>Com ou sem reposição?</strong> Com reposição (ou população enorme) →
+              binomial, pois <span class="v">p</span> fica constante. Sem reposição →
+              hipergeométrica, porque cada retirada muda a composição do que sobrou.
             </p>
           </div>
         </div>
@@ -1730,6 +2090,172 @@ html { scroll-behavior: smooth; }
   }
   sDisp.addEventListener("input", drawViga);
 
+  /* ---------------- §07 explorador de distribuições ---------------- */
+  /* Fatoriais em log: mantém C(n,k) e Poisson estáveis para n e λT grandes. */
+  var LNF = [0];
+  (function () { for (var i = 1; i <= 4000; i++) LNF[i] = LNF[i - 1] + Math.log(i); })();
+  function lnComb(n, k) {
+    if (k < 0 || k > n || n < 0) return -Infinity;
+    return LNF[n] - LNF[k] - LNF[n - k];
+  }
+  function comb(n, k) { var l = lnComb(n, k); return l === -Infinity ? 0 : Math.exp(l); }
+
+  var distSeg = document.getElementById("distSeg");
+  var distNome = document.getElementById("distNome");
+  var distCanvas = document.getElementById("distCanvas");
+  var dSoma = document.getElementById("dSoma"), dMu = document.getElementById("dMu"),
+      dVar = document.getElementById("dVar"), dSig = document.getElementById("dSig");
+  var distVerdict = document.getElementById("distVerdict");
+  var distMode = "unif";
+
+  var P = {};
+  ["pUnN", "pBinN", "pBinP", "pGeoP", "pNbR", "pNbP", "pHgN", "pHgK", "pHgn", "pPoisL"]
+    .forEach(function (id) { P[id] = document.getElementById(id); });
+  var O = {};
+  ["oUnN", "oBinN", "oBinP", "oGeoP", "oNbR", "oNbP", "oHgN", "oHgK", "oHgn", "oPoisL"]
+    .forEach(function (id) { O[id] = document.getElementById(id); });
+
+  /* Devolve {xs, fs, nome, teorico} — xs são os valores da faixa, fs as probabilidades. */
+  function construirDist() {
+    var xs = [], fs = [], nome = "", teor = "";
+    if (distMode === "unif") {
+      var n = +P.pUnN.value;
+      O.oUnN.textContent = String(n);
+      for (var i = 1; i <= n; i++) { xs.push(i); fs.push(1 / n); }
+      nome = "Uniforme em {1, …, " + n + "} · <span class='fx'>f(x) = 1/" + n + "</span>";
+      teor = "μ = " + d2((1 + n) / 2) + " (média dos valores) · V = " + d2((n * n - 1) / 12);
+
+    } else if (distMode === "bin") {
+      var bn = +P.pBinN.value, bp = +P.pBinP.value;
+      O.oBinN.textContent = String(bn); O.oBinP.textContent = d2(bp);
+      for (i = 0; i <= bn; i++) {
+        xs.push(i);
+        fs.push(Math.exp(lnComb(bn, i) + i * Math.log(bp) + (bn - i) * Math.log(1 - bp)));
+      }
+      nome = "Binomial(n = " + bn + ", p = " + d2(bp) + ") · <span class='fx'>sucessos em n tentativas</span>";
+      teor = "μ = np = " + d2(bn * bp) + " · V = np(1−p) = " + d2(bn * bp * (1 - bp));
+
+    } else if (distMode === "geo") {
+      var gp = +P.pGeoP.value;
+      O.oGeoP.textContent = d2(gp);
+      var lim = Math.max(12, Math.ceil(Math.log(0.002) / Math.log(1 - gp)));
+      for (i = 1; i <= lim; i++) { xs.push(i); fs.push(Math.pow(1 - gp, i - 1) * gp); }
+      nome = "Geométrica(p = " + d2(gp) + ") · <span class='fx'>tentativas até o 1º sucesso</span>";
+      teor = "μ = 1/p = " + d2(1 / gp) + " · V = (1−p)/p² = " + d2((1 - gp) / (gp * gp));
+
+    } else if (distMode === "nbin") {
+      var nr = +P.pNbR.value, np_ = +P.pNbP.value;
+      O.oNbR.textContent = String(nr); O.oNbP.textContent = d2(np_);
+      var limN = Math.max(nr + 10, Math.ceil(nr / np_ + 4 * Math.sqrt(nr * (1 - np_)) / np_));
+      for (i = nr; i <= limN; i++) {
+        xs.push(i);
+        fs.push(Math.exp(lnComb(i - 1, nr - 1) + (i - nr) * Math.log(1 - np_) + nr * Math.log(np_)));
+      }
+      nome = "Binomial negativa(r = " + nr + ", p = " + d2(np_) + ") · <span class='fx'>tentativas até o r-ésimo sucesso</span>";
+      teor = "μ = r/p = " + d2(nr / np_) + " · V = r(1−p)/p² = " + d2(nr * (1 - np_) / (np_ * np_));
+
+    } else if (distMode === "hgeo") {
+      var HN = +P.pHgN.value;
+      /* K e n não podem passar de N */
+      P.pHgK.max = String(HN); P.pHgn.max = String(HN);
+      var HK = Math.min(+P.pHgK.value, HN), Hn = Math.min(+P.pHgn.value, HN);
+      P.pHgK.value = String(HK); P.pHgn.value = String(Hn);
+      O.oHgN.textContent = String(HN); O.oHgK.textContent = String(HK); O.oHgn.textContent = String(Hn);
+      var lo = Math.max(0, Hn + HK - HN), hi = Math.min(HK, Hn);
+      for (i = lo; i <= hi; i++) {
+        xs.push(i);
+        fs.push(Math.exp(lnComb(HK, i) + lnComb(HN - HK, Hn - i) - lnComb(HN, Hn)));
+      }
+      var muH = Hn * HK / HN;
+      var vH = HN > 1 ? Hn * (HK / HN) * (1 - HK / HN) * (HN - Hn) / (HN - 1) : 0;
+      nome = "Hipergeométrica(N = " + HN + ", K = " + HK + ", n = " + Hn + ") · <span class='fx'>sem reposição</span>";
+      teor = "μ = nK/N = " + d2(muH) + " · V = " + d2(vH) + " · faixa " + lo + "…" + hi;
+
+    } else {
+      var lam = +P.pPoisL.value;
+      O.oPoisL.textContent = lam.toFixed(1).replace(".", ",");
+      var limP = Math.max(10, Math.ceil(lam + 4 * Math.sqrt(lam) + 4));
+      for (i = 0; i <= limP; i++) { xs.push(i); fs.push(Math.exp(-lam + i * Math.log(lam) - LNF[i])); }
+      nome = "Poisson(λT = " + lam.toFixed(1).replace(".", ",") + ") · <span class='fx'>eventos num intervalo</span>";
+      teor = "μ = V = λT = " + d2(lam);
+    }
+    return { xs: xs, fs: fs, nome: nome, teor: teor };
+  }
+
+  function drawDist() {
+    var D = construirDist();
+    distNome.innerHTML = D.nome;
+
+    var soma = 0, mu = 0, e2 = 0;
+    D.xs.forEach(function (x, i) { soma += D.fs[i]; mu += x * D.fs[i]; e2 += x * x * D.fs[i]; });
+    var vr = e2 - mu * mu;
+    dSoma.textContent = d4(soma);
+    dMu.textContent = d4(mu);
+    dVar.textContent = d4(Math.max(0, vr));
+    dSig.textContent = d4(Math.sqrt(Math.max(0, vr)));
+    distVerdict.innerHTML = D.teor +
+      (soma < 0.999 ? " · <b>a soma mostrada é " + d4(soma) + "</b>: a cauda continua além do quadro." : "");
+
+    var f = fit(distCanvas);
+    if (!f) return;
+    var ctx = f.ctx, w = f.w, h = f.h;
+    var padL = 46, padR = 10, padT = 12, padB = 22;
+    var N = D.xs.length;
+    var bw = (w - padL - padR) / N;
+    var maxf = Math.max.apply(null, D.fs);
+    var H = h - padT - padB;
+
+    ctx.strokeStyle = css("--rule"); ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(padL, padT); ctx.lineTo(padL, h - padB); ctx.lineTo(w - padR, h - padB);
+    ctx.stroke();
+
+    ctx.fillStyle = css("--ink-mute");
+    ctx.font = "11px monospace";
+    ctx.textAlign = "right";
+    ctx.fillText(d2(maxf), padL - 6, padT + 9);
+    ctx.fillText("0", padL - 6, h - padB);
+    ctx.textAlign = "left";
+    ctx.fillText("x = " + D.xs[0], padL + 2, h - padB + 15);
+    ctx.textAlign = "right";
+    ctx.fillText(String(D.xs[N - 1]), w - padR, h - padB + 15);
+
+    /* barras */
+    ctx.fillStyle = css("--teorico");
+    D.fs.forEach(function (fx, i) {
+      var bh = H * (fx / maxf);
+      ctx.fillRect(padL + i * bw + bw * .15, h - padB - bh, Math.max(1, bw * .7), bh);
+    });
+
+    /* marcador da média: triângulo na base, como o fulcro da viga do § 06 */
+    var xm = padL + ((mu - D.xs[0]) + .5) * bw;
+    if (xm >= padL && xm <= w - padR) {
+      ctx.strokeStyle = css("--empirico"); ctx.lineWidth = 2;
+      ctx.setLineDash([5, 4]);
+      ctx.beginPath(); ctx.moveTo(xm, padT + 4); ctx.lineTo(xm, h - padB); ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.fillStyle = css("--empirico");
+      ctx.beginPath();
+      ctx.moveTo(xm, h - padB - 1);
+      ctx.lineTo(xm - 7, h - padB + 13);
+      ctx.lineTo(xm + 7, h - padB + 13);
+      ctx.closePath(); ctx.fill();
+
+      ctx.textAlign = "center"; ctx.font = "12px monospace";
+      ctx.fillText("μ = " + d2(mu), xm, padT + 2);
+    }
+  }
+
+  Object.keys(P).forEach(function (id) { P[id].addEventListener("input", drawDist); });
+  wireSeg("distSeg", function (k) {
+    distMode = k;
+    Array.prototype.forEach.call(document.querySelectorAll(".par-grupo"), function (g) {
+      g.classList.toggle("on", g.getAttribute("data-dist") === k);
+    });
+    drawDist();
+  });
+
   /* ---------------- exercícios com resolução ---------------- */
   Array.prototype.forEach.call(document.querySelectorAll("[data-reveal]"), function (btn) {
     btn.addEventListener("click", function () {
@@ -1846,11 +2372,11 @@ html { scroll-behavior: smooth; }
   });
 
   /* ---------------- redraw ---------------- */
-  function redrawAll() { drawHero(heroP); drawPmf(); drawCdf(); drawPoco(); drawViga(); }
+  function redrawAll() { drawHero(heroP); drawPmf(); drawCdf(); drawPoco(); drawViga(); drawDist(); }
   window.addEventListener("resize", redrawAll);
 
   hudZoom.textContent = Math.round(ps * 100) + "%";
-  drawPmf(); drawCdf(); drawPoco(); drawViga();
+  drawPmf(); drawCdf(); drawPoco(); drawViga(); drawDist();
   heroTick();
 })();
 </script>
