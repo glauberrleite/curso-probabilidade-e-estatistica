@@ -236,6 +236,8 @@ Exercício: Uma inspeção visual de uma localização nas pastilhas de um proce
 
 Considere que as pastilhas sejam independentes em relação às partículas contaminadas. As pastilhas são selecionadas até que uma com cinco ou mais partículas contaminadas ocorra. Calcule a média e variância para $X$.
 
+⚠️ É mais interessante nesta fase, a gente entender a questão, montar espaço amostral e dizer que é $f(x_i)$. Montar o formato da equação da média e da variância. Mas para resolver, é mais fácil se a gente fizer isso depois de aprender Distribuição Geométrica. 
+
 ---
 
 # Algumas distribuições
@@ -244,6 +246,9 @@ Considere que as pastilhas sejam independentes em relação às partículas cont
 
 Uma variável aleatória $X$ tem uma distribuição discreta uniforme se cada um dos $n$ valores em sua faixa, isto é, $x_1$, $x_2$, $\dots$, $x_n$ tiver igual probabilidade. Então,
 $$f(x_i) = \frac{1}{n}$$
+
+- Média: $\mu = E(X) = \frac{b - a}{2}$
+- Variância: $\sigma^2 = \frac{(b - a + 1)^2 - 1}{12}
 
 ## Distribuição Binomial
 
@@ -255,13 +260,22 @@ Um experimento aleatório consiste em $n$ tentativa de Bernoulli, de modo que
 A variável aleatória $X$, que é igual ao número de tentativas que resultam em sucesso, é uma variável aleatória binomial com parâmetros $0 < p < 1$ e $n = 1, 2, \dots$. A função de probabilidade de $X$ é:
 $$f(x) = \begin{pmatrix}n \\ x\end{pmatrix} p^x (1 - p)^{n - x} \quad x = 0, 1, \dots, n$$
 
+- Média: $\mu = E[X] = np$
+- Variância: $\sigma^2 = E[(x - \mu)^2] = np(1 - p)$
+
 ## Distribuição Geométrica e Binomial Negativa
 
 Em uma série de tentativas de Bernoulli (tentativas independentes, com probabilidade constante $p$ de um sucesso), seja a variável aleatória $X$ o número de tentativas até que o primeiro sucesso ocorra. Então $X$ é uma variável aleatória geométrica, com parâmetro $0 < p < 1$ e 
 $$f(x) = (1- p)^{x-1} p \quad x = 1, 2, \dots$$
 
+- Média: $\mu = E[X] = \frac{1}{p}$
+- Variância: $\sigma^2 = E[(x - \mu)^2] = \frac{(1 - p)}{p^2}$
+
 Uma generalização da distribuição geométrica é a Binomial Negativa: Em uma série de tentativas de Bernoulli, seja a variável aleatória $X$ o número de tentativas até que $r$ sucessos ocorram. Então $X$ é uma variável aleatória binomial negativa, com parâmetros $0 < p < 1$ e $r = 1, 2, \dots$. e
 $$f(x) = \begin{pmatrix}x-1 \\ r-1\end{pmatrix} (1 - p)^{x - r} p^r \quad x = r, r+1, r+2, \dots$$
+
+- Média: $\mu = E[X] = \frac{r}{p}$
+- Variância: $\sigma^2 = E[(x - \mu)^2] = \frac{r(1 - p)}{p^2}$
 
 ## Distribuição Hipergeométrica
 
@@ -275,7 +289,20 @@ $$f(x) = \frac{\begin{pmatrix}K \\ x\end{pmatrix} \begin{pmatrix}N - K \\ n - x\
 
 $$x = \max\{0, n + K - N\} \text{ para } \min\{K, n \}$$
 
+- Média: $\mu = E[X} = np$
+- Variância: $\sigma^2 = E[(x - \mu)^2] = np (1 - p) (\frac{N - n}{N - 1})$
+Sabendo que $p = K/N$.
+
+No caso de uma variável aleatória hipergeométrica, o termo
+$$\frac{N - n}{N - 1}$$
+é conhecido como fator de correção para população finita.
+
 ## Distribuição de Poisson
+
+- Tentativas infinitas, mas com média da distribuição constante.
 
 A variável aleatória $X$, que é igual ao número de eventos no intervalo, é uma variável aleatória de Poisson, com parâmetro $0 < \lambda$ e 
 $$f(x) = \frac{e^{-\lambda T} (\lambda T)^x}{x!} \quad x = 0, 1, \dots$$
+
+- Média: $\mu = E[X] = \lambda T$
+- Variância: $\sigma^2 = E[(x - \mu)^2] = \lambda T$

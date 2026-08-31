@@ -1220,33 +1220,46 @@ html { scroll-behavior: smooth; }
                 </tbody>
               </table>
             </div>
-            <button class="b" type="button" data-reveal>Mostrar resolução</button>
+            <button class="b" type="button" data-reveal>Montar o problema</button>
             <div class="sol" hidden>
               <p>
                 A tabela serve só para extrair <strong>uma</strong> probabilidade: a de a pastilha
                 ter 5 ou mais partículas, <span class="v">p</span> = 0,20. Como as pastilhas são
-                independentes e paramos na primeira que satisfaz, <span class="v">X</span> é a
-                mesma <strong>geométrica</strong> do § 04:
+                independentes e paramos na primeira que satisfaz, o espaço amostral é o mesmo do
+                § 04 — sequências de “não” terminadas em “sim”:
               </p>
               <div class="eq" style="font-size:1.05rem">
+                <span class="v">S</span> = { <span class="v">s</span>, <span class="v">ns</span>,
+                <span class="v">nns</span>, ⋯ }
+                &nbsp;&nbsp;⟹&nbsp;&nbsp;
                 <span class="v">f</span>(<span class="v">x</span>) = (0,80)<sup><span class="v">x</span>−1</sup> × 0,20
               </div>
-              <p>
-                Somando as séries (ou usando os resultados da geométrica,
-                μ = 1/<span class="v">p</span> e
-                <span class="v">V</span> = (1−<span class="v">p</span>)/<span class="v">p</span>²):
-              </p>
-              <p>
-                μ = 1/0,20 = <span class="res">5</span> pastilhas &nbsp;·&nbsp;
-                <span class="v">V</span>(<span class="v">X</span>) = 0,80/0,04 = <span class="res">20</span> &nbsp;·&nbsp;
-                σ = √20 ≈ <span class="res">4,47</span>
-              </p>
-              <p style="color:var(--ink-mute)">
-                Leitura: em média inspecionam-se 5 pastilhas até achar uma bem contaminada, mas o
-                desvio padrão é quase igual à média — a geométrica é bem espalhada, e não é raro
-                precisar de muito mais que 5.
-              </p>
+              <p>E as definições do § 06 dão a <strong>forma</strong> das duas medidas:</p>
+              <div class="eq" style="font-size:1.05rem">
+                μ =
+                <span class="sum"><span class="lim">∞</span><span class="big">∑</span><span class="lim"><span class="v">x</span>=1</span></span>
+                <span class="v">x</span> (0,80)<sup><span class="v">x</span>−1</sup>(0,20)
+                &nbsp;&nbsp;&nbsp;
+                <span class="v">V</span>(<span class="v">X</span>) =
+                <span class="sum"><span class="lim">∞</span><span class="big">∑</span><span class="lim"><span class="v">x</span>=1</span></span>
+                <span class="v">x</span>² <span class="v">f</span>(<span class="v">x</span>) − μ²
+              </div>
             </div>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 06 · Média e variância">
+          <div class="note problema">
+            <span class="lab">Por enquanto, paramos aqui</span>
+            <p>
+              Nesta altura interessa <strong>entender a questão, montar o espaço amostral e
+              escrever <span class="v">f</span>(<span class="v">x</span>)</strong>, além da forma
+              das equações de média e variância. Somar essas séries na mão dá trabalho.
+            </p>
+            <p>
+              É bem mais fácil depois de conhecer a <strong>distribuição geométrica</strong> — que
+              é justamente o § 07, a seguir. Voltamos a este exercício lá.
+            </p>
           </div>
         </div>
       </div>
@@ -1294,6 +1307,19 @@ html { scroll-behavior: smooth; }
               <span class="v">f</span>(<span class="v">x</span><sub><span class="v">i</span></sub>) =
               <span class="frac"><span>1</span><span><span class="v">n</span></span></span>
             </div>
+            <p>
+              Para os inteiros consecutivos de <span class="v">a</span> a <span class="v">b</span>:
+            </p>
+            <div class="eq">
+              μ =
+              <span class="frac"><span><span class="v">a</span> + <span class="v">b</span></span><span>2</span></span>
+              &nbsp;&nbsp;&nbsp;&nbsp;
+              σ² =
+              <span class="frac">
+                <span>(<span class="v">b</span> − <span class="v">a</span> + 1)² − 1</span>
+                <span>12</span>
+              </span>
+            </div>
           </div>
           <div class="note">
             <span class="lab">De onde já conhecemos</span>
@@ -1340,6 +1366,23 @@ html { scroll-behavior: smooth; }
           </div>
         </div>
 
+        <div class="slide" data-sec="§ 07 · Binomial">
+          <h3>Binomial — média e variância</h3>
+          <div class="eq">
+            μ = <span class="v">np</span>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            σ² = <span class="v">np</span>(1 − <span class="v">p</span>)
+          </div>
+          <div class="note">
+            <span class="lab">Leitura</span>
+            <p>
+              A variância é máxima em <span class="v">p</span> = 0,5 e vai a zero nos extremos —
+              faz sentido: com <span class="v">p</span> quase 0 ou quase 1 o resultado é quase
+              certo, e não há o que variar.
+            </p>
+          </div>
+        </div>
+
         <div class="slide" data-sec="§ 07 · Geométrica e binomial negativa">
           <h3>Distribuição geométrica</h3>
           <div class="defn">
@@ -1356,14 +1399,45 @@ html { scroll-behavior: smooth; }
               <span class="v">p</span>
               &nbsp;&nbsp; <span class="v">x</span> = 1, 2, …
             </div>
+            <div class="eq">
+              μ = <span class="frac"><span>1</span><span><span class="v">p</span></span></span>
+              &nbsp;&nbsp;&nbsp;&nbsp;
+              σ² =
+              <span class="frac">
+                <span>1 − <span class="v">p</span></span>
+                <span><span class="v">p</span>²</span>
+              </span>
+            </div>
           </div>
           <div class="note">
             <span class="lab">Já apareceu duas vezes</span>
             <p>
               É exatamente a <span class="v">f</span>(<span class="v">x</span>) que deduzimos no
-              § 04 para as pastilhas (com <span class="v">p</span> = 0,01) e a do exercício de
-              média e variância do § 06 (com <span class="v">p</span> = 0,20, dando μ = 5 e
-              <span class="v">V</span> = 20).
+              § 04 para as pastilhas (<span class="v">p</span> = 0,01) e a do exercício deixado em
+              aberto no § 06 (<span class="v">p</span> = 0,20).
+            </p>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 07 · Geométrica e binomial negativa">
+          <div class="ex">
+            <span class="lab">Fechando o exercício do § 06</span>
+            <p>
+              Lá montamos o problema e paramos nas séries. Agora elas não precisam ser somadas na
+              mão: <span class="v">X</span> é geométrica com <span class="v">p</span> = 0,20,
+              então basta aplicar as fórmulas.
+            </p>
+            <div class="eq" style="font-size:1.05rem">
+              μ = <span class="frac"><span>1</span><span>0,20</span></span> = <span class="res">5</span> pastilhas
+              &nbsp;&nbsp;·&nbsp;&nbsp;
+              σ² = <span class="frac"><span>0,80</span><span>0,04</span></span> = <span class="res">20</span>
+              &nbsp;&nbsp;·&nbsp;&nbsp;
+              σ = √20 ≈ <span class="res">4,47</span>
+            </div>
+            <p style="color:var(--ink-mute); margin:0">
+              Leitura: em média inspecionam-se 5 pastilhas até achar uma bem contaminada, mas o
+              desvio padrão é quase igual à média — a geométrica é bem espalhada, e não é raro
+              precisar de muito mais que 5.
             </p>
           </div>
         </div>
@@ -1389,6 +1463,15 @@ html { scroll-behavior: smooth; }
               (1 − <span class="v">p</span>)<sup><span class="v">x</span>−<span class="v">r</span></sup>
               <span class="v">p</span><sup><span class="v">r</span></sup>
               &nbsp;&nbsp; <span class="v">x</span> = <span class="v">r</span>, <span class="v">r</span>+1, …
+            </div>
+            <div class="eq">
+              μ = <span class="frac"><span><span class="v">r</span></span><span><span class="v">p</span></span></span>
+              &nbsp;&nbsp;&nbsp;&nbsp;
+              σ² =
+              <span class="frac">
+                <span><span class="v">r</span>(1 − <span class="v">p</span>)</span>
+                <span><span class="v">p</span>²</span>
+              </span>
             </div>
           </div>
           <div class="note">
@@ -1433,6 +1516,48 @@ html { scroll-behavior: smooth; }
               <span class="v">x</span> = max{0, <span class="v">n</span> + <span class="v">K</span> − <span class="v">N</span>}
               &nbsp;até&nbsp; min{<span class="v">K</span>, <span class="v">n</span>}
             </div>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 07 · Hipergeométrica">
+          <h3>Média, variância e o fator de correção</h3>
+          <p>
+            Escrevendo <span class="v">p</span> = <span class="v">K</span>/<span class="v">N</span>,
+            a proporção de sucessos na população:
+          </p>
+          <div class="eq">
+            μ = <span class="v">np</span>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            σ² = <span class="v">np</span>(1 − <span class="v">p</span>)
+            <span class="frac">
+              <span><span class="v">N</span> − <span class="v">n</span></span>
+              <span><span class="v">N</span> − 1</span>
+            </span>
+          </div>
+          <div class="defn">
+            <span class="lab">Fator de correção para população finita</span>
+            <p>
+              O termo
+              <span class="frac" style="font-size:.95em">
+                <span><span class="v">N</span> − <span class="v">n</span></span>
+                <span><span class="v">N</span> − 1</span>
+              </span>
+              é conhecido como <strong>fator de correção para população finita</strong>.
+            </p>
+          </div>
+          <div class="note">
+            <span class="lab">O que ele faz</span>
+            <p>
+              A média é <strong>a mesma</strong> da binomial. A variância, não: o fator é sempre
+              ≤ 1, então a hipergeométrica <strong>varia menos</strong>. Retirar sem reposição
+              esgota a população e reduz a incerteza.
+            </p>
+            <p>
+              Nos extremos: com <span class="v">n</span> = 1 o fator vale 1 e as duas coincidem;
+              com <span class="v">n</span> = <span class="v">N</span> ele vale 0 — retirando tudo,
+              não sobra aleatoriedade. E quando <span class="v">N</span> ≫ <span class="v">n</span>
+              o fator tende a 1: <strong>população grande, a binomial aproxima bem</strong>.
+            </p>
           </div>
         </div>
 
@@ -1483,6 +1608,37 @@ html { scroll-behavior: smooth; }
               </span>
               &nbsp;&nbsp; <span class="v">x</span> = 0, 1, …
             </div>
+            <div class="eq">
+              μ = λ<span class="v">T</span>
+              &nbsp;&nbsp;&nbsp;&nbsp;
+              σ² = λ<span class="v">T</span>
+            </div>
+          </div>
+          <div class="note">
+            <span class="lab">Média e variância iguais</span>
+            <p>
+              É a assinatura da Poisson: μ = σ². Se numa contagem real a variância for muito maior
+              que a média, o modelo de Poisson provavelmente não serve.
+            </p>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 07 · Poisson">
+          <div class="note">
+            <span class="lab">De onde ela vem</span>
+            <p>
+              <strong>Tentativas infinitas, mas com a média da distribuição constante.</strong>
+              Divida o intervalo em <span class="v">n</span> pedacinhos, cada um com chance
+              <span class="v">p</span> de conter um evento. Isso é uma binomial — mas agora faça
+              <span class="v">n</span> → ∞ e <span class="v">p</span> → 0 mantendo
+              <span class="v">np</span> = λ<span class="v">T</span> fixo.
+            </p>
+            <p>
+              A binomial converge para a Poisson. Repare que a média sobrevive
+              (<span class="v">np</span> = λ<span class="v">T</span>) e a variância também, porque
+              <span class="v">np</span>(1−<span class="v">p</span>) → λ<span class="v">T</span>
+              quando <span class="v">p</span> → 0 — daí μ = σ².
+            </p>
           </div>
           <div class="note">
             <span class="lab">Onde entra</span>
@@ -1599,15 +1755,15 @@ html { scroll-behavior: smooth; }
           <div class="tbl-scroll">
             <table class="tri">
               <thead>
-                <tr><th>Distribuição</th><th>Pergunta que ela responde</th><th>Parâmetros</th><th>Média</th></tr>
+                <tr><th>Distribuição</th><th>Pergunta que ela responde</th><th>Parâm.</th><th>μ</th><th>σ²</th></tr>
               </thead>
               <tbody>
-                <tr><td>Uniforme</td><td>Todos os valores têm a mesma chance?</td><td class="num"><span class="v">n</span></td><td class="num f">média dos valores</td></tr>
-                <tr><td>Binomial</td><td>Quantos <strong>sucessos</strong> em <span class="v">n</span> tentativas?</td><td class="num"><span class="v">n</span>, <span class="v">p</span></td><td class="num f"><span class="v">np</span></td></tr>
-                <tr><td>Geométrica</td><td>Quantas <strong>tentativas</strong> até o 1º sucesso?</td><td class="num"><span class="v">p</span></td><td class="num f">1/<span class="v">p</span></td></tr>
-                <tr><td>Bin. negativa</td><td>Quantas <strong>tentativas</strong> até o <span class="v">r</span>-ésimo sucesso?</td><td class="num"><span class="v">r</span>, <span class="v">p</span></td><td class="num f"><span class="v">r</span>/<span class="v">p</span></td></tr>
-                <tr><td>Hipergeométrica</td><td>Quantos sucessos em <span class="v">n</span> retiradas <strong>sem reposição</strong>?</td><td class="num"><span class="v">N</span>, <span class="v">K</span>, <span class="v">n</span></td><td class="num f"><span class="v">nK</span>/<span class="v">N</span></td></tr>
-                <tr><td>Poisson</td><td>Quantos <strong>eventos</strong> num intervalo?</td><td class="num">λ<span class="v">T</span></td><td class="num f">λ<span class="v">T</span></td></tr>
+                <tr><td>Uniforme</td><td>Todos os valores têm a mesma chance?</td><td class="num"><span class="v">a</span>, <span class="v">b</span></td><td class="num f">(<span class="v">a</span>+<span class="v">b</span>)/2</td><td class="num F">((<span class="v">b</span>−<span class="v">a</span>+1)²−1)/12</td></tr>
+                <tr><td>Binomial</td><td>Quantos <strong>sucessos</strong> em <span class="v">n</span> tentativas?</td><td class="num"><span class="v">n</span>, <span class="v">p</span></td><td class="num f"><span class="v">np</span></td><td class="num F"><span class="v">np</span>(1−<span class="v">p</span>)</td></tr>
+                <tr><td>Geométrica</td><td>Quantas <strong>tentativas</strong> até o 1º sucesso?</td><td class="num"><span class="v">p</span></td><td class="num f">1/<span class="v">p</span></td><td class="num F">(1−<span class="v">p</span>)/<span class="v">p</span>²</td></tr>
+                <tr><td>Bin. negativa</td><td>Quantas <strong>tentativas</strong> até o <span class="v">r</span>-ésimo sucesso?</td><td class="num"><span class="v">r</span>, <span class="v">p</span></td><td class="num f"><span class="v">r</span>/<span class="v">p</span></td><td class="num F"><span class="v">r</span>(1−<span class="v">p</span>)/<span class="v">p</span>²</td></tr>
+                <tr><td>Hipergeométrica</td><td>Quantos sucessos em <span class="v">n</span> retiradas <strong>sem reposição</strong>?</td><td class="num"><span class="v">N</span>, <span class="v">K</span>, <span class="v">n</span></td><td class="num f"><span class="v">np</span></td><td class="num F"><span class="v">np</span>(1−<span class="v">p</span>)·<sup><span class="v">N</span>−<span class="v">n</span></sup>⁄<sub><span class="v">N</span>−1</sub></td></tr>
+                <tr><td>Poisson</td><td>Quantos <strong>eventos</strong> num intervalo?</td><td class="num">λ<span class="v">T</span></td><td class="num f">λ<span class="v">T</span></td><td class="num F">λ<span class="v">T</span></td></tr>
               </tbody>
             </table>
           </div>
