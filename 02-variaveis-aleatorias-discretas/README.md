@@ -284,10 +284,10 @@ Um conjunto de $N$ objetos contém
 2. $N - K$ objetos classificados como falhas
 Uma amostra com $n$ objetos é selecionada aleatoriamente (sem reposição) a partir de $N$ objetos, em que $K \leq N$ e $n \leq N$.
 
-A variável aleatória $X$ que iguala o número de sucessos na amostra é uma variável aleatória hipergeométrica e 
+A variável aleatória $X$ que iguala o número de sucessos na amostra é uma variável aleatória hipergeométrica ($h(x; N, n, K)$) e 
 $$f(x) = \frac{\begin{pmatrix}K \\ x\end{pmatrix} \begin{pmatrix}N - K \\ n - x\end{pmatrix}}{\begin{pmatrix}N \\ n\end{pmatrix}}$$
 
-$$x = \max\{0, n + K - N\} \text{ para } \min\{K, n \}$$
+$$\max\{0, n + K - N\} \leq x \leq  \min\{K, n \}$$
 
 - Média: $\mu = E[X} = np$
 - Variância: $\sigma^2 = E[(x - \mu)^2] = np (1 - p) (\frac{N - n}{N - 1})$
@@ -296,6 +296,14 @@ Sabendo que $p = K/N$.
 No caso de uma variável aleatória hipergeométrica, o termo
 $$\frac{N - n}{N - 1}$$
 é conhecido como fator de correção para população finita.
+
+Exemplo: Em um lote de cem itens, um estudo mostrou que doze apresentam defeitos. Qual a probabilidade de que, em uma amostra de dez, três apresentem defeitos? O que seria a média e variância nesse contexto?
+
+> Se você repetisse indefinidamente o procedimento "sortear 10 itens dos 100 e contar quantos são defeituosos", a média dessas contagens tenderia a $\mu$ defeituosos por amostra.
+> No caso da variância, é normalíssimo encontrar 0, 1 ou 2 defeituosos; 3 já é cerca de (3 − 1,2)/ 0,98 ≈ 1,8
+(3−1,2)/0,98≈1,8 desvios acima da média — daí a probabilidade de apenas ~8%.
+
+> Exemplo na área de Educação e Linguística Computacional: Computação de diversidade lexical através da HD-D (MTLD, vocd-D, and HD-D: A validation study of sophisticated approaches to lexical diversity assessment, MacCarthy e Jarvis, 2010)
 
 ## Distribuição de Poisson
 

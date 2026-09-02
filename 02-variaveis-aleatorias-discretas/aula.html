@@ -432,6 +432,9 @@ figcaption { font-family: var(--sans); font-size: .78rem; color: var(--ink-mute)
 :root[data-mode="present"] .binom .col { line-height: 1; }
 :root[data-mode="present"] h3 { margin-top: 0; }
 :root[data-mode="present"] canvas.plot { height: clamp(190px, 30vh, 430px); }
+/* o explorador pode exibir 3 sliders (hipergeométrica): gráfico um pouco menor */
+:root[data-mode="present"] #distCanvas { height: clamp(170px, 26vh, 380px); }
+:root[data-mode="present"] .dist-nome { margin-bottom: .3rem; }
 :root[data-mode="present"] .hero-fig canvas { height: clamp(110px, 16vh, 260px); }
 :root[data-mode="present"] .sliders { gap: .35rem; margin-bottom: .6rem; }
 :root[data-mode="present"] .ctl { margin-bottom: .6rem; }
@@ -1443,6 +1446,61 @@ html { scroll-behavior: smooth; }
         </div>
 
         <div class="slide" data-sec="§ 07 · Geométrica e binomial negativa">
+          <h3>E o que isso significa na prática?</h3>
+          <p>
+            “Média 5, desvio padrão 4,47” é uma frase difícil de sentir. Vamos então
+            <strong>simular</strong> o procedimento — inspecionar pastilhas até achar a primeira
+            contaminada — duzentas mil vezes, e olhar o que acontece.
+          </p>
+          <figure>
+            <img src="./media/geometrica_simulacao.png"
+                 alt="Três painéis: à esquerda, histograma das simulações coincidindo com a função de probabilidade exata, com a moda em 1 e a média marcada em 5; ao centro, a média acumulada convergindo para 5 dentro da faixa de um desvio padrão; à direita, a curva da cauda P(X maior que k), destacando que 32,8 por cento precisam de mais que a média.">
+            <figcaption>
+              <a href="./scripts/geometrica_simulacao.py">Simulação Monte Carlo</a> com 200 mil
+              repetições. Âmbar: simulado. Teal: exato.
+            </figcaption>
+          </figure>
+        </div>
+
+        <div class="slide" data-sec="§ 07 · Geométrica e binomial negativa">
+          <h3>O que a simulação revela</h3>
+          <div class="tbl-scroll">
+            <table class="tri">
+              <thead>
+                <tr><th>Medida</th><th>Simulado (200 mil)</th><th>Exato</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>média</td><td class="num f">4,9963</td><td class="num F">5,0000</td></tr>
+                <tr><td>variância</td><td class="num f">20,0497</td><td class="num F">20,0000</td></tr>
+                <tr><td>desvio padrão</td><td class="num f">4,4777</td><td class="num F">4,4721</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="note problema">
+            <span class="lab">Duas surpresas</span>
+            <p>
+              <strong>A moda é 1, não 5.</strong> O resultado <em>mais provável</em> é achar logo
+              na primeira pastilha (20 % das vezes). A média é 5 porque a cauda longa à direita
+              puxa o ponto de equilíbrio — é a viga do § 06 com quase toda a massa à esquerda e
+              um braço comprido.
+            </p>
+            <p>
+              <strong>33 % precisam de mais que a média.</strong> Como
+              <span class="v">P</span>(<span class="v">X</span> &gt; <span class="v">k</span>) =
+              (1−<span class="v">p</span>)<sup><span class="v">k</span></sup>, temos
+              0,8<sup>5</sup> ≈ 0,33. E ~11 % precisam de mais de 10 pastilhas — o dobro da média.
+            </p>
+          </div>
+          <div class="note">
+            <span class="lab">Por que isso importa</span>
+            <p>
+              Planejar a inspeção “para a média” subdimensiona o trabalho em um terço dos casos.
+              Quando σ ≈ μ, a média sozinha é um resumo pobre — é exatamente o alerta do § 06.
+            </p>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 07 · Geométrica e binomial negativa">
           <h3>Distribuição binomial negativa</h3>
           <div class="defn">
             <span class="lab">Definição</span>
@@ -1485,6 +1543,105 @@ html { scroll-behavior: smooth; }
           </div>
         </div>
 
+        <div class="slide" data-sec="§ 07 · Binomial × binomial negativa">
+          <h3>As duas são o mesmo experimento, contado ao contrário</h3>
+          <div class="cols2">
+            <div class="defn">
+              <span class="lab">Binomial</span>
+              <p>
+                <strong>Fixa</strong> o número de tentativas <span class="v">n</span>.<br>
+                <strong>Conta</strong> quantos sucessos saíram.
+              </p>
+              <p style="color:var(--ink-soft)">
+                Faixa limitada: <span class="v">x</span> = 0 … <span class="v">n</span>.
+              </p>
+            </div>
+            <div class="defn" style="border-left-color:var(--empirico); background:var(--empirico-bg)">
+              <span class="lab" style="color:var(--empirico)">Binomial negativa</span>
+              <p>
+                <strong>Fixa</strong> o número de sucessos <span class="v">r</span>.<br>
+                <strong>Conta</strong> quantas tentativas foram precisas.
+              </p>
+              <p style="color:var(--ink-soft)">
+                Faixa sem teto: <span class="v">x</span> = <span class="v">r</span>, <span class="v">r</span>+1, …
+              </p>
+            </div>
+          </div>
+          <div class="note">
+            <span class="lab">A ponte entre elas</span>
+            <p>
+              “Precisar de <strong>no máximo</strong> <span class="v">n</span> tentativas para
+              obter <span class="v">r</span> sucessos” é o mesmo evento que “obter
+              <strong>pelo menos</strong> <span class="v">r</span> sucessos em
+              <span class="v">n</span> tentativas”. Logo:
+            </p>
+            <div class="eq" style="font-size:1.15rem">
+              <span class="v">P</span>(<span class="v">X</span><sub>NB</sub> ≤ <span class="v">n</span>) =
+              <span class="v">P</span>(<span class="v">X</span><sub>Bin</sub> ≥ <span class="v">r</span>)
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 07 · Binomial × binomial negativa">
+          <div class="demo">
+            <div class="demo-head">
+              <span class="t">Binomial × binomial negativa</span>
+              <span class="h">as duas áreas destacadas são sempre iguais</span>
+            </div>
+            <div class="demo-body">
+              <div class="sliders">
+                <div class="sld">
+                  <label for="pDuP">sucesso <span class="v">p</span></label>
+                  <input type="range" id="pDuP" min="0.05" max="0.90" step="0.01" value="0.30">
+                  <output id="oDuP">0,30</output>
+                </div>
+                <div class="sld">
+                  <label for="pDuN">tentativas <span class="v">n</span> · binomial</label>
+                  <input type="range" id="pDuN" min="1" max="40" step="1" value="10">
+                  <output id="oDuN">10</output>
+                </div>
+                <div class="sld">
+                  <label for="pDuR">sucessos <span class="v">r</span> · bin. negativa</label>
+                  <input type="range" id="pDuR" min="1" max="12" step="1" value="3">
+                  <output id="oDuR">3</output>
+                </div>
+              </div>
+              <canvas class="plot" id="duCanvas" aria-label="Dois gráficos de barras empilhados: em cima a binomial com as barras de x maior ou igual a r destacadas, embaixo a binomial negativa com as barras de x menor ou igual a n destacadas"></canvas>
+              <div class="readout">
+                <div><span class="k"><span class="v">P</span>(Bin ≥ <span class="v">r</span>)</span><span class="val f" id="duBin">—</span></div>
+                <div><span class="k"><span class="v">P</span>(NB ≤ <span class="v">n</span>)</span><span class="val F" id="duNb">—</span></div>
+                <div><span class="k">μ binomial</span><span class="val" id="duMuB">—</span></div>
+                <div><span class="k">μ bin. negativa</span><span class="val" id="duMuN">—</span></div>
+              </div>
+              <div class="verdict ok" id="duVerdict"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 07 · Binomial × binomial negativa">
+          <div class="note">
+            <span class="lab">O que observar mexendo nos controles</span>
+            <p>
+              <strong>As duas probabilidades destacadas nunca se separam.</strong> Aumente
+              <span class="v">n</span> e as duas sobem juntas; aumente <span class="v">r</span> e
+              as duas caem juntas. É a mesma pergunta feita de dois jeitos.
+            </p>
+            <p>
+              <strong>Com <span class="v">r</span> = 1 a de baixo vira a geométrica</strong>, e a
+              identidade lê: “achar o 1º sucesso em até <span class="v">n</span> tentativas” =
+              “ter pelo menos 1 sucesso em <span class="v">n</span> tentativas” = 1 −
+              (1−<span class="v">p</span>)<sup><span class="v">n</span></sup>.
+            </p>
+            <p>
+              <strong>Repare nas médias:</strong> <span class="v">np</span> contra
+              <span class="v">r</span>/<span class="v">p</span>. Quando
+              <span class="v">n</span> ≈ <span class="v">r</span>/<span class="v">p</span>, a
+              probabilidade destacada fica perto de 50 % — o orçamento de tentativas é
+              exatamente o esperado para colher <span class="v">r</span> sucessos.
+            </p>
+          </div>
+        </div>
+
         <div class="slide" data-sec="§ 07 · Hipergeométrica">
           <h3>Distribuição hipergeométrica</h3>
           <div class="defn">
@@ -1498,7 +1655,10 @@ html { scroll-behavior: smooth; }
               Uma amostra com <span class="v">n</span> objetos é selecionada aleatoriamente
               <strong>sem reposição</strong>, em que <span class="v">K</span> ≤ <span class="v">N</span>
               e <span class="v">n</span> ≤ <span class="v">N</span>. A variável
-              <span class="v">X</span> que iguala o número de sucessos na amostra é hipergeométrica:
+              <span class="v">X</span> que iguala o número de sucessos na amostra é
+              <strong>hipergeométrica</strong>, denotada
+              <span class="v">h</span>(<span class="v">x</span>; <span class="v">N</span>,
+              <span class="v">n</span>, <span class="v">K</span>):
             </p>
             <div class="eq">
               <span class="v">f</span>(<span class="v">x</span>) =
@@ -1513,8 +1673,9 @@ html { scroll-behavior: smooth; }
               </span>
             </div>
             <div class="eq" style="font-size:1rem">
-              <span class="v">x</span> = max{0, <span class="v">n</span> + <span class="v">K</span> − <span class="v">N</span>}
-              &nbsp;até&nbsp; min{<span class="v">K</span>, <span class="v">n</span>}
+              max{0, <span class="v">n</span> + <span class="v">K</span> − <span class="v">N</span>}
+              &nbsp;≤ <span class="v">x</span> ≤&nbsp;
+              min{<span class="v">K</span>, <span class="v">n</span>}
             </div>
           </div>
         </div>
@@ -1582,6 +1743,105 @@ html { scroll-behavior: smooth; }
               É <strong>exatamente</strong> a fórmula acima com <span class="v">x</span> = 2. O que
               era um exercício de combinatória agora tem nome, parâmetros e fórmulas prontas de
               média e variância.
+            </p>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 07 · Hipergeométrica">
+          <div class="ex" data-ex>
+            <span class="lab">Exemplo — lote com defeitos</span>
+            <p>
+              Em um lote de <strong>cem itens</strong>, um estudo mostrou que
+              <strong>doze</strong> apresentam defeitos. Qual a probabilidade de que, em uma
+              amostra de <strong>dez</strong>, três apresentem defeitos? O que seriam a média e a
+              variância nesse contexto?
+            </p>
+            <button class="b" type="button" data-reveal>Mostrar resolução</button>
+            <div class="sol" hidden>
+              <p>
+                Sem reposição, com <span class="v">N</span> = 100,
+                <span class="v">K</span> = 12, <span class="v">n</span> = 10 e
+                <span class="v">x</span> = 3 — é <span class="v">h</span>(3; 100, 10, 12):
+              </p>
+              <div class="eq" style="font-size:1.05rem">
+                <span class="v">f</span>(3) =
+                <span class="frac">
+                  <span>
+                    <span class="binom"><span class="par">(</span><span class="col"><span>12</span><span>3</span></span><span class="par">)</span></span>
+                    <span class="binom"><span class="par">(</span><span class="col"><span>88</span><span>7</span></span><span class="par">)</span></span>
+                  </span>
+                  <span>
+                    <span class="binom"><span class="par">(</span><span class="col"><span>100</span><span>10</span></span><span class="par">)</span></span>
+                  </span>
+                </span>
+                ≈ <span class="res">0,0807</span>
+              </div>
+              <p>
+                Com <span class="v">p</span> = <span class="v">K</span>/<span class="v">N</span> = 0,12:
+              </p>
+              <div class="eq" style="font-size:1.05rem">
+                μ = <span class="v">np</span> = <span class="res">1,2</span>
+                &nbsp;&nbsp;·&nbsp;&nbsp;
+                σ² = 10(0,12)(0,88)
+                <span class="frac"><span>90</span><span>99</span></span>
+                = <span class="res">0,96</span>
+                &nbsp;&nbsp;·&nbsp;&nbsp;
+                σ ≈ <span class="res">0,98</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 07 · Hipergeométrica">
+          <h3>Por que 8 % é pouco</h3>
+          <div class="tbl-scroll">
+            <table class="tri">
+              <thead>
+                <tr><th><span class="v">x</span> defeituosos na amostra</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="v">f</span>(<span class="v">x</span>)</td>
+                  <td class="num f">26,1 %</td>
+                  <td class="num f">39,6 %</td>
+                  <td class="num f">24,5 %</td>
+                  <td class="num f"><strong>8,1 %</strong></td>
+                  <td class="num f">1,5 %</td>
+                  <td class="num f">0,2 %</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="note">
+            <span class="lab">Lendo a média e a variância</span>
+            <p>
+              A <strong>média</strong>: se você repetisse indefinidamente o procedimento “sortear
+              10 itens dos 100 e contar quantos são defeituosos”, a média dessas contagens
+              tenderia a μ = 1,2 defeituosos por amostra.
+            </p>
+            <p>
+              A <strong>variância</strong>: é normalíssimo encontrar 0, 1 ou 2 defeituosos — juntos
+              somam 90 % dos casos. Já 3 está a
+              (3 − 1,2)/0,98 ≈ <strong>1,8 desvios</strong> acima da média, daí a probabilidade de
+              apenas ~8 %.
+            </p>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 07 · Hipergeométrica">
+          <div class="note">
+            <span class="lab">Aplicação fora da indústria</span>
+            <p>
+              Em <strong>Educação e Linguística Computacional</strong>, a hipergeométrica é a base
+              da métrica <strong>HD-D</strong>, usada para medir <em>diversidade lexical</em> de um
+              texto: para cada palavra distinta, calcula-se a probabilidade de encontrá-la ao
+              sortear uma amostra de tokens — exatamente o nosso
+              <span class="v">h</span>(<span class="v">x</span>; <span class="v">N</span>,
+              <span class="v">n</span>, <span class="v">K</span>), com o texto no lugar do lote.
+            </p>
+            <p style="color:var(--ink-mute)">
+              McCarthy &amp; Jarvis (2010). <i>MTLD, vocd-D, and HD-D: A validation study of
+              sophisticated approaches to lexical diversity assessment.</i>
             </p>
           </div>
         </div>
@@ -1715,18 +1975,18 @@ html { scroll-behavior: smooth; }
               <div class="par-grupo" data-dist="hgeo">
                 <div class="sld">
                   <label for="pHgN">total <span class="v">N</span></label>
-                  <input type="range" id="pHgN" min="10" max="80" step="1" value="50">
-                  <output id="oHgN">50</output>
+                  <input type="range" id="pHgN" min="10" max="200" step="1" value="100">
+                  <output id="oHgN">100</output>
                 </div>
                 <div class="sld">
                   <label for="pHgK">sucessos <span class="v">K</span></label>
-                  <input type="range" id="pHgK" min="1" max="40" step="1" value="3">
-                  <output id="oHgK">3</output>
+                  <input type="range" id="pHgK" min="1" max="200" step="1" value="12">
+                  <output id="oHgK">12</output>
                 </div>
                 <div class="sld">
                   <label for="pHgn">amostra <span class="v">n</span></label>
-                  <input type="range" id="pHgn" min="1" max="40" step="1" value="6">
-                  <output id="oHgn">6</output>
+                  <input type="range" id="pHgn" min="1" max="200" step="1" value="10">
+                  <output id="oHgn">10</output>
                 </div>
               </div>
 
@@ -2412,6 +2672,121 @@ html { scroll-behavior: smooth; }
     drawDist();
   });
 
+  /* ---------------- §07 binomial x binomial negativa ---------------- */
+  /* A identidade que a demo ilustra:
+       P(NB(r,p) <= n) = P(Bin(n,p) >= r)
+     "obter r sucessos em ate n tentativas" e "ter pelo menos r sucessos em n
+     tentativas" sao o MESMO evento — as duas areas destacadas coincidem. */
+  var pDuP = document.getElementById("pDuP"), pDuN = document.getElementById("pDuN"),
+      pDuR = document.getElementById("pDuR");
+  var oDuP = document.getElementById("oDuP"), oDuN = document.getElementById("oDuN"),
+      oDuR = document.getElementById("oDuR");
+  var duCanvas = document.getElementById("duCanvas");
+  var duBin = document.getElementById("duBin"), duNb = document.getElementById("duNb"),
+      duMuB = document.getElementById("duMuB"), duMuN = document.getElementById("duMuN"),
+      duVerdict = document.getElementById("duVerdict");
+
+  function binPmf(x, n, p) {
+    if (x < 0 || x > n) return 0;
+    return Math.exp(lnComb(n, x) + x * Math.log(p) + (n - x) * Math.log(1 - p));
+  }
+  function nbinPmf(x, r, p) {
+    if (x < r) return 0;
+    return Math.exp(lnComb(x - 1, r - 1) + (x - r) * Math.log(1 - p) + r * Math.log(p));
+  }
+
+  function drawDu() {
+    var p = +pDuP.value, n = +pDuN.value, r = +pDuR.value;
+    /* r nao pode passar de n: sem isso o evento "r sucessos em n tentativas"
+       seria impossivel e os dois lados dariam zero, escondendo a identidade. */
+    if (r > n) { r = n; pDuR.value = String(r); }
+    pDuR.max = String(Math.min(12, n));
+    oDuP.textContent = d2(p); oDuN.textContent = String(n); oDuR.textContent = String(r);
+
+    /* binomial: x = 0..n */
+    var bx = [], bf = [];
+    for (var i = 0; i <= n; i++) { bx.push(i); bf.push(binPmf(i, n, p)); }
+    var pBinGeR = 0;
+    for (i = r; i <= n; i++) pBinGeR += bf[i];
+
+    /* binomial negativa: x = r.. ate cobrir a cauda */
+    var lim = Math.max(n + 1, Math.ceil(r / p + 4 * Math.sqrt(r * (1 - p)) / p));
+    var nx = [], nf = [];
+    for (i = r; i <= lim; i++) { nx.push(i); nf.push(nbinPmf(i, r, p)); }
+    var pNbLeN = 0;
+    for (i = r; i <= n; i++) pNbLeN += nbinPmf(i, r, p);
+
+    duBin.textContent = d4(pBinGeR);
+    duNb.textContent = d4(pNbLeN);
+    duMuB.textContent = d2(n * p);
+    duMuN.textContent = d2(r / p);
+    duVerdict.textContent = "As duas valem " + d4(pBinGeR)
+      + " — a mesma pergunta contada de dois jeitos. μ da binomial = np = " + d2(n * p)
+      + "; μ da negativa = r/p = " + d2(r / p) + ".";
+
+    var f = fit(duCanvas);
+    if (!f) return;
+    var ctx = f.ctx, w = f.w, h = f.h;
+    var padL = 46, padR = 10, gap = 26;
+    var hMeio = (h - gap) / 2;
+
+    function painel(topo, xs, fs, destaque, cor, rotulo) {
+      var padT = 14, padB = 18;
+      var H = hMeio - padT - padB;
+      var base = topo + hMeio - padB;
+      var N = xs.length;
+      var bw = (w - padL - padR) / N;
+      var maxf = Math.max.apply(null, fs) || 1;
+
+      ctx.strokeStyle = css("--rule"); ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(padL, topo + padT); ctx.lineTo(padL, base); ctx.lineTo(w - padR, base);
+      ctx.stroke();
+
+      fs.forEach(function (fx, k) {
+        var bh = H * (fx / maxf);
+        ctx.fillStyle = cor;
+        ctx.globalAlpha = destaque(xs[k]) ? .95 : .2;
+        ctx.fillRect(padL + k * bw + bw * .15, base - bh, Math.max(1, bw * .7), bh);
+      });
+      ctx.globalAlpha = 1;
+
+      ctx.fillStyle = css("--ink-mute");
+      ctx.font = "11px monospace";
+      ctx.textAlign = "left";
+      ctx.fillText("x = " + xs[0], padL + 2, base + 13);
+      ctx.textAlign = "right";
+      ctx.fillText(String(xs[N - 1]), w - padR, base + 13);
+      ctx.textAlign = "left";
+      ctx.fillStyle = cor;
+      ctx.font = "12px monospace";
+      ctx.fillText(rotulo, padL + 6, topo + padT + 4);
+      return { bw: bw, base: base, topo: topo + padT, x0: xs[0] };
+    }
+
+    /* painel de cima: binomial, destacando x >= r */
+    var pa = painel(0, bx, bf, function (x) { return x >= r; }, css("--teorico"),
+                    "Binomial(n=" + n + ", p=" + d2(p) + ")   destaque: x ≥ " + r);
+    var xr = padL + (r - pa.x0) * pa.bw;
+    ctx.strokeStyle = css("--teorico"); ctx.lineWidth = 1.4;
+    ctx.setLineDash([4, 3]);
+    ctx.beginPath(); ctx.moveTo(xr, pa.topo); ctx.lineTo(xr, pa.base); ctx.stroke();
+    ctx.setLineDash([]);
+
+    /* painel de baixo: binomial negativa, destacando x <= n */
+    var pb = painel(hMeio + gap, nx, nf, function (x) { return x <= n; }, css("--empirico"),
+                    "Bin. negativa(r=" + r + ", p=" + d2(p) + ")   destaque: x ≤ " + n);
+    var xn = padL + (n - pb.x0 + 1) * pb.bw;
+    if (xn <= w - padR) {
+      ctx.strokeStyle = css("--empirico"); ctx.lineWidth = 1.4;
+      ctx.setLineDash([4, 3]);
+      ctx.beginPath(); ctx.moveTo(xn, pb.topo); ctx.lineTo(xn, pb.base); ctx.stroke();
+      ctx.setLineDash([]);
+    }
+  }
+
+  [pDuP, pDuN, pDuR].forEach(function (e) { e.addEventListener("input", drawDu); });
+
   /* ---------------- exercícios com resolução ---------------- */
   Array.prototype.forEach.call(document.querySelectorAll("[data-reveal]"), function (btn) {
     btn.addEventListener("click", function () {
@@ -2528,11 +2903,11 @@ html { scroll-behavior: smooth; }
   });
 
   /* ---------------- redraw ---------------- */
-  function redrawAll() { drawHero(heroP); drawPmf(); drawCdf(); drawPoco(); drawViga(); drawDist(); }
+  function redrawAll() { drawHero(heroP); drawPmf(); drawCdf(); drawPoco(); drawViga(); drawDist(); drawDu(); }
   window.addEventListener("resize", redrawAll);
 
   hudZoom.textContent = Math.round(ps * 100) + "%";
-  drawPmf(); drawCdf(); drawPoco(); drawViga(); drawDist();
+  drawPmf(); drawCdf(); drawPoco(); drawViga(); drawDist(); drawDu();
   heroTick();
 })();
 </script>
