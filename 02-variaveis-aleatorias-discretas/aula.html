@@ -1297,7 +1297,7 @@ html { scroll-behavior: smooth; }
         <div class="slide" data-sec="§ 07 · Discreta uniforme">
           <h3>Distribuição discreta uniforme</h3>
           <div class="defn">
-            <span class="lab">Definição</span>
+            <span class="lab">Definição · <span class="v">X</span> ~ <span class="v">u</span>(<span class="v">x</span>; <span class="v">a</span>, <span class="v">b</span>)</span>
             <p>
               Uma variável aleatória <span class="v">X</span> tem uma
               <strong>distribuição discreta uniforme</strong> se cada um dos
@@ -1324,6 +1324,32 @@ html { scroll-behavior: smooth; }
               </span>
             </div>
           </div>
+</div>
+
+        <div class="slide" data-sec="§ 07 · Discreta uniforme">
+          <div class="demo">
+            <div class="demo-head">
+              <span class="t">Uniforme · mexa em n</span>
+              <span class="h">todas as barras têm a mesma altura</span>
+            </div>
+            <div class="demo-body">
+              <div class="sliders">
+                <div class="sld">
+                  <label for="mUnN">valores 1 a <span class='v'>n</span></label>
+                  <input type="range" id="mUnN" min="2" max="12" step="1" value="6">
+                  <output id="moUnN">6</output>
+                </div>
+              </div>
+              <canvas class="plot" id="mUnCanvas" aria-label="Gráfico de barras da função de probabilidade, que muda com os parâmetros"></canvas>
+              <div class="readout">
+                <div><span class="k">média μ</span><span class="val f" id="mUnMu">—</span></div>
+                <div><span class="k">variância V</span><span class="val F" id="mUnVar">—</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 07 · Discreta uniforme">
           <div class="note">
             <span class="lab">De onde já conhecemos</span>
             <p>
@@ -1334,10 +1360,10 @@ html { scroll-behavior: smooth; }
           </div>
         </div>
 
-        <div class="slide" data-sec="§ 07 · Binomial">
-          <h3>Distribuição binomial</h3>
+        <div class="slide" data-sec="§ 07 · Tentativas de Bernoulli">
+          <h3>Tentativas de Bernoulli</h3>
           <div class="defn">
-            <span class="lab">Tentativas de Bernoulli</span>
+            <span class="lab">Definição</span>
             <p>Um experimento aleatório consiste em <span class="v">n</span> tentativas de Bernoulli, de modo que:</p>
             <ol>
               <li>as tentativas sejam <strong>independentes</strong>;</li>
@@ -1347,8 +1373,25 @@ html { scroll-behavior: smooth; }
                 <span class="v">p</span>, permaneça <strong>constante</strong>.</li>
             </ol>
           </div>
+          <div class="note">
+            <span class="lab">O tronco comum</span>
+            <p>
+              Três das distribuições a seguir nascem daqui, mudando apenas <em>o que se conta</em>:
+              a <strong>binomial</strong> conta sucessos com <span class="v">n</span> fixo; a
+              <strong>geométrica</strong> conta tentativas até o 1º sucesso; a
+              <strong>binomial negativa</strong>, até o <span class="v">r</span>-ésimo.
+            </p>
+            <p>
+              A hipergeométrica <em>quebra</em> a terceira condição — sem reposição,
+              <span class="v">p</span> muda a cada retirada.
+            </p>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 07 · Binomial">
+          <h3>Distribuição binomial</h3>
           <div class="defn">
-            <span class="lab">Definição</span>
+            <span class="lab">Definição · <span class="v">X</span> ~ <span class="v">b</span>(<span class="v">x</span>; <span class="v">n</span>, <span class="v">p</span>)</span>
             <p>
               A variável aleatória <span class="v">X</span>, que é igual ao <strong>número de
               tentativas que resultam em sucesso</strong>, é uma variável aleatória binomial com
@@ -1376,6 +1419,37 @@ html { scroll-behavior: smooth; }
             &nbsp;&nbsp;&nbsp;&nbsp;
             σ² = <span class="v">np</span>(1 − <span class="v">p</span>)
           </div>
+</div>
+
+        <div class="slide" data-sec="§ 07 · Binomial">
+          <div class="demo">
+            <div class="demo-head">
+              <span class="t">Binomial · mexa em n e p</span>
+              <span class="h">o pico anda com np; a largura é máxima em p = 0,5</span>
+            </div>
+            <div class="demo-body">
+              <div class="sliders">
+                <div class="sld">
+                  <label for="mBinN">tentativas <span class='v'>n</span></label>
+                  <input type="range" id="mBinN" min="1" max="40" step="1" value="10">
+                  <output id="moBinN">10</output>
+                </div>
+                <div class="sld">
+                  <label for="mBinP">sucesso <span class='v'>p</span></label>
+                  <input type="range" id="mBinP" min="0.02" max="0.98" step="0.01" value="0.30">
+                  <output id="moBinP">0,30</output>
+                </div>
+              </div>
+              <canvas class="plot" id="mBinCanvas" aria-label="Gráfico de barras da função de probabilidade, que muda com os parâmetros"></canvas>
+              <div class="readout">
+                <div><span class="k">μ = np</span><span class="val f" id="mBinMu">—</span></div>
+                <div><span class="k">V = np(1−p)</span><span class="val F" id="mBinVar">—</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 07 · Binomial">
           <div class="note">
             <span class="lab">Leitura</span>
             <p>
@@ -1389,7 +1463,7 @@ html { scroll-behavior: smooth; }
         <div class="slide" data-sec="§ 07 · Geométrica e binomial negativa">
           <h3>Distribuição geométrica</h3>
           <div class="defn">
-            <span class="lab">Definição</span>
+            <span class="lab">Definição · <span class="v">X</span> ~ <span class="v">g</span>(<span class="v">x</span>; <span class="v">p</span>)</span>
             <p>
               Em uma série de tentativas de Bernoulli, seja <span class="v">X</span> o
               <strong>número de tentativas até que o primeiro sucesso ocorra</strong>. Então
@@ -1412,6 +1486,32 @@ html { scroll-behavior: smooth; }
               </span>
             </div>
           </div>
+</div>
+
+        <div class="slide" data-sec="§ 07 · Geométrica e binomial negativa">
+          <div class="demo">
+            <div class="demo-head">
+              <span class="t">Geométrica · mexa em p</span>
+              <span class="h">sempre decrescente: a moda é 1, qualquer que seja p</span>
+            </div>
+            <div class="demo-body">
+              <div class="sliders">
+                <div class="sld">
+                  <label for="mGeoP">sucesso <span class='v'>p</span></label>
+                  <input type="range" id="mGeoP" min="0.02" max="0.90" step="0.01" value="0.20">
+                  <output id="moGeoP">0,20</output>
+                </div>
+              </div>
+              <canvas class="plot" id="mGeoCanvas" aria-label="Gráfico de barras da função de probabilidade, que muda com os parâmetros"></canvas>
+              <div class="readout">
+                <div><span class="k">μ = 1/p</span><span class="val f" id="mGeoMu">—</span></div>
+                <div><span class="k">σ</span><span class="val F" id="mGeoSig">—</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 07 · Geométrica e binomial negativa">
           <div class="note">
             <span class="lab">Já apareceu duas vezes</span>
             <p>
@@ -1503,7 +1603,7 @@ html { scroll-behavior: smooth; }
         <div class="slide" data-sec="§ 07 · Geométrica e binomial negativa">
           <h3>Distribuição binomial negativa</h3>
           <div class="defn">
-            <span class="lab">Definição</span>
+            <span class="lab">Definição · <span class="v">X</span> ~ <span class="v">b</span>*(<span class="v">x</span>; <span class="v">r</span>, <span class="v">p</span>)</span>
             <p>
               Uma <strong>generalização</strong> da geométrica. Em uma série de tentativas de
               Bernoulli, seja <span class="v">X</span> o número de tentativas até que
@@ -1532,6 +1632,37 @@ html { scroll-behavior: smooth; }
               </span>
             </div>
           </div>
+</div>
+
+        <div class="slide" data-sec="§ 07 · Geométrica e binomial negativa">
+          <div class="demo">
+            <div class="demo-head">
+              <span class="t">Binomial negativa · mexa em r e p</span>
+              <span class="h">com r = 1 a curva vira a geométrica</span>
+            </div>
+            <div class="demo-body">
+              <div class="sliders">
+                <div class="sld">
+                  <label for="mNbR">sucessos <span class='v'>r</span></label>
+                  <input type="range" id="mNbR" min="1" max="8" step="1" value="3">
+                  <output id="moNbR">3</output>
+                </div>
+                <div class="sld">
+                  <label for="mNbP">sucesso <span class='v'>p</span></label>
+                  <input type="range" id="mNbP" min="0.05" max="0.90" step="0.01" value="0.25">
+                  <output id="moNbP">0,25</output>
+                </div>
+              </div>
+              <canvas class="plot" id="mNbCanvas" aria-label="Gráfico de barras da função de probabilidade, que muda com os parâmetros"></canvas>
+              <div class="readout">
+                <div><span class="k">μ = r/p</span><span class="val f" id="mNbMu">—</span></div>
+                <div><span class="k">observação</span><span class="val F" id="mNbNota" style="font-size:.9rem"></span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 07 · Geométrica e binomial negativa">
           <div class="note">
             <span class="lab">Confira</span>
             <p>
@@ -1645,7 +1776,7 @@ html { scroll-behavior: smooth; }
         <div class="slide" data-sec="§ 07 · Hipergeométrica">
           <h3>Distribuição hipergeométrica</h3>
           <div class="defn">
-            <span class="lab">Definição</span>
+            <span class="lab">Definição · <span class="v">X</span> ~ <span class="v">h</span>(<span class="v">x</span>; <span class="v">N</span>, <span class="v">n</span>, <span class="v">K</span>)</span>
             <p>Um conjunto de <span class="v">N</span> objetos contém:</p>
             <ol>
               <li><span class="v">K</span> objetos classificados como <strong>sucessos</strong>;</li>
@@ -1719,6 +1850,40 @@ html { scroll-behavior: smooth; }
               não sobra aleatoriedade. E quando <span class="v">N</span> ≫ <span class="v">n</span>
               o fator tende a 1: <strong>população grande, a binomial aproxima bem</strong>.
             </p>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 07 · Hipergeométrica">
+          <div class="demo">
+            <div class="demo-head">
+              <span class="t">Hipergeométrica · mexa em N, K e n</span>
+              <span class="h">aumente N com n fixo e veja o fator de correção subir para 1</span>
+            </div>
+            <div class="demo-body">
+              <div class="sliders">
+                <div class="sld">
+                  <label for="mHgN">população <span class="v">N</span></label>
+                  <input type="range" id="mHgN" min="5" max="120" step="1" value="50">
+                  <output id="moHgN">50</output>
+                </div>
+                <div class="sld">
+                  <label for="mHgK">sucessos <span class="v">K</span></label>
+                  <input type="range" id="mHgK" min="1" max="50" step="1" value="12">
+                  <output id="moHgK">12</output>
+                </div>
+                <div class="sld">
+                  <label for="mHgn">amostra <span class="v">n</span></label>
+                  <input type="range" id="mHgn" min="1" max="50" step="1" value="10">
+                  <output id="moHgn">10</output>
+                </div>
+              </div>
+              <canvas class="plot" id="mHgCanvas" aria-label="Gráfico de barras da hipergeométrica, que muda com N, K e n"></canvas>
+              <div class="readout">
+                <div><span class="k">μ = nK/N</span><span class="val f" id="mHgMu">—</span></div>
+                <div><span class="k">fator (N−n)/(N−1)</span><span class="val F" id="mHgFc">—</span></div>
+              </div>
+              <div class="verdict ok" id="mHgComp"></div>
+            </div>
           </div>
         </div>
 
@@ -1846,15 +2011,55 @@ html { scroll-behavior: smooth; }
           </div>
         </div>
 
-        <div class="slide" data-sec="§ 07 · Poisson">
-          <h3>Distribuição de Poisson</h3>
+        <div class="slide" data-sec="§ 07 · Processo de Poisson">
+          <h3>Processo de Poisson</h3>
           <p>
-            Considere eventos que ocorrem ao acaso ao longo de um intervalo — de tempo, de
-            comprimento, de área — com uma taxa média λ por unidade, e seja
-            <span class="v">T</span> o tamanho do intervalo observado.
+            Antes da distribuição, o <strong>processo</strong> que a gera. Contagens ao longo de um
+            intervalo — de tempo, de distância, de área — seguem um processo de Poisson quando:
           </p>
           <div class="defn">
-            <span class="lab">Definição</span>
+            <span class="lab">As três condições</span>
+            <ol>
+              <li>
+                O número de resultados que ocorrem em um intervalo ou região é
+                <strong>independente</strong> do número que ocorre em outro intervalo ou região
+                <strong>disjunta</strong>. Dizemos que o processo <strong>não tem memória</strong>.
+              </li>
+              <li>
+                A probabilidade de um <strong>único</strong> resultado ocorrer num intervalo breve
+                é <strong>proporcional à extensão</strong> do intervalo, e não depende do que
+                acontece fora dele.
+              </li>
+              <li>
+                A probabilidade de <strong>mais de um</strong> resultado ocorrer num intervalo
+                muito breve é <strong>desprezível</strong>.
+              </li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 07 · Processo de Poisson">
+          <div class="note">
+            <span class="lab">Lendo as três condições</span>
+            <p>
+              <strong>(1) sem memória</strong> é o que permite somar trechos disjuntos, e por isso
+              o parâmetro escala com o tamanho.
+              <strong>(2) proporcional à extensão</strong> é o que faz aparecer o produto
+              λ<span class="v">T</span>, e não λ sozinho.
+              <strong>(3) no máximo um por vez</strong> é o que garante que estamos contando
+              eventos pontuais, não rajadas.
+            </p>
+            <p>
+              Se alguma falhar, a Poisson não serve — eventos que chegam em rajada, por exemplo,
+              violam a (3), e a variância observada fica bem acima da média.
+            </p>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 07 · Poisson">
+          <h3>Distribuição de Poisson</h3>
+          <div class="defn">
+            <span class="lab">Definição · <span class="v">X</span> ~ <span class="v">p</span>(<span class="v">x</span>, λ<span class="v">t</span>)</span>
             <p>
               A variável aleatória <span class="v">X</span>, que é igual ao <strong>número de
               eventos no intervalo</strong>, é uma variável aleatória de Poisson, com parâmetro
@@ -1873,6 +2078,15 @@ html { scroll-behavior: smooth; }
               &nbsp;&nbsp;&nbsp;&nbsp;
               σ² = λ<span class="v">T</span>
             </div>
+            <ul>
+              <li><strong>λ</strong> é a <strong>taxa</strong> de resultados por unidade;</li>
+              <li><strong><span class="v">T</span></strong> é o valor de interesse naquela unidade
+                — “tempo”, “distância”, “área”, …</li>
+            </ul>
+            <p style="color:var(--ink-soft)">
+              Só o <strong>produto</strong> λ<span class="v">T</span> entra na fórmula: 2 falhas/m
+              em 3 m e 6 falhas/m em 1 m dão a mesma distribuição.
+            </p>
           </div>
           <div class="note">
             <span class="lab">Média e variância iguais</span>
@@ -1907,6 +2121,145 @@ html { scroll-behavior: smooth; }
               aço do exercício 3.1.5 (§ 02), que tinham faixa infinita contável justamente por não
               haver limite superior natural.
             </p>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 07 · Poisson na extrusora">
+          <div class="sec-head">
+            <span class="n">exemplo</span>
+            <h2>Falhas numa extrusora de cabos</h2>
+            <span class="sub">O caso em que λ e <span class="v">T</span> aparecem separados</span>
+          </div>
+          <p>
+            Uma <strong>extrusora</strong> produz cabo continuamente. Pequenas falhas — bolhas,
+            variações de espessura, impurezas no isolamento — ocorrem <strong>ao acaso ao longo do
+            comprimento</strong>, sem posição preferida. O histórico do processo dá a taxa média:
+          </p>
+          <div class="eq">
+            λ = 0,05 falhas por metro &nbsp;&nbsp;(uma falha a cada 20 m)
+          </div>
+          <div class="note">
+            <span class="lab">Conferindo as três condições do processo</span>
+            <p>
+              <strong>(1) Sem memória:</strong> o que acontece nos primeiros 10 m não diz nada
+              sobre os 10 m seguintes — trechos disjuntos do cabo são independentes.
+            </p>
+            <p>
+              <strong>(2) Proporcional à extensão:</strong> um pedacinho de cabo duas vezes mais
+              longo tem o dobro de chance de conter uma falha. É daí que sai λ<span class="v">T</span>.
+            </p>
+            <p>
+              <strong>(3) Uma de cada vez:</strong> num milímetro de cabo, duas falhas
+              simultâneas são desprezíveis.
+            </p>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 07 · Poisson na extrusora">
+          <h3>O comprimento entra multiplicando</h3>
+          <p>
+            Se <span class="v">X</span> é o número de falhas num pedaço de
+            <span class="v">T</span> metros, então
+            <span class="v">X</span> ~ Poisson(λ<span class="v">T</span>):
+          </p>
+          <div class="eq">
+            <span class="v">f</span>(<span class="v">x</span>) =
+            <span class="frac">
+              <span><span class="v">e</span><sup>−λ<span class="v">T</span></sup> (λ<span class="v">T</span>)<sup><span class="v">x</span></sup></span>
+              <span><span class="v">x</span>!</span>
+            </span>
+            &nbsp;&nbsp;&nbsp; μ = σ² = λ<span class="v">T</span>
+          </div>
+          <div class="note">
+            <span class="lab">A propriedade que sustenta isso</span>
+            <p>
+              Dois trechos <strong>disjuntos</strong> do cabo têm contagens independentes, e a soma
+              de Poissons independentes é Poisson com os parâmetros somados. Um rolo de 25 m mais
+              um de 35 m dá o mesmo que um de 60 m: 1,25 + 1,75 = 3,00 falhas esperadas.
+            </p>
+            <p>
+              É por isso que <strong>dobrar o comprimento dobra a média</strong> — e também a
+              variância. Mexa em <span class="v">T</span> no gráfico a seguir e veja a
+              distribuição andar para a direita e alargar ao mesmo tempo.
+            </p>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 07 · Poisson na extrusora">
+          <div class="demo">
+            <div class="demo-head">
+              <span class="t">Extrusora · falhas por rolo</span>
+              <span class="h">λ é a qualidade do processo; T é o quanto se inspeciona</span>
+            </div>
+            <div class="demo-body">
+              <div class="sliders">
+                <div class="sld">
+                  <label for="mPoLam">λ · falhas por metro</label>
+                  <input type="range" id="mPoLam" min="0.01" max="0.40" step="0.01" value="0.05">
+                  <output id="moPoLam">0,05</output>
+                </div>
+                <div class="sld">
+                  <label for="mPoT"><span class="v">T</span> · metros do rolo</label>
+                  <input type="range" id="mPoT" min="5" max="200" step="5" value="60">
+                  <output id="moPoT">60</output>
+                </div>
+              </div>
+              <canvas class="plot" id="mPoCanvas" aria-label="Gráfico de barras do número de falhas num rolo, que se desloca e alarga conforme o comprimento aumenta"></canvas>
+              <div class="readout">
+                <div><span class="k">λT · falhas esperadas</span><span class="val f" id="mPoLT">—</span></div>
+                <div><span class="k">σ = √(λT)</span><span class="val F" id="mPoSig">—</span></div>
+                <div><span class="k"><span class="v">P</span>(rolo sem falha)</span><span class="val f" id="mPoP0">—</span></div>
+                <div><span class="k"><span class="v">P</span>(ao menos uma)</span><span class="val F" id="mPoP1">—</span></div>
+              </div>
+              <div class="verdict ok" id="mPoNota"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 07 · Poisson na extrusora">
+          <div class="ex" data-ex>
+            <span class="lab">Exercício — controle de qualidade da extrusora</span>
+            <p>
+              Com λ = 0,05 falhas/m, a fábrica corta rolos de <strong>60 metros</strong>.
+            </p>
+            <p>
+              <strong>(a)</strong> Qual a probabilidade de um rolo sair com exatamente 2 falhas?<br>
+              <strong>(b)</strong> E de sair perfeito, sem nenhuma falha?<br>
+              <strong>(c)</strong> O cliente exige um pedaço com <strong>90 % de chance</strong> de
+              não ter falha alguma. Qual o comprimento máximo que se pode prometer?
+            </p>
+            <button class="b" type="button" data-reveal>Mostrar resolução</button>
+            <div class="sol" hidden>
+              <p>Primeiro o parâmetro: λ<span class="v">T</span> = 0,05 × 60 = <strong>3</strong> falhas esperadas.</p>
+              <p>
+                <strong>(a)</strong>
+                <span class="v">P</span>(<span class="v">X</span> = 2) =
+                <span class="frac" style="font-size:.95em">
+                  <span><span class="v">e</span><sup>−3</sup> · 3²</span><span>2!</span>
+                </span>
+                = <span class="res">0,2240</span> &nbsp;(22,4 %)
+              </p>
+              <p>
+                <strong>(b)</strong>
+                <span class="v">P</span>(<span class="v">X</span> = 0) =
+                <span class="v">e</span><sup>−3</sup> = <span class="res">0,0498</span> &nbsp;(apenas 5 %)
+              </p>
+              <p>
+                <strong>(c)</strong> Queremos
+                <span class="v">e</span><sup>−0,05<span class="v">T</span></sup> ≥ 0,90, ou seja
+                <span class="v">T</span> ≤ ln(1/0,90)/0,05 = <span class="res">2,1 m</span>.
+              </p>
+              <div class="note problema" style="margin-top:.8rem">
+                <span class="lab">O contraste do item (c)</span>
+                <p>
+                  Um rolo de 60 m tem só 5 % de chance de sair perfeito, e para chegar a 90 % o
+                  pedaço não pode passar de <strong>2,1 metros</strong>. A probabilidade de “zero
+                  falhas” cai <strong>exponencialmente</strong> com o comprimento — prometer
+                  perfeição em peça longa é caro, e é por isso que a especificação costuma ser
+                  “no máximo <span class="v">k</span> falhas”, não “nenhuma”.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -2015,15 +2368,15 @@ html { scroll-behavior: smooth; }
           <div class="tbl-scroll">
             <table class="tri">
               <thead>
-                <tr><th>Distribuição</th><th>Pergunta que ela responde</th><th>Parâm.</th><th>μ</th><th>σ²</th></tr>
+                <tr><th>Distribuição</th><th>Notação</th><th>Pergunta que ela responde</th><th>μ</th><th>σ²</th></tr>
               </thead>
               <tbody>
-                <tr><td>Uniforme</td><td>Todos os valores têm a mesma chance?</td><td class="num"><span class="v">a</span>, <span class="v">b</span></td><td class="num f">(<span class="v">a</span>+<span class="v">b</span>)/2</td><td class="num F">((<span class="v">b</span>−<span class="v">a</span>+1)²−1)/12</td></tr>
-                <tr><td>Binomial</td><td>Quantos <strong>sucessos</strong> em <span class="v">n</span> tentativas?</td><td class="num"><span class="v">n</span>, <span class="v">p</span></td><td class="num f"><span class="v">np</span></td><td class="num F"><span class="v">np</span>(1−<span class="v">p</span>)</td></tr>
-                <tr><td>Geométrica</td><td>Quantas <strong>tentativas</strong> até o 1º sucesso?</td><td class="num"><span class="v">p</span></td><td class="num f">1/<span class="v">p</span></td><td class="num F">(1−<span class="v">p</span>)/<span class="v">p</span>²</td></tr>
-                <tr><td>Bin. negativa</td><td>Quantas <strong>tentativas</strong> até o <span class="v">r</span>-ésimo sucesso?</td><td class="num"><span class="v">r</span>, <span class="v">p</span></td><td class="num f"><span class="v">r</span>/<span class="v">p</span></td><td class="num F"><span class="v">r</span>(1−<span class="v">p</span>)/<span class="v">p</span>²</td></tr>
-                <tr><td>Hipergeométrica</td><td>Quantos sucessos em <span class="v">n</span> retiradas <strong>sem reposição</strong>?</td><td class="num"><span class="v">N</span>, <span class="v">K</span>, <span class="v">n</span></td><td class="num f"><span class="v">np</span></td><td class="num F"><span class="v">np</span>(1−<span class="v">p</span>)·<sup><span class="v">N</span>−<span class="v">n</span></sup>⁄<sub><span class="v">N</span>−1</sub></td></tr>
-                <tr><td>Poisson</td><td>Quantos <strong>eventos</strong> num intervalo?</td><td class="num">λ<span class="v">T</span></td><td class="num f">λ<span class="v">T</span></td><td class="num F">λ<span class="v">T</span></td></tr>
+                <tr><td>Uniforme</td><td class="num f"><span class="v">u</span>(<span class="v">x</span>; <span class="v">a</span>, <span class="v">b</span>)</td><td>Todos os valores têm a mesma chance?</td><td class="num f">(<span class="v">a</span>+<span class="v">b</span>)/2</td><td class="num F">((<span class="v">b</span>−<span class="v">a</span>+1)²−1)/12</td></tr>
+                <tr><td>Binomial</td><td class="num f"><span class="v">b</span>(<span class="v">x</span>; <span class="v">n</span>, <span class="v">p</span>)</td><td>Quantos <strong>sucessos</strong> em <span class="v">n</span> tentativas?</td><td class="num f"><span class="v">np</span></td><td class="num F"><span class="v">np</span>(1−<span class="v">p</span>)</td></tr>
+                <tr><td>Geométrica</td><td class="num f"><span class="v">g</span>(<span class="v">x</span>; <span class="v">p</span>)</td><td>Quantas <strong>tentativas</strong> até o 1º sucesso?</td><td class="num f">1/<span class="v">p</span></td><td class="num F">(1−<span class="v">p</span>)/<span class="v">p</span>²</td></tr>
+                <tr><td>Bin. negativa</td><td class="num f"><span class="v">b</span>*(<span class="v">x</span>; <span class="v">r</span>, <span class="v">p</span>)</td><td>Quantas <strong>tentativas</strong> até o <span class="v">r</span>-ésimo sucesso?</td><td class="num f"><span class="v">r</span>/<span class="v">p</span></td><td class="num F"><span class="v">r</span>(1−<span class="v">p</span>)/<span class="v">p</span>²</td></tr>
+                <tr><td>Hipergeométrica</td><td class="num f"><span class="v">h</span>(<span class="v">x</span>; <span class="v">N</span>, <span class="v">n</span>, <span class="v">K</span>)</td><td>Quantos sucessos em <span class="v">n</span> retiradas <strong>sem reposição</strong>?</td><td class="num f"><span class="v">np</span></td><td class="num F"><span class="v">np</span>(1−<span class="v">p</span>)·<sup><span class="v">N</span>−<span class="v">n</span></sup>⁄<sub><span class="v">N</span>−1</sub></td></tr>
+                <tr><td>Poisson</td><td class="num f"><span class="v">p</span>(<span class="v">x</span>, λ<span class="v">t</span>)</td><td>Quantos <strong>eventos</strong> num intervalo?</td><td class="num f">λ<span class="v">T</span></td><td class="num F">λ<span class="v">T</span></td></tr>
               </tbody>
             </table>
           </div>
@@ -2506,44 +2859,31 @@ html { scroll-behavior: smooth; }
   }
   sDisp.addEventListener("input", drawViga);
 
-  /* ---------------- §07 explorador de distribuições ---------------- */
-  /* Fatoriais em log: mantém C(n,k) e Poisson estáveis para n e λT grandes. */
+  /* ================= §07 motor de distribuições =================
+     Um unico calculo alimenta tanto os mini-graficos de cada slide quanto o
+     explorador do final. calcDist e puro (nao le o DOM), o que permite
+     instanciar quantos graficos forem precisos sobre a mesma matematica. */
+
+  /* Fatoriais em log: mantem C(n,k) e Poisson estaveis para n e λT grandes. */
   var LNF = [0];
   (function () { for (var i = 1; i <= 4000; i++) LNF[i] = LNF[i - 1] + Math.log(i); })();
   function lnComb(n, k) {
     if (k < 0 || k > n || n < 0) return -Infinity;
     return LNF[n] - LNF[k] - LNF[n - k];
   }
-  function comb(n, k) { var l = lnComb(n, k); return l === -Infinity ? 0 : Math.exp(l); }
 
-  var distSeg = document.getElementById("distSeg");
-  var distNome = document.getElementById("distNome");
-  var distCanvas = document.getElementById("distCanvas");
-  var dSoma = document.getElementById("dSoma"), dMu = document.getElementById("dMu"),
-      dVar = document.getElementById("dVar"), dSig = document.getElementById("dSig");
-  var distVerdict = document.getElementById("distVerdict");
-  var distMode = "unif";
+  /* par: {n, p, r, N, K, nn, lam} conforme o modo. Devolve {xs, fs, nome, teor}. */
+  function calcDist(modo, par) {
+    var xs = [], fs = [], nome = "", teor = "", i;
 
-  var P = {};
-  ["pUnN", "pBinN", "pBinP", "pGeoP", "pNbR", "pNbP", "pHgN", "pHgK", "pHgn", "pPoisL"]
-    .forEach(function (id) { P[id] = document.getElementById(id); });
-  var O = {};
-  ["oUnN", "oBinN", "oBinP", "oGeoP", "oNbR", "oNbP", "oHgN", "oHgK", "oHgn", "oPoisL"]
-    .forEach(function (id) { O[id] = document.getElementById(id); });
-
-  /* Devolve {xs, fs, nome, teorico} — xs são os valores da faixa, fs as probabilidades. */
-  function construirDist() {
-    var xs = [], fs = [], nome = "", teor = "";
-    if (distMode === "unif") {
-      var n = +P.pUnN.value;
-      O.oUnN.textContent = String(n);
-      for (var i = 1; i <= n; i++) { xs.push(i); fs.push(1 / n); }
+    if (modo === "unif") {
+      var n = par.n;
+      for (i = 1; i <= n; i++) { xs.push(i); fs.push(1 / n); }
       nome = "Uniforme em {1, …, " + n + "} · <span class='fx'>f(x) = 1/" + n + "</span>";
-      teor = "μ = " + d2((1 + n) / 2) + " (média dos valores) · V = " + d2((n * n - 1) / 12);
+      teor = "μ = (a+b)/2 = " + d2((1 + n) / 2) + " · V = " + d2((n * n - 1) / 12);
 
-    } else if (distMode === "bin") {
-      var bn = +P.pBinN.value, bp = +P.pBinP.value;
-      O.oBinN.textContent = String(bn); O.oBinP.textContent = d2(bp);
+    } else if (modo === "bin") {
+      var bn = par.n, bp = par.p;
       for (i = 0; i <= bn; i++) {
         xs.push(i);
         fs.push(Math.exp(lnComb(bn, i) + i * Math.log(bp) + (bn - i) * Math.log(1 - bp)));
@@ -2551,17 +2891,15 @@ html { scroll-behavior: smooth; }
       nome = "Binomial(n = " + bn + ", p = " + d2(bp) + ") · <span class='fx'>sucessos em n tentativas</span>";
       teor = "μ = np = " + d2(bn * bp) + " · V = np(1−p) = " + d2(bn * bp * (1 - bp));
 
-    } else if (distMode === "geo") {
-      var gp = +P.pGeoP.value;
-      O.oGeoP.textContent = d2(gp);
+    } else if (modo === "geo") {
+      var gp = par.p;
       var lim = Math.max(12, Math.ceil(Math.log(0.002) / Math.log(1 - gp)));
       for (i = 1; i <= lim; i++) { xs.push(i); fs.push(Math.pow(1 - gp, i - 1) * gp); }
       nome = "Geométrica(p = " + d2(gp) + ") · <span class='fx'>tentativas até o 1º sucesso</span>";
       teor = "μ = 1/p = " + d2(1 / gp) + " · V = (1−p)/p² = " + d2((1 - gp) / (gp * gp));
 
-    } else if (distMode === "nbin") {
-      var nr = +P.pNbR.value, np_ = +P.pNbP.value;
-      O.oNbR.textContent = String(nr); O.oNbP.textContent = d2(np_);
+    } else if (modo === "nbin") {
+      var nr = par.r, np_ = par.p;
       var limN = Math.max(nr + 10, Math.ceil(nr / np_ + 4 * Math.sqrt(nr * (1 - np_)) / np_));
       for (i = nr; i <= limN; i++) {
         xs.push(i);
@@ -2570,13 +2908,8 @@ html { scroll-behavior: smooth; }
       nome = "Binomial negativa(r = " + nr + ", p = " + d2(np_) + ") · <span class='fx'>tentativas até o r-ésimo sucesso</span>";
       teor = "μ = r/p = " + d2(nr / np_) + " · V = r(1−p)/p² = " + d2(nr * (1 - np_) / (np_ * np_));
 
-    } else if (distMode === "hgeo") {
-      var HN = +P.pHgN.value;
-      /* K e n não podem passar de N */
-      P.pHgK.max = String(HN); P.pHgn.max = String(HN);
-      var HK = Math.min(+P.pHgK.value, HN), Hn = Math.min(+P.pHgn.value, HN);
-      P.pHgK.value = String(HK); P.pHgn.value = String(Hn);
-      O.oHgN.textContent = String(HN); O.oHgK.textContent = String(HK); O.oHgn.textContent = String(Hn);
+    } else if (modo === "hgeo") {
+      var HN = par.N, HK = Math.min(par.K, par.N), Hn = Math.min(par.nn, par.N);
       var lo = Math.max(0, Hn + HK - HN), hi = Math.min(HK, Hn);
       for (i = lo; i <= hi; i++) {
         xs.push(i);
@@ -2588,37 +2921,29 @@ html { scroll-behavior: smooth; }
       teor = "μ = nK/N = " + d2(muH) + " · V = " + d2(vH) + " · faixa " + lo + "…" + hi;
 
     } else {
-      var lam = +P.pPoisL.value;
-      O.oPoisL.textContent = lam.toFixed(1).replace(".", ",");
+      var lam = par.lam;
       var limP = Math.max(10, Math.ceil(lam + 4 * Math.sqrt(lam) + 4));
       for (i = 0; i <= limP; i++) { xs.push(i); fs.push(Math.exp(-lam + i * Math.log(lam) - LNF[i])); }
-      nome = "Poisson(λT = " + lam.toFixed(1).replace(".", ",") + ") · <span class='fx'>eventos num intervalo</span>";
+      nome = "Poisson(λT = " + d2(lam) + ") · <span class='fx'>eventos num intervalo</span>";
       teor = "μ = V = λT = " + d2(lam);
     }
     return { xs: xs, fs: fs, nome: nome, teor: teor };
   }
 
-  function drawDist() {
-    var D = construirDist();
-    distNome.innerHTML = D.nome;
-
+  /* Desenha as barras de f(x) e o marcador da média. Devolve {mu, var, soma}. */
+  function desenharBarras(cv, D, opts) {
+    opts = opts || {};
     var soma = 0, mu = 0, e2 = 0;
     D.xs.forEach(function (x, i) { soma += D.fs[i]; mu += x * D.fs[i]; e2 += x * x * D.fs[i]; });
-    var vr = e2 - mu * mu;
-    dSoma.textContent = d4(soma);
-    dMu.textContent = d4(mu);
-    dVar.textContent = d4(Math.max(0, vr));
-    dSig.textContent = d4(Math.sqrt(Math.max(0, vr)));
-    distVerdict.innerHTML = D.teor +
-      (soma < 0.999 ? " · <b>a soma mostrada é " + d4(soma) + "</b>: a cauda continua além do quadro." : "");
+    var vr = Math.max(0, e2 - mu * mu);
 
-    var f = fit(distCanvas);
-    if (!f) return;
+    var f = fit(cv);
+    if (!f) return { mu: mu, var: vr, soma: soma };
     var ctx = f.ctx, w = f.w, h = f.h;
     var padL = 46, padR = 10, padT = 12, padB = 22;
     var N = D.xs.length;
     var bw = (w - padL - padR) / N;
-    var maxf = Math.max.apply(null, D.fs);
+    var maxf = Math.max.apply(null, D.fs) || 1;
     var H = h - padT - padB;
 
     ctx.strokeStyle = css("--rule"); ctx.lineWidth = 1;
@@ -2636,12 +2961,13 @@ html { scroll-behavior: smooth; }
     ctx.textAlign = "right";
     ctx.fillText(String(D.xs[N - 1]), w - padR, h - padB + 15);
 
-    /* barras */
-    ctx.fillStyle = css("--teorico");
     D.fs.forEach(function (fx, i) {
       var bh = H * (fx / maxf);
+      ctx.fillStyle = css("--teorico");
+      ctx.globalAlpha = (opts.destaque && !opts.destaque(D.xs[i])) ? .22 : 1;
       ctx.fillRect(padL + i * bw + bw * .15, h - padB - bh, Math.max(1, bw * .7), bh);
     });
+    ctx.globalAlpha = 1;
 
     /* marcador da média: triângulo na base, como o fulcro da viga do § 06 */
     var xm = padL + ((mu - D.xs[0]) + .5) * bw;
@@ -2650,20 +2976,185 @@ html { scroll-behavior: smooth; }
       ctx.setLineDash([5, 4]);
       ctx.beginPath(); ctx.moveTo(xm, padT + 4); ctx.lineTo(xm, h - padB); ctx.stroke();
       ctx.setLineDash([]);
-
       ctx.fillStyle = css("--empirico");
       ctx.beginPath();
       ctx.moveTo(xm, h - padB - 1);
       ctx.lineTo(xm - 7, h - padB + 13);
       ctx.lineTo(xm + 7, h - padB + 13);
       ctx.closePath(); ctx.fill();
-
-      ctx.textAlign = "center"; ctx.font = "12px monospace";
-      ctx.fillText("μ = " + d2(mu), xm, padT + 2);
+      /* chip de fundo: o rotulo cai sobre a barra mais alta quando mu coincide com a moda */
+      var rot = "μ = " + d2(mu);
+      ctx.font = "12px monospace"; ctx.textAlign = "center";
+      var lw = ctx.measureText(rot).width;
+      ctx.fillStyle = css("--paper"); ctx.globalAlpha = .88;
+      ctx.fillRect(xm - lw / 2 - 4, padT - 9, lw + 8, 14);
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = css("--empirico");
+      ctx.fillText(rot, xm, padT + 2);
     }
+    return { mu: mu, var: vr, soma: soma };
   }
 
-  Object.keys(P).forEach(function (id) { P[id].addEventListener("input", drawDist); });
+  /* Fabrica um mini-gráfico ligado aos seus próprios controles. */
+  function criarMini(cfg) {
+    var cv = document.getElementById(cfg.canvas);
+    if (!cv) return function () {};
+    var els = cfg.sliders.map(function (s) { return document.getElementById(s.id); });
+    var outs = cfg.sliders.map(function (s) { return document.getElementById(s.out); });
+    if (els.some(function (e) { return !e; })) return function () {};
+
+    function desenhar() {
+      var par = {};
+      cfg.sliders.forEach(function (s, i) { par[s.k] = +els[i].value; });
+      if (cfg.ajusta) cfg.ajusta(par, els);
+      cfg.sliders.forEach(function (s, i) {
+        outs[i].textContent = s.fmt ? s.fmt(par[s.k]) : String(par[s.k]);
+      });
+      var D = calcDist(cfg.modo, cfg.mapa ? cfg.mapa(par) : par);
+      var est = desenharBarras(cv, D, cfg.opts);
+      if (cfg.lendo) cfg.lendo(D, par, est);
+    }
+    els.forEach(function (e) { e.addEventListener("input", desenhar); });
+    return desenhar;
+  }
+
+  /* ---------------- minis, um por distribuição ---------------- */
+  function pct(v) { return (v * 100).toFixed(2).replace(".", ",") + " %"; }
+  function txt(id, v) { var e = document.getElementById(id); if (e) e.textContent = v; }
+
+  var miniUnif = criarMini({
+    canvas: "mUnCanvas", modo: "unif",
+    sliders: [{ id: "mUnN", out: "moUnN", k: "n" }],
+    lendo: function (D, par, est) {
+      txt("mUnMu", d2(est.mu)); txt("mUnVar", d2(est.var));
+    }
+  });
+
+  var miniBin = criarMini({
+    canvas: "mBinCanvas", modo: "bin",
+    sliders: [{ id: "mBinN", out: "moBinN", k: "n" },
+              { id: "mBinP", out: "moBinP", k: "p", fmt: d2 }],
+    lendo: function (D, par, est) {
+      txt("mBinMu", d2(par.n * par.p)); txt("mBinVar", d2(par.n * par.p * (1 - par.p)));
+    }
+  });
+
+  var miniGeo = criarMini({
+    canvas: "mGeoCanvas", modo: "geo",
+    sliders: [{ id: "mGeoP", out: "moGeoP", k: "p", fmt: d2 }],
+    lendo: function (D, par) {
+      txt("mGeoMu", d2(1 / par.p)); txt("mGeoSig", d2(Math.sqrt((1 - par.p) / (par.p * par.p))));
+    }
+  });
+
+  var miniNb = criarMini({
+    canvas: "mNbCanvas", modo: "nbin",
+    sliders: [{ id: "mNbR", out: "moNbR", k: "r" },
+              { id: "mNbP", out: "moNbP", k: "p", fmt: d2 }],
+    lendo: function (D, par) {
+      txt("mNbMu", d2(par.r / par.p));
+      txt("mNbNota", par.r === 1 ? "r = 1: é exatamente a geométrica." : "");
+    }
+  });
+
+  var miniHg = criarMini({
+    canvas: "mHgCanvas", modo: "hgeo",
+    sliders: [{ id: "mHgN", out: "moHgN", k: "N" },
+              { id: "mHgK", out: "moHgK", k: "K" },
+              { id: "mHgn", out: "moHgn", k: "nn" }],
+    ajusta: function (par, els) {
+      els[1].max = String(par.N); els[2].max = String(par.N);
+      par.K = Math.min(par.K, par.N); par.nn = Math.min(par.nn, par.N);
+      els[1].value = String(par.K); els[2].value = String(par.nn);
+    },
+    lendo: function (D, par) {
+      var p = par.K / par.N;
+      var fc = par.N > 1 ? (par.N - par.nn) / (par.N - 1) : 0;
+      txt("mHgMu", d2(par.nn * p));
+      txt("mHgFc", d2(fc));
+      txt("mHgComp", "binomial daria V = " + d2(par.nn * p * (1 - p))
+        + "; aqui V = " + d2(par.nn * p * (1 - p) * fc) + ".");
+    }
+  });
+
+  /* Poisson na extrusora: os controles são λ (falhas/m) e T (metros de cabo);
+     o parâmetro da distribuição é o produto λT. */
+  var miniPois = criarMini({
+    canvas: "mPoCanvas", modo: "pois",
+    sliders: [{ id: "mPoLam", out: "moPoLam", k: "lambda", fmt: function (v) { return v.toFixed(2).replace(".", ","); } },
+              { id: "mPoT", out: "moPoT", k: "T" }],
+    mapa: function (par) { return { lam: Math.max(0.01, par.lambda * par.T) }; },
+    lendo: function (D, par) {
+      var m = par.lambda * par.T;
+      var p0 = Math.exp(-m);
+      txt("mPoLT", d2(m));
+      txt("mPoP0", pct(p0));
+      txt("mPoP1", pct(1 - p0));
+      txt("mPoSig", d2(Math.sqrt(m)));
+      txt("mPoNota", "Um rolo de " + par.T + " m tem " + pct(p0)
+        + " de chance de sair sem nenhuma falha. Para essa chance chegar a 90 % o pedaço não pode passar de "
+        + (Math.log(1 / 0.9) / par.lambda).toFixed(1).replace(".", ",") + " m.");
+    }
+  });
+
+  /* ---------------- explorador do final ---------------- */
+  var distNome = document.getElementById("distNome");
+  var distCanvas = document.getElementById("distCanvas");
+  var dSoma = document.getElementById("dSoma"), dMu = document.getElementById("dMu"),
+      dVar = document.getElementById("dVar"), dSig = document.getElementById("dSig");
+  var distVerdict = document.getElementById("distVerdict");
+  var distMode = "unif";
+
+  var P = {};
+  ["pUnN", "pBinN", "pBinP", "pGeoP", "pNbR", "pNbP", "pHgN", "pHgK", "pHgn", "pPoisL"]
+    .forEach(function (id) { P[id] = document.getElementById(id); });
+  var O = {};
+  ["oUnN", "oBinN", "oBinP", "oGeoP", "oNbR", "oNbP", "oHgN", "oHgK", "oHgn", "oPoisL"]
+    .forEach(function (id) { O[id] = document.getElementById(id); });
+
+  function construirDist() {
+    if (distMode === "unif") {
+      O.oUnN.textContent = P.pUnN.value;
+      return calcDist("unif", { n: +P.pUnN.value });
+    }
+    if (distMode === "bin") {
+      O.oBinN.textContent = P.pBinN.value; O.oBinP.textContent = d2(+P.pBinP.value);
+      return calcDist("bin", { n: +P.pBinN.value, p: +P.pBinP.value });
+    }
+    if (distMode === "geo") {
+      O.oGeoP.textContent = d2(+P.pGeoP.value);
+      return calcDist("geo", { p: +P.pGeoP.value });
+    }
+    if (distMode === "nbin") {
+      O.oNbR.textContent = P.pNbR.value; O.oNbP.textContent = d2(+P.pNbP.value);
+      return calcDist("nbin", { r: +P.pNbR.value, p: +P.pNbP.value });
+    }
+    if (distMode === "hgeo") {
+      var HN = +P.pHgN.value;
+      P.pHgK.max = String(HN); P.pHgn.max = String(HN);
+      var HK = Math.min(+P.pHgK.value, HN), Hn = Math.min(+P.pHgn.value, HN);
+      P.pHgK.value = String(HK); P.pHgn.value = String(Hn);
+      O.oHgN.textContent = String(HN); O.oHgK.textContent = String(HK); O.oHgn.textContent = String(Hn);
+      return calcDist("hgeo", { N: HN, K: HK, nn: Hn });
+    }
+    O.oPoisL.textContent = (+P.pPoisL.value).toFixed(1).replace(".", ",");
+    return calcDist("pois", { lam: +P.pPoisL.value });
+  }
+
+  function drawDist() {
+    if (!distCanvas) return;
+    var D = construirDist();
+    distNome.innerHTML = D.nome;
+    var est = desenharBarras(distCanvas, D);
+    dSoma.textContent = d4(est.soma);
+    dMu.textContent = d4(est.mu);
+    dVar.textContent = d4(est.var);
+    dSig.textContent = d4(Math.sqrt(est.var));
+    distVerdict.innerHTML = D.teor +
+      (est.soma < 0.999 ? " · <b>a soma mostrada é " + d4(est.soma) + "</b>: a cauda continua além do quadro." : "");
+  }
+
+  Object.keys(P).forEach(function (id) { if (P[id]) P[id].addEventListener("input", drawDist); });
   wireSeg("distSeg", function (k) {
     distMode = k;
     Array.prototype.forEach.call(document.querySelectorAll(".par-grupo"), function (g) {
@@ -2671,6 +3162,8 @@ html { scroll-behavior: smooth; }
     });
     drawDist();
   });
+
+  function drawMinis() { miniUnif(); miniBin(); miniGeo(); miniNb(); miniHg(); miniPois(); }
 
   /* ---------------- §07 binomial x binomial negativa ---------------- */
   /* A identidade que a demo ilustra:
@@ -2903,11 +3396,11 @@ html { scroll-behavior: smooth; }
   });
 
   /* ---------------- redraw ---------------- */
-  function redrawAll() { drawHero(heroP); drawPmf(); drawCdf(); drawPoco(); drawViga(); drawDist(); drawDu(); }
+  function redrawAll() { drawHero(heroP); drawPmf(); drawCdf(); drawPoco(); drawViga(); drawDist(); drawDu(); drawMinis(); }
   window.addEventListener("resize", redrawAll);
 
   hudZoom.textContent = Math.round(ps * 100) + "%";
-  drawPmf(); drawCdf(); drawPoco(); drawViga(); drawDist(); drawDu();
+  drawPmf(); drawCdf(); drawPoco(); drawViga(); drawDist(); drawDu(); drawMinis();
   heroTick();
 })();
 </script>

@@ -91,8 +91,8 @@ $$P(X = x) = P(aaa\cdots ap) = 0.99^{x-1} \times 0.01$$
 
 Vemos que $f(x) = P(X = x) \geq 0 \ \forall x \in \mathbb{Z}^+ $
 
-Também temos que $\sum_{x=1}^{\infty} f(x)
-  = \sum_{x=1}^{\infty} 0.99^{\,x-1} \times 0.01 = 0.01 \sum_{x=1}^{\infty} 0.99^{\,x-1}$
+Também temos que
+$$\sum_{x=1}^{\infty} f(x) = \sum_{x=1}^{\infty} 0.99^{\,x-1} \times 0.01 = 0.01 \sum_{x=1}^{\infty} 0.99^{\,x-1}$$
 
 Se colocamos $k = x - 1$, Sobrou uma série geométrica de razão $r = 0.99$. Como $|r| < 1$ a série converge para $\frac{1}{1 - r}$.
 
@@ -244,20 +244,25 @@ Considere que as pastilhas sejam independentes em relação às partículas cont
 
 ## Distribuição Discreta Uniforme
 
-Uma variável aleatória $X$ tem uma distribuição discreta uniforme se cada um dos $n$ valores em sua faixa, isto é, $x_1$, $x_2$, $\dots$, $x_n$ tiver igual probabilidade. Então,
+Uma variável aleatória $X$ tem uma distribuição discreta uniforme ($X \sim u(x; a, b)$) se cada um dos $n$ valores em sua faixa, isto é, $x_1$, $x_2$, $\dots$, $x_n$ tiver igual probabilidade. Então,
 $$f(x_i) = \frac{1}{n}$$
 
-- Média: $\mu = E(X) = \frac{b - a}{2}$
-- Variância: $\sigma^2 = \frac{(b - a + 1)^2 - 1}{12}
+- Média: $\mu = E(X) = \frac{a + b}{2}$
+- Variância: $\sigma^2 = \frac{(b - a + 1)^2 - 1}{12}$
 
-## Distribuição Binomial
+---
+Tentativas de Bernoulli
 
 Um experimento aleatório consiste em $n$ tentativa de Bernoulli, de modo que
 1. As tentativas sejam independentes.
 2. Cada tentativa resulte em somente dois resultados possíveis, designados como "sucesso" e "falha".
 3. A probabilidade de sucesso em cada tentativa, denotada por $p$, permaneça constante.
 
-A variável aleatória $X$, que é igual ao número de tentativas que resultam em sucesso, é uma variável aleatória binomial com parâmetros $0 < p < 1$ e $n = 1, 2, \dots$. A função de probabilidade de $X$ é:
+---
+
+## Distribuição Binomial
+
+A variável aleatória $X$, que é igual ao número de tentativas que resultam em sucesso, é uma variável aleatória binomial ($X \sim b(x; n, p)$) com parâmetros $0 < p < 1$ e $n = 1, 2, \dots$. A função de probabilidade de $X$ é:
 $$f(x) = \begin{pmatrix}n \\ x\end{pmatrix} p^x (1 - p)^{n - x} \quad x = 0, 1, \dots, n$$
 
 - Média: $\mu = E[X] = np$
@@ -265,13 +270,13 @@ $$f(x) = \begin{pmatrix}n \\ x\end{pmatrix} p^x (1 - p)^{n - x} \quad x = 0, 1, 
 
 ## Distribuição Geométrica e Binomial Negativa
 
-Em uma série de tentativas de Bernoulli (tentativas independentes, com probabilidade constante $p$ de um sucesso), seja a variável aleatória $X$ o número de tentativas até que o primeiro sucesso ocorra. Então $X$ é uma variável aleatória geométrica, com parâmetro $0 < p < 1$ e 
+Em uma série de tentativas de Bernoulli (tentativas independentes, com probabilidade constante $p$ de um sucesso), seja a variável aleatória $X$ o número de tentativas até que o primeiro sucesso ocorra. Então $X$ é uma variável aleatória geométrica ($X \sim g(x; p)$), com parâmetro $0 < p < 1$ e 
 $$f(x) = (1- p)^{x-1} p \quad x = 1, 2, \dots$$
 
 - Média: $\mu = E[X] = \frac{1}{p}$
 - Variância: $\sigma^2 = E[(x - \mu)^2] = \frac{(1 - p)}{p^2}$
 
-Uma generalização da distribuição geométrica é a Binomial Negativa: Em uma série de tentativas de Bernoulli, seja a variável aleatória $X$ o número de tentativas até que $r$ sucessos ocorram. Então $X$ é uma variável aleatória binomial negativa, com parâmetros $0 < p < 1$ e $r = 1, 2, \dots$. e
+Uma generalização da distribuição geométrica é a Binomial Negativa: Em uma série de tentativas de Bernoulli, seja a variável aleatória $X$ o número de tentativas até que $r$ sucessos ocorram. Então $X$ é uma variável aleatória binomial negativa ($X \sim b*(x; r, p)$), com parâmetros $0 < p < 1$ e $r = 1, 2, \dots$. e
 $$f(x) = \begin{pmatrix}x-1 \\ r-1\end{pmatrix} (1 - p)^{x - r} p^r \quad x = r, r+1, r+2, \dots$$
 
 - Média: $\mu = E[X] = \frac{r}{p}$
@@ -284,12 +289,12 @@ Um conjunto de $N$ objetos contém
 2. $N - K$ objetos classificados como falhas
 Uma amostra com $n$ objetos é selecionada aleatoriamente (sem reposição) a partir de $N$ objetos, em que $K \leq N$ e $n \leq N$.
 
-A variável aleatória $X$ que iguala o número de sucessos na amostra é uma variável aleatória hipergeométrica ($h(x; N, n, K)$) e 
+A variável aleatória $X$ que iguala o número de sucessos na amostra é uma variável aleatória hipergeométrica ($X \sim h(x; N, n, K)$) e 
 $$f(x) = \frac{\begin{pmatrix}K \\ x\end{pmatrix} \begin{pmatrix}N - K \\ n - x\end{pmatrix}}{\begin{pmatrix}N \\ n\end{pmatrix}}$$
 
 $$\max\{0, n + K - N\} \leq x \leq  \min\{K, n \}$$
 
-- Média: $\mu = E[X} = np$
+- Média: $\mu = E[X] = np$
 - Variância: $\sigma^2 = E[(x - \mu)^2] = np (1 - p) (\frac{N - n}{N - 1})$
 Sabendo que $p = K/N$.
 
@@ -307,10 +312,23 @@ Exemplo: Em um lote de cem itens, um estudo mostrou que doze apresentam defeitos
 
 ## Distribuição de Poisson
 
+---
+
+Processo de Poisson
+
+1. O número de resultados que ocorrem em um intervalo de tempo ou em uma região específica é independente do número de resultados que ocorre em outro intervalo de tempo disjunto ou região do espaço disjunta. Nesse caso, dizemos que o processo não tem memória.
+2. A probabilidade de que um único resultado ocorrerá durante um breve intervalo de tempo ou em uma região pequena é proporcional à extensão do intervalo de tempo ou ao tamanho da região, e não depende do número de resultados que ocorrem fora desse intervalo de tempo ou dessa região.
+3. A probabilidade de que mais de um resultado ocorrerá em um intervalo de tempo muito breve ou em uma região muito pequena é desprezível.
+
+---
+
 - Tentativas infinitas, mas com média da distribuição constante.
 
-A variável aleatória $X$, que é igual ao número de eventos no intervalo, é uma variável aleatória de Poisson, com parâmetro $0 < \lambda$ e 
+A variável aleatória $X$, que é igual ao número de eventos no intervalo, é uma variável aleatória de Poisson ($X \sim p(x, \lambda t)$), com parâmetro $0 < \lambda$ e 
 $$f(x) = \frac{e^{-\lambda T} (\lambda T)^x}{x!} \quad x = 0, 1, \dots$$
+
+- $\lambda$ é a taxa de resultados por unidade
+- $T$ é o valor de interesse na unidade ("tempo", "distância", "área" ...)
 
 - Média: $\mu = E[X] = \lambda T$
 - Variância: $\sigma^2 = E[(x - \mu)^2] = \lambda T$
