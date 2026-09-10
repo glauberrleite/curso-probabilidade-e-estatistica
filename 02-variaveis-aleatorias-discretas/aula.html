@@ -232,6 +232,32 @@ blockquote cite {
 .note p { margin: 0 0 .55rem; }
 .note p:last-child { margin-bottom: 0; }
 
+.extra {
+  border: 1px solid var(--rule); border-left: 2px solid var(--empirico);
+  background: var(--surface); margin: 1.1rem 0 0;
+}
+.extra > summary {
+  cursor: pointer; list-style: none; padding: .6rem 1.1rem;
+  font-family: var(--mono); font-size: .66rem; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--empirico);
+  display: flex; align-items: center; gap: .55rem;
+}
+.extra > summary::-webkit-details-marker { display: none; }
+.extra > summary::before {
+  content: "\25B8"; font-size: .95rem; line-height: 1;
+  transition: transform .15s ease; display: inline-block;
+}
+.extra[open] > summary::before { transform: rotate(90deg); }
+.extra .body {
+  padding: .7rem 1.1rem .85rem; border-top: 1px solid var(--rule-soft);
+  font-size: .95rem;
+}
+.extra .body p { margin: 0 0 .6rem; }
+.extra .body ul { margin: 0 0 .6rem; padding-left: 1.15rem; }
+.extra .body > :last-child { margin-bottom: 0; }
+.extra .body li { margin: 0 0 .3rem; }
+.extra .body li:last-child { margin-bottom: 0; }
+
 /* ---------- matemática ---------- */
 
 .eq {
@@ -1323,6 +1349,32 @@ html { scroll-behavior: smooth; }
                 <span>12</span>
               </span>
             </div>
+            <details class="extra">
+              <summary>Material complementar · de onde vêm essas duas fórmulas</summary>
+              <div class="body">
+                <p>
+                  Nenhuma das duas cai do céu: as duas saem da definição de valor esperado
+                  aplicada a <span class="v">f</span>(<span class="v">x</span>) = 1/<span class="v">n</span>,
+                  com um somatório quebrado em dois e uma divisão de polinômios no fim.
+                  A dedução completa, passo a passo, está em um documento à parte:
+                </p>
+                <ul>
+                  <li>
+                    <a href="https://github.com/glauberrleite/curso-probabilidade-e-estatistica/blob/main/02-variaveis-aleatorias-discretas/demonstracao-distribuicao-uniforme.md#cálculo-da-média">Demonstração da média</a>
+                    — contribuição do aluno <strong>Yann Kevin</strong>, que enxergou como quebrar
+                    o somatório em dois e resolver cada parte como uma progressão aritmética.
+                  </li>
+                  <li>
+                    <a href="https://github.com/glauberrleite/curso-probabilidade-e-estatistica/blob/main/02-variaveis-aleatorias-discretas/demonstracao-distribuicao-uniforme.md#cálculo-da-variância">Demonstração da variância</a>
+                    — usa <span class="v">V</span>(<span class="v">X</span>) =
+                    <span class="v">E</span>(<span class="v">X</span>²) − μ² e a soma dos quadrados.
+                  </li>
+                </ul>
+                <p>
+                  Não é cobrado em prova, mas vale a leitura de quem quiser ver a mecânica por dentro.
+                </p>
+              </div>
+            </details>
           </div>
 </div>
 
