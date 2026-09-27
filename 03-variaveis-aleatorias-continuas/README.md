@@ -70,7 +70,58 @@ Agora vamos passar por algumas distribuições conhecidas, permitindo que façam
 
 ## Distribuição Contínua Uniforme
 
-## Distribuição Normal
+Uma variável aleatório contínua $X$, com função densidade de probabilidade
+$$f(x) = \frac{1}{b-a}, \quad a \leq x \leq b$$
+
+tem uma distribuição contínua uniforme ($X \sim U(x; a, b)$).
+
+- Média: $\mu = E(X) = \frac{a + b}{2}$
+- Variância: $\sigma^2 = \frac{(b - a)^2}{12}$
+
+## Distribuição Normal (ou Gaussiana)
+
+Indubitavelmente, o modelo mais largamente utilizado para uma medida contínua é uma variável aleatória normal. Toda vez que um experimento aleatório for replicado, a variável aleatória que for igual ao resultado médio (ou total) das réplicas tenderá a ter uma distribuição normal, à medida que o número de réplicas se torne grande.
+
+Aqui, a própria média $\mu$ e a variância $\sigma^2$ assumem o papel de parâmetros da função densidade. Podemos ver como mexem no formato da curva, que lembra um sino (*bell-shaped*).
+![](https://thumb.wikimedia.org/wikipedia/commons/thumb/7/74/Normal_Distribution_PDF.svg/3840px-Normal_Distribution_PDF.svg.png)
+
+Uma variável aleatória $X$, com função densidade de probabilidade
+$$f(x) = \frac{1}{\sqrt{2 \pi \sigma^2}}e^{-\frac{(x - \mu)^2}{2 \sigma^2}}$$
+
+é uma variável aleatória normal ($X \sim \mathcal{N}(x; \mu, \sigma^2)$).
+
+Claramente:
+- Média: $E(X) = \mu$
+- Variância: $E[(X-\mu)^2]= \sigma^2$
+
+🤔Distribuições binomiais e de poisson podem ser sintonizadas (através dos seus parâmetros) para se tornar gaussianas.
+
+### Teorema central do limite
+💡A distribuição normal será muito importante no futuro, quando discutirmos o teorema central do limite.
+> [(Wikipedia)](https://en.wikipedia.org/wiki/Normal_distribution) It states that the average of many statistically independent samples (observations) of a random variable with finite mean and variance is itself a random variable—whose distribution converges to a normal distribution as the number of samples increases. 
+> Therefore, physical quantities that are expected to be the sum of many independent processes, such as measurement errors, often have distributions that are nearly normal
+
+### Explorando a simetria da distribuição gaussiana
+
+Um resultado útil é explorar a simetria... De forma geral, temos:
+
+$$P(\mu - \sigma < X < \mu + \sigma) = 0,6827$$
+$$P(\mu - 2\sigma < X < \mu + 2\sigma) = 0,9545$$
+$$P(\mu - 3\sigma < X < \mu + 3\sigma) = 0,9973$$
+
+![](https://www.mathsisfun.com/data/images/normal-distrubution-large.svg)
+
+⚠️A distribuição normal padrão (ou *Standard Normal Distribuition*) nada mais é do que $\mathcal{N}(x; 0, 1)$. Isso facilita algumas tomadas de decisões.
+
+### z-score
+
+Por conta da simetria, uma métrica interessante é o z-score, que diz, usando o desvio padrão como unidade, quão longe um valor de $X$ está de sua média.
+Também é usado para normalização (escalonamento/*"standardzation"*).
+
+Se $X$ é uma variável aleatória normal com $E(X) = \mu$ e $V(X) = \sigma^2$, a variável aleatória
+$$Z = \frac{X - \mu}{\sigma}$$
+
+será uma variável aleatória normal, com $E(Z) = 0$ e $V(Z) = 1$. Ou seja, $Z$ é uma variável aleatória padrão.
 
 ## Distribuição Exponencial
 
