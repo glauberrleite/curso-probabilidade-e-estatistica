@@ -158,8 +158,8 @@ h1 em { font-style: italic; color: var(--teorico); }
   content: ""; display: inline-block; width: 1.6rem; height: 2px;
   vertical-align: middle; margin-right: .45rem;
 }
-.hero-cap .k-f::before { background: var(--teorico); }
-.hero-cap .k-F::before { background: var(--empirico); }
+.hero-cap .k-dens::before { background: var(--teorico); }
+.hero-cap .k-acum::before { background: var(--empirico); }
 
 /* ---------- seções ---------- */
 
@@ -342,8 +342,10 @@ input[type="range"]::-moz-range-thumb {
    entre maiúscula e minúscula é justamente o conteúdo. */
 .readout .k { font-size: .68rem; letter-spacing: .06em; color: var(--ink-mute); }
 .readout .val { font-size: 1.15rem; }
-.readout .val.f { color: var(--teorico); }
-.readout .val.F { color: var(--empirico); }
+/* Classes .dens/.acum (e não .f/.F): sem doctype a página roda em quirks mode,
+   onde seletores de classe e id ignoram maiúsculas. */
+.readout .val.dens { color: var(--teorico); }
+.readout .val.acum { color: var(--empirico); }
 
 canvas.plot { display: block; width: 100%; height: 200px; }
 
@@ -399,8 +401,8 @@ canvas.plot { display: block; width: 100%; height: 200px; }
 .tri td.num {
   font-family: var(--mono); font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap;
 }
-.tri td.num.f { color: var(--teorico); }
-.tri td.num.F { color: var(--empirico); }
+.tri td.num.dens { color: var(--teorico); }
+.tri td.num.acum { color: var(--empirico); }
 .tri tr.tot td { font-weight: 650; border-top: 1px solid var(--ink); }
 
 /* ---------- explorador de distribuições ---------- */
@@ -514,7 +516,7 @@ html { scroll-behavior: smooth; }
       <a href="#faixa"><span class="n">02</span><span>A faixa da variável</span></a>
       <a href="#distribuicoes"><span class="n">03</span><span>Distribuições de probabilidade</span></a>
       <a href="#fx"><span class="n">04</span><span>Funções de probabilidade</span></a>
-      <a href="#Fx"><span class="n">05</span><span>Distribuição cumulativa</span></a>
+      <a href="#cumulativa"><span class="n">05</span><span>Distribuição cumulativa</span></a>
       <a href="#media"><span class="n">06</span><span>Média e variância</span></a>
       <a href="#distros"><span class="n">07</span><span>Algumas distribuições</span></a>
     </nav>
@@ -543,8 +545,8 @@ html { scroll-behavior: smooth; }
           <div class="hero-fig">
             <canvas id="heroCanvas" aria-label="Barras decrescentes de uma distribuição geométrica, com a curva acumulada subindo até um"></canvas>
             <div class="hero-cap">
-              <span class="k-f">f(x) — a probabilidade de cada valor</span>
-              <span class="k-F">F(x) — o quanto já foi acumulado</span>
+              <span class="k-dens">f(x) — a probabilidade de cada valor</span>
+              <span class="k-acum">F(x) — o quanto já foi acumulado</span>
             </div>
           </div>
         </div>
@@ -856,9 +858,9 @@ html { scroll-behavior: smooth; }
               </div>
               <canvas class="plot" id="pmfCanvas" aria-label="Gráfico de barras da função de probabilidade, decrescendo geometricamente"></canvas>
               <div class="readout">
-                <div><span class="k"><span class="v">f</span>(1)</span><span class="val f" id="rF1">—</span></div>
-                <div><span class="k"><span class="v">f</span>(2)</span><span class="val f" id="rF2">—</span></div>
-                <div><span class="k">soma mostrada</span><span class="val F" id="rSoma">—</span></div>
+                <div><span class="k"><span class="v">f</span>(1)</span><span class="val dens" id="rF1">—</span></div>
+                <div><span class="k"><span class="v">f</span>(2)</span><span class="val dens" id="rF2">—</span></div>
+                <div><span class="k">soma mostrada</span><span class="val acum" id="rSoma">—</span></div>
                 <div><span class="k">soma total da série</span><span class="val" id="rTot">1,0000</span></div>
               </div>
               <div class="verdict ok" id="pmfVerdict"></div>
@@ -889,7 +891,7 @@ html { scroll-behavior: smooth; }
     </section>
 
     <!-- ============ 05 ============ -->
-    <section id="Fx">
+    <section id="cumulativa">
       <div class="wrap">
         <div class="slide" data-sec="§ 05 · Distribuição cumulativa">
           <div class="sec-head">
@@ -956,8 +958,8 @@ html { scroll-behavior: smooth; }
               </div>
               <canvas class="plot" id="cdfCanvas" aria-label="Barras da função de probabilidade com a função cumulativa em escada sobreposta"></canvas>
               <div class="readout">
-                <div><span class="k"><span class="v">f</span>(<span class="v">x</span>) · o salto</span><span class="val f" id="cF">—</span></div>
-                <div><span class="k"><span class="v">F</span>(<span class="v">x</span>) · acumulado</span><span class="val F" id="cFF">—</span></div>
+                <div><span class="k"><span class="v">f</span>(<span class="v">x</span>) · o salto</span><span class="val dens" id="cF">—</span></div>
+                <div><span class="k"><span class="v">F</span>(<span class="v">x</span>) · acumulado</span><span class="val acum" id="cFF">—</span></div>
                 <div><span class="k"><span class="v">P</span>(<span class="v">X</span> &gt; <span class="v">x</span>) · cauda</span><span class="val" id="cTail">—</span></div>
               </div>
             </div>
@@ -1011,12 +1013,12 @@ html { scroll-behavior: smooth; }
                 <tr><th><span class="v">x</span> (pés)</th><th>Poços que contribuem</th><th>Nº</th><th><span class="v">f</span>(<span class="v">x</span>)</th><th><span class="v">F</span>(<span class="v">x</span>)</th></tr>
               </thead>
               <tbody>
-                <tr><td class="num">217</td><td>Serpentina</td><td class="num">36</td><td class="num f">0,0047</td><td class="num F">0,0047</td></tr>
-                <tr><td class="num">218</td><td>Granito</td><td class="num">26</td><td class="num f">0,0034</td><td class="num F">0,0080</td></tr>
-                <tr><td class="num">231</td><td>Mineral de silicato</td><td class="num">349</td><td class="num f">0,0452</td><td class="num F">0,0532</td></tr>
-                <tr><td class="num">255</td><td>Gnaisse + Xisto</td><td class="num">2.858</td><td class="num f">0,3700</td><td class="num F">0,4231</td></tr>
-                <tr><td class="num">267</td><td>Mármore + Outros xistos</td><td class="num">1.167</td><td class="num f">0,1511</td><td class="num F">0,5742</td></tr>
-                <tr><td class="num">317</td><td>Xisto Loch Raven</td><td class="num">3.290</td><td class="num f">0,4259</td><td class="num F">1,0000</td></tr>
+                <tr><td class="num">217</td><td>Serpentina</td><td class="num">36</td><td class="num dens">0,0047</td><td class="num acum">0,0047</td></tr>
+                <tr><td class="num">218</td><td>Granito</td><td class="num">26</td><td class="num dens">0,0034</td><td class="num acum">0,0080</td></tr>
+                <tr><td class="num">231</td><td>Mineral de silicato</td><td class="num">349</td><td class="num dens">0,0452</td><td class="num acum">0,0532</td></tr>
+                <tr><td class="num">255</td><td>Gnaisse + Xisto</td><td class="num">2.858</td><td class="num dens">0,3700</td><td class="num acum">0,4231</td></tr>
+                <tr><td class="num">267</td><td>Mármore + Outros xistos</td><td class="num">1.167</td><td class="num dens">0,1511</td><td class="num acum">0,5742</td></tr>
+                <tr><td class="num">317</td><td>Xisto Loch Raven</td><td class="num">3.290</td><td class="num dens">0,4259</td><td class="num acum">1,0000</td></tr>
               </tbody>
             </table>
           </div>
@@ -1057,8 +1059,8 @@ html { scroll-behavior: smooth; }
               </div>
               <canvas class="plot" id="pocoCanvas" aria-label="Função cumulativa em degraus dos poços, com saltos nas seis profundidades observadas"></canvas>
               <div class="readout">
-                <div><span class="k"><span class="v">f</span>(<span class="v">x</span>) · salto aqui</span><span class="val f" id="pF">—</span></div>
-                <div><span class="k"><span class="v">F</span>(<span class="v">x</span>) = <span class="v">P</span>(<span class="v">X</span> ≤ <span class="v">x</span>)</span><span class="val F" id="pFF">—</span></div>
+                <div><span class="k"><span class="v">f</span>(<span class="v">x</span>) · salto aqui</span><span class="val dens" id="pF">—</span></div>
+                <div><span class="k"><span class="v">F</span>(<span class="v">x</span>) = <span class="v">P</span>(<span class="v">X</span> ≤ <span class="v">x</span>)</span><span class="val acum" id="pFF">—</span></div>
               </div>
               <div class="verdict ok" id="pocoVerdict"></div>
             </div>
@@ -1181,9 +1183,9 @@ html { scroll-behavior: smooth; }
               </div>
               <canvas class="plot" id="vigaCanvas" aria-label="Viga horizontal com massas verticais em posições de 0 a 5, fulcro triangular na média e faixa indicando um desvio padrão para cada lado"></canvas>
               <div class="readout">
-                <div><span class="k">média μ</span><span class="val f" id="vMu">—</span></div>
-                <div><span class="k">variância V(X)</span><span class="val F" id="vVar">—</span></div>
-                <div><span class="k">desvio padrão σ</span><span class="val F" id="vSig">—</span></div>
+                <div><span class="k">média μ</span><span class="val dens" id="vMu">—</span></div>
+                <div><span class="k">variância V(X)</span><span class="val acum" id="vVar">—</span></div>
+                <div><span class="k">desvio padrão σ</span><span class="val acum" id="vSig">—</span></div>
               </div>
               <div class="verdict ok" id="vigaVerdict"></div>
             </div>
@@ -1394,8 +1396,8 @@ html { scroll-behavior: smooth; }
               </div>
               <canvas class="plot" id="mUnCanvas" aria-label="Gráfico de barras da função de probabilidade, que muda com os parâmetros"></canvas>
               <div class="readout">
-                <div><span class="k">média μ</span><span class="val f" id="mUnMu">—</span></div>
-                <div><span class="k">variância V</span><span class="val F" id="mUnVar">—</span></div>
+                <div><span class="k">média μ</span><span class="val dens" id="mUnMu">—</span></div>
+                <div><span class="k">variância V</span><span class="val acum" id="mUnVar">—</span></div>
               </div>
             </div>
           </div>
@@ -1494,8 +1496,8 @@ html { scroll-behavior: smooth; }
               </div>
               <canvas class="plot" id="mBinCanvas" aria-label="Gráfico de barras da função de probabilidade, que muda com os parâmetros"></canvas>
               <div class="readout">
-                <div><span class="k">μ = np</span><span class="val f" id="mBinMu">—</span></div>
-                <div><span class="k">V = np(1−p)</span><span class="val F" id="mBinVar">—</span></div>
+                <div><span class="k">μ = np</span><span class="val dens" id="mBinMu">—</span></div>
+                <div><span class="k">V = np(1−p)</span><span class="val acum" id="mBinVar">—</span></div>
               </div>
             </div>
           </div>
@@ -1556,8 +1558,8 @@ html { scroll-behavior: smooth; }
               </div>
               <canvas class="plot" id="mGeoCanvas" aria-label="Gráfico de barras da função de probabilidade, que muda com os parâmetros"></canvas>
               <div class="readout">
-                <div><span class="k">μ = 1/p</span><span class="val f" id="mGeoMu">—</span></div>
-                <div><span class="k">σ</span><span class="val F" id="mGeoSig">—</span></div>
+                <div><span class="k">μ = 1/p</span><span class="val dens" id="mGeoMu">—</span></div>
+                <div><span class="k">σ</span><span class="val acum" id="mGeoSig">—</span></div>
               </div>
             </div>
           </div>
@@ -1622,9 +1624,9 @@ html { scroll-behavior: smooth; }
                 <tr><th>Medida</th><th>Simulado (200 mil)</th><th>Exato</th></tr>
               </thead>
               <tbody>
-                <tr><td>média</td><td class="num f">4,9963</td><td class="num F">5,0000</td></tr>
-                <tr><td>variância</td><td class="num f">20,0497</td><td class="num F">20,0000</td></tr>
-                <tr><td>desvio padrão</td><td class="num f">4,4777</td><td class="num F">4,4721</td></tr>
+                <tr><td>média</td><td class="num dens">4,9963</td><td class="num acum">5,0000</td></tr>
+                <tr><td>variância</td><td class="num dens">20,0497</td><td class="num acum">20,0000</td></tr>
+                <tr><td>desvio padrão</td><td class="num dens">4,4777</td><td class="num acum">4,4721</td></tr>
               </tbody>
             </table>
           </div>
@@ -1707,8 +1709,8 @@ html { scroll-behavior: smooth; }
               </div>
               <canvas class="plot" id="mNbCanvas" aria-label="Gráfico de barras da função de probabilidade, que muda com os parâmetros"></canvas>
               <div class="readout">
-                <div><span class="k">μ = r/p</span><span class="val f" id="mNbMu">—</span></div>
-                <div><span class="k">observação</span><span class="val F" id="mNbNota" style="font-size:.9rem"></span></div>
+                <div><span class="k">μ = r/p</span><span class="val dens" id="mNbMu">—</span></div>
+                <div><span class="k">observação</span><span class="val acum" id="mNbNota" style="font-size:.9rem"></span></div>
               </div>
             </div>
           </div>
@@ -1791,8 +1793,8 @@ html { scroll-behavior: smooth; }
               </div>
               <canvas class="plot" id="duCanvas" aria-label="Dois gráficos de barras empilhados: em cima a binomial com as barras de x maior ou igual a r destacadas, embaixo a binomial negativa com as barras de x menor ou igual a n destacadas"></canvas>
               <div class="readout">
-                <div><span class="k"><span class="v">P</span>(Bin ≥ <span class="v">r</span>)</span><span class="val f" id="duBin">—</span></div>
-                <div><span class="k"><span class="v">P</span>(NB ≤ <span class="v">n</span>)</span><span class="val F" id="duNb">—</span></div>
+                <div><span class="k"><span class="v">P</span>(Bin ≥ <span class="v">r</span>)</span><span class="val dens" id="duBin">—</span></div>
+                <div><span class="k"><span class="v">P</span>(NB ≤ <span class="v">n</span>)</span><span class="val acum" id="duNb">—</span></div>
                 <div><span class="k">μ binomial</span><span class="val" id="duMuB">—</span></div>
                 <div><span class="k">μ bin. negativa</span><span class="val" id="duMuN">—</span></div>
               </div>
@@ -1931,8 +1933,8 @@ html { scroll-behavior: smooth; }
               </div>
               <canvas class="plot" id="mHgCanvas" aria-label="Gráfico de barras da hipergeométrica, que muda com N, K e n"></canvas>
               <div class="readout">
-                <div><span class="k">μ = nK/N</span><span class="val f" id="mHgMu">—</span></div>
-                <div><span class="k">fator (N−n)/(N−1)</span><span class="val F" id="mHgFc">—</span></div>
+                <div><span class="k">μ = nK/N</span><span class="val dens" id="mHgMu">—</span></div>
+                <div><span class="k">fator (N−n)/(N−1)</span><span class="val acum" id="mHgFc">—</span></div>
               </div>
               <div class="verdict ok" id="mHgComp"></div>
             </div>
@@ -2019,12 +2021,12 @@ html { scroll-behavior: smooth; }
               <tbody>
                 <tr>
                   <td><span class="v">f</span>(<span class="v">x</span>)</td>
-                  <td class="num f">26,1 %</td>
-                  <td class="num f">39,6 %</td>
-                  <td class="num f">24,5 %</td>
-                  <td class="num f"><strong>8,1 %</strong></td>
-                  <td class="num f">1,5 %</td>
-                  <td class="num f">0,2 %</td>
+                  <td class="num dens">26,1 %</td>
+                  <td class="num dens">39,6 %</td>
+                  <td class="num dens">24,5 %</td>
+                  <td class="num dens"><strong>8,1 %</strong></td>
+                  <td class="num dens">1,5 %</td>
+                  <td class="num dens">0,2 %</td>
                 </tr>
               </tbody>
             </table>
@@ -2258,10 +2260,10 @@ html { scroll-behavior: smooth; }
               </div>
               <canvas class="plot" id="mPoCanvas" aria-label="Gráfico de barras do número de falhas num rolo, que se desloca e alarga conforme o comprimento aumenta"></canvas>
               <div class="readout">
-                <div><span class="k">λT · falhas esperadas</span><span class="val f" id="mPoLT">—</span></div>
-                <div><span class="k">σ = √(λT)</span><span class="val F" id="mPoSig">—</span></div>
-                <div><span class="k"><span class="v">P</span>(rolo sem falha)</span><span class="val f" id="mPoP0">—</span></div>
-                <div><span class="k"><span class="v">P</span>(ao menos uma)</span><span class="val F" id="mPoP1">—</span></div>
+                <div><span class="k">λT · falhas esperadas</span><span class="val dens" id="mPoLT">—</span></div>
+                <div><span class="k">σ = √(λT)</span><span class="val acum" id="mPoSig">—</span></div>
+                <div><span class="k"><span class="v">P</span>(rolo sem falha)</span><span class="val dens" id="mPoP0">—</span></div>
+                <div><span class="k"><span class="v">P</span>(ao menos uma)</span><span class="val acum" id="mPoP1">—</span></div>
               </div>
               <div class="verdict ok" id="mPoNota"></div>
             </div>
@@ -2406,9 +2408,9 @@ html { scroll-behavior: smooth; }
               <canvas class="plot" id="distCanvas" aria-label="Gráfico de barras da função de probabilidade da distribuição selecionada"></canvas>
               <div class="readout">
                 <div><span class="k">soma (barras)</span><span class="val" id="dSoma">—</span></div>
-                <div><span class="k">μ (barras)</span><span class="val f" id="dMu">—</span></div>
-                <div><span class="k"><span class="v">V</span> (barras)</span><span class="val F" id="dVar">—</span></div>
-                <div><span class="k">σ (barras)</span><span class="val F" id="dSig">—</span></div>
+                <div><span class="k">μ (barras)</span><span class="val dens" id="dMu">—</span></div>
+                <div><span class="k"><span class="v">V</span> (barras)</span><span class="val acum" id="dVar">—</span></div>
+                <div><span class="k">σ (barras)</span><span class="val acum" id="dSig">—</span></div>
               </div>
               <div class="verdict ok" id="distVerdict"></div>
             </div>
@@ -2423,12 +2425,12 @@ html { scroll-behavior: smooth; }
                 <tr><th>Distribuição</th><th>Notação</th><th>Pergunta que ela responde</th><th>μ</th><th>σ²</th></tr>
               </thead>
               <tbody>
-                <tr><td>Uniforme</td><td class="num f"><span class="v">u</span>(<span class="v">x</span>; <span class="v">a</span>, <span class="v">b</span>)</td><td>Todos os valores têm a mesma chance?</td><td class="num f">(<span class="v">a</span>+<span class="v">b</span>)/2</td><td class="num F">((<span class="v">b</span>−<span class="v">a</span>+1)²−1)/12</td></tr>
-                <tr><td>Binomial</td><td class="num f"><span class="v">b</span>(<span class="v">x</span>; <span class="v">n</span>, <span class="v">p</span>)</td><td>Quantos <strong>sucessos</strong> em <span class="v">n</span> tentativas?</td><td class="num f"><span class="v">np</span></td><td class="num F"><span class="v">np</span>(1−<span class="v">p</span>)</td></tr>
-                <tr><td>Geométrica</td><td class="num f"><span class="v">g</span>(<span class="v">x</span>; <span class="v">p</span>)</td><td>Quantas <strong>tentativas</strong> até o 1º sucesso?</td><td class="num f">1/<span class="v">p</span></td><td class="num F">(1−<span class="v">p</span>)/<span class="v">p</span>²</td></tr>
-                <tr><td>Bin. negativa</td><td class="num f"><span class="v">b</span>*(<span class="v">x</span>; <span class="v">r</span>, <span class="v">p</span>)</td><td>Quantas <strong>tentativas</strong> até o <span class="v">r</span>-ésimo sucesso?</td><td class="num f"><span class="v">r</span>/<span class="v">p</span></td><td class="num F"><span class="v">r</span>(1−<span class="v">p</span>)/<span class="v">p</span>²</td></tr>
-                <tr><td>Hipergeométrica</td><td class="num f"><span class="v">h</span>(<span class="v">x</span>; <span class="v">N</span>, <span class="v">n</span>, <span class="v">K</span>)</td><td>Quantos sucessos em <span class="v">n</span> retiradas <strong>sem reposição</strong>?</td><td class="num f"><span class="v">np</span></td><td class="num F"><span class="v">np</span>(1−<span class="v">p</span>)·<sup><span class="v">N</span>−<span class="v">n</span></sup>⁄<sub><span class="v">N</span>−1</sub></td></tr>
-                <tr><td>Poisson</td><td class="num f"><span class="v">p</span>(<span class="v">x</span>, λ<span class="v">t</span>)</td><td>Quantos <strong>eventos</strong> num intervalo?</td><td class="num f">λ<span class="v">T</span></td><td class="num F">λ<span class="v">T</span></td></tr>
+                <tr><td>Uniforme</td><td class="num dens"><span class="v">u</span>(<span class="v">x</span>; <span class="v">a</span>, <span class="v">b</span>)</td><td>Todos os valores têm a mesma chance?</td><td class="num dens">(<span class="v">a</span>+<span class="v">b</span>)/2</td><td class="num acum">((<span class="v">b</span>−<span class="v">a</span>+1)²−1)/12</td></tr>
+                <tr><td>Binomial</td><td class="num dens"><span class="v">b</span>(<span class="v">x</span>; <span class="v">n</span>, <span class="v">p</span>)</td><td>Quantos <strong>sucessos</strong> em <span class="v">n</span> tentativas?</td><td class="num dens"><span class="v">np</span></td><td class="num acum"><span class="v">np</span>(1−<span class="v">p</span>)</td></tr>
+                <tr><td>Geométrica</td><td class="num dens"><span class="v">g</span>(<span class="v">x</span>; <span class="v">p</span>)</td><td>Quantas <strong>tentativas</strong> até o 1º sucesso?</td><td class="num dens">1/<span class="v">p</span></td><td class="num acum">(1−<span class="v">p</span>)/<span class="v">p</span>²</td></tr>
+                <tr><td>Bin. negativa</td><td class="num dens"><span class="v">b</span>*(<span class="v">x</span>; <span class="v">r</span>, <span class="v">p</span>)</td><td>Quantas <strong>tentativas</strong> até o <span class="v">r</span>-ésimo sucesso?</td><td class="num dens"><span class="v">r</span>/<span class="v">p</span></td><td class="num acum"><span class="v">r</span>(1−<span class="v">p</span>)/<span class="v">p</span>²</td></tr>
+                <tr><td>Hipergeométrica</td><td class="num dens"><span class="v">h</span>(<span class="v">x</span>; <span class="v">N</span>, <span class="v">n</span>, <span class="v">K</span>)</td><td>Quantos sucessos em <span class="v">n</span> retiradas <strong>sem reposição</strong>?</td><td class="num dens"><span class="v">np</span></td><td class="num acum"><span class="v">np</span>(1−<span class="v">p</span>)·<sup><span class="v">N</span>−<span class="v">n</span></sup>⁄<sub><span class="v">N</span>−1</sub></td></tr>
+                <tr><td>Poisson</td><td class="num dens"><span class="v">p</span>(<span class="v">x</span>, λ<span class="v">t</span>)</td><td>Quantos <strong>eventos</strong> num intervalo?</td><td class="num dens">λ<span class="v">T</span></td><td class="num acum">λ<span class="v">T</span></td></tr>
               </tbody>
             </table>
           </div>

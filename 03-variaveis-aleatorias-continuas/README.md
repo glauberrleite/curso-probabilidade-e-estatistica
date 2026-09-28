@@ -17,6 +17,17 @@ Como grande parte dos conceitos podem ser reaproveitados, naturalmente, o ritmo 
 > 2. $\int_{-\infty}^\infty f(x) dx = 1$
 > 3. $P(a \leq X \leq b) = \int_{a}^b f(x) dx$
 
+---
+
+Exemplo: Um importante fator no combustível sólido de um míssil é a distribuição do tamanho de partículas. Problemas significativos podem ocorrer se o tamanho das partículas for muito grande. Dos dados de produção obtidos no passado, foi determinado que a distribuição do tamanho da partícula (em micrometros) é caracterizada por:
+
+$$f(x) = \begin{cases} 3 x^{-4}, & x > 1 \\ 0, & \text{caso contrário} \end{cases}$$
+
+(a) Verifique que essa é uma função densidade válida.
+(b) Qual é a probabilidade de que uma partícula aleatória de um combustível manufaturado exceda 4 micrometros?
+
+---
+
 🤔Veja que, considerando a definição, quem seria $P(X = a)$?
 Aplicando, temos:
 
@@ -27,17 +38,19 @@ $$P(X = a) = P(a \leq X \leq a) = \int_a^a f(x)dx = F(x) - F(x) = 0$$
 > Quando uma medida particular de corrente for observada, tal como 14,47 miliampères, esse resultado poderá ser interpretado como o valor arredondado de uma medida da corrente, que está realmente na faixa $14,465 \leq x \leq 14,475$.
 
 ⚠️Uma vez que cada ponto tem probabilidade zero, não é necessário distinguir entre desigualdades, tais como $<$ ou $\leq$, para variáveis aleatórias contínuas.
+Veja que:
+$$P(a \leq X \leq b) = P(X = a) + P(a < X < b) + P(X = b) = P(a < X < b)$$
 
 💡Um histograma é uma aproximação da função densidade de probabilidade.
 
 ## Função de Distribuição Cumulativa
 
 > Definição: A função de distribuição cumulativa de uma variável aleatória contínua $X$ é
-> $$F(x) = P(X \leq x) = \int_{\infty}^x f(u) du$$
+> $$F(x) = P(X \leq x) = \int_{-\infty}^x f(u) du$$
 
 Uma grande vantagem é que podemos usar o [Teorema Fundamental do Cálculo](https://pt.wikipedia.org/wiki/Teorema_fundamental_do_c%C3%A1lculo) para estabelecer a relação entre a função cumulativa e a função densidade de probabilidade:
 
-$$\frac{d}{dx} F(x) = \frac{d}{dx} \int_{\infty}^x f(u) du = f(x)$$
+$$\frac{d}{dx} F(x) = \frac{d}{dx} \int_{-\infty}^x f(u) du = f(x)$$
 
 ---
 
@@ -96,6 +109,14 @@ Claramente:
 
 🤔Distribuições binomiais e de poisson podem ser sintonizadas (através dos seus parâmetros) para se tornar gaussianas.
 
+---
+
+Exemplo: Certa máquina fabrica resistores elétricos com uma resistência média de 40 ohms e desvio-padrão de 2 ohms. Supondo que a resistência siga uma distribuição normal e que pode ser medida para qualquer grau de acuidade, qual é a porcentagem de resistores que terão uma resistência excedendo 43 ohms?
+
+(Esta questão dá para resolver pela integral direta, mas é muito mais fácil trazendo para uma distribuição normal padrão, como será revisitado)
+
+---
+
 ### Teorema central do limite
 💡A distribuição normal será muito importante no futuro, quando discutirmos o teorema central do limite.
 > [(Wikipedia)](https://en.wikipedia.org/wiki/Normal_distribution) It states that the average of many statistically independent samples (observations) of a random variable with finite mean and variance is itself a random variable—whose distribution converges to a normal distribution as the number of samples increases. 
@@ -107,9 +128,7 @@ Um resultado útil é explorar a simetria... De forma geral, temos:
 
 $$P(\mu - \sigma < X < \mu + \sigma) = 0,6827$$
 $$P(\mu - 2\sigma < X < \mu + 2\sigma) = 0,9545$$
-$$P(\mu - 3\sigma < X < \mu + 3\sigma) = 0,9973$$
-
-![](https://www.mathsisfun.com/data/images/normal-distrubution-large.svg)
+$$P(\mu - 3\sigma < X < \mu + 3\sigma) = 0,9973$$![](https://www.mathsisfun.com/data/images/normal-distrubution-large.svg)
 
 ⚠️A distribuição normal padrão (ou *Standard Normal Distribuition*) nada mais é do que $\mathcal{N}(x; 0, 1)$. Isso facilita algumas tomadas de decisões.
 
@@ -122,6 +141,10 @@ Se $X$ é uma variável aleatória normal com $E(X) = \mu$ e $V(X) = \sigma^2$, 
 $$Z = \frac{X - \mu}{\sigma}$$
 
 será uma variável aleatória normal, com $E(Z) = 0$ e $V(Z) = 1$. Ou seja, $Z$ é uma variável aleatória padrão.
+
+💡É muito comum usar tabelas de computação da integral, feitas através de métodos numéricos. Um exemplo [aqui](https://www.ime.usp.br/~leorolla/probabilidade/Ax2.html).
+
+💡Revisitar questão da máquina que fabrica resistores.
 
 ## Distribuição Exponencial
 
