@@ -148,10 +148,82 @@ será uma variável aleatória normal, com $E(Z) = 0$ e $V(Z) = 1$. Ou seja, $Z$
 
 ## Distribuição Exponencial
 
+Uma variável aleatória exponencial descreve o comprimento até que a primeira contagem seja obtida em um processo de Poisson.
+
+💡 Revisitar processo de Poisson
+
+A variável aleatória $X$, que é igual à distância entre contagens sucessivas de um processo de Poisson, com média $\lambda > 0$, é uma variável exponencial com parâmetro $\lambda$. A função densidade de probabilidade de $X$ é
+$$f(x) = \lambda e^{-\lambda x}, \text{ para } 0 \leq x < \infty$$
+
+- Média: $E(X) = \frac{1}{\lambda}$
+- Variância: $E[(X-\mu)^2]= \frac{1}{\lambda^2}$
+
+### Propriedade de falta de memória
+
+Para uma variável aleatória exponencial $X$, temos
+$$P(X < t_1 + t_2 | X > t_1) = P(X < t_2)$$
+
 ## Distribuição de Erlang e Gama
+
+Uma generalização da distribuição exponencial é o comprimento até que $r$ contagens ocorram em um processo de Poisson. Temos que a função densidade de probabilidade de uma distribuição de Erlang é
+$$f(x) = \frac{\lambda^r x^{r - 1} e^{-\lambda x}}{(r - 1)!}, \text{ para } x > 0 \text{ e } r = 1,2, \dots$$
+
+Se $r = 1$, temos a distribuição exponencial. Uma limitação é que $r \mathbb{Z}^{+}$
+
+> Existe uma função que generaliza a recursão fatorial para números reais positivos. Essa é a função gama:
+> $$\Gamma(r) = \inf_0^\infty x^{r - 1} e^{-x} dx \text{, para } r > 0$$
+
+🤔 Aplicando integração por partes, temos a recursão: $\Gamma(r) = (r - 1) \Gamma(r - 1)$
+
+⚠️ $\Gamma(0) \neq (0)!$, então $r > 0$ para fazer sentido.
+
+💡 Para resolver questões, é comum usar recursao para chegar em paradas como $\Gamma(1) = 1$ ou $\Gamma(0.5) = \pi^0.5$
+
+A distribuição de Erlang pode ser generalizada pela distribuição Gama, que tem função densidade de probabilidade:
+$$f(x) = \frac{\lambda^r x^{r-1} e^{-\lambda x}}{\Gamma(r)} \text{, para } x > 0$$
+
+- Média: $E(X) = \frac{r}{\lambda}$
+- Variância: $E[(X-\mu)^2]= \frac{r}{\lambda^2}$
+
+💡Uma distribuição muito usada (estimação de intervalos, testes de hipóteses) é um caso especial da distribuição gama. A distribuição qui-quadrado $\chi^2$ é o caso em que $\lambda = 0.5$ e $r$ assume um dos valores $0.5, 1, 1.5, 2, \dots$
 
 ## Distribuição de Weibull
 
+A distribuição de Weibull é frequentemente usada para modelar o tempo até a falha de muitos sistemas físicos diferentes:
+
+- Número de falhas aumenta com o tempo (desgaste de rolamento)
+- Diminui com o tempo (alguns semicondutores)
+- Permanece constante com o tempo (falhas causadas pelos choques externos ao sistema)
+
+A variável aleatória $X$, com função densidade de probabilidade
+
+$$f(x) = \frac{\beta}{\delta} \left( \frac{x}{\delta} \right)^{\beta - 1} e^{- \left( \frac{x}{\delta} \right)^\beta} \text{, para } x > 0$$
+
+é uma variável aleatória de Weibull, com parâmetro de escala $\delta > 0$ e parâmetro de forma $\beta > 0$.
+
+💡 A distribuição de Raleigh é um caso especial, quando $\beta = 2$.
+
+- Média: $E(X) = \delta \Gamma \left( 1 + \frac{1}{\beta} \right)$
+- Variância: $E[(X-\mu)^2]= \delta^2 \Gamma \left( 1 + \frac{2}{\beta} \right) - \delta^2 \left[ \Gamma \left( 1 + \frac{1}{\beta} \right) \right]^2$
+
 ## Distribuição Lognormal
 
+Seja $W$ tendo distribuição normal, com média $\theta$ e variância $\omega^2$; então, $X = e^{W}$ é uma variável aleatória lognormal, com função de densidade de probabilidade
+
+$$f(x) = \frac{1}{x \omega \sqrt{2 \pi}} e^{-\frac{(\text{ln}(x) - \theta)^2}{2 \omega^2}} \text{, } 0 < x < \infty$$
+
+- Média: $E(X) = e^{\theta + \omega^2 / 2}$
+- Variância: $E[(X-\mu)^2]= e^{2 \theta + \omega^2} (e^{\omega^2} - 1)$
+
+O tempo de vida de um produto que degrada ao longo do tempo é frequentemente modelado por uma variável aleatória lognormal (tempo de vida de um laser semicondutor).
+
 ## Distribuição Beta
+
+A variável aleatória $X$ com função densidade de probabilidade
+
+$$f(x) \frac{\Gamma(\alpha + \beta)}{\Gamma(\alpha) \Gamma(\beta)} x^{\alpha - 1} (1 - x)^{\beta - 1} \text{, para } x \in [0, 1]$$
+
+é uma variável aleatória beta com parâmetros $\alpha > 0$ e $\beta > 0$.
+
+- Média: $E(X) = \frac{\alpha}{\alpha + \beta}$
+- Variância: $E[(X-\mu)^2]= \frac{\alpha \beta}{(\alpha + \beta)^2 (\alpha + \beta + 1)}$
