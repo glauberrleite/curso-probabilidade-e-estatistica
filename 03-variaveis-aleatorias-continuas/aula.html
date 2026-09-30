@@ -1,7 +1,7 @@
 <meta charset="utf-8">
-<title>Variáveis aleatórias contínuas — densidade, F(x), valor esperado, uniforme e normal</title>
+<title>Variáveis aleatórias contínuas — densidade, F(x), valor esperado e distribuições</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="ECOM020 — Probabilidade e Estatística. Aula 03: variáveis aleatórias contínuas, função densidade de probabilidade, distribuição cumulativa, valor esperado, distribuições uniforme contínua e normal, z-score.">
+<meta name="description" content="ECOM020 — Probabilidade e Estatística. Aula 03: variáveis aleatórias contínuas, função densidade de probabilidade, distribuição cumulativa, valor esperado, distribuições uniforme contínua, normal, exponencial, Erlang, gama, Weibull, lognormal e beta, z-score.">
 <style>
 /* ============================================================
    ECOM020 — Probabilidade e Estatística · Aula 03
@@ -409,16 +409,14 @@ canvas.plot.tall { height: 320px; }
 }
 .tri td { font-size: .95rem; }
 .tri td:first-child { font-family: var(--sans); font-size: .82rem; color: var(--ink-soft); }
-
-/* ---------- a seguir ---------- */
-
-.proximas { border-top: 1px solid var(--rule); margin: 1rem 0; }
-.proximas div {
-  display: grid; grid-template-columns: 12rem 1fr; gap: 1rem; padding: .55rem 0;
-  border-bottom: 1px solid var(--rule-soft); font-family: var(--sans); font-size: .86rem;
+.tri td.num {
+  font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: .85rem; white-space: nowrap;
 }
-.proximas b { font-weight: 650; }
-.proximas span { color: var(--ink-soft); }
+.tri td.num.dens { color: var(--teorico); }
+.tri td.num.acum { color: var(--empirico); }
+#resumo .tri td { font-family: var(--sans); font-size: .85rem; }
+#resumo .tri td.num { font-family: var(--mono); }
+.gr { text-transform: none; }
 
 /* ============================================================
    MODO APRESENTAÇÃO
@@ -495,7 +493,6 @@ canvas.plot.tall { height: 320px; }
 @media (max-width: 36rem) {
   .sld { grid-template-columns: 1fr 4.8rem; }
   .sld > label { grid-column: 1 / -1; }
-  .proximas div { grid-template-columns: 1fr; gap: .1rem; }
   .sec-head { grid-template-columns: 1fr; }
   .sec-head .sub { grid-column: 1; }
 }
@@ -520,7 +517,12 @@ html { scroll-behavior: smooth; }
       <a href="#uniforme"><span class="n">05</span><span>Uniforme contínua</span></a>
       <a href="#normal"><span class="n">06</span><span>Distribuição normal</span></a>
       <a href="#zscore"><span class="n">07</span><span>Simetria e z-score</span></a>
-      <a href="#seguir"><span class="n">08</span><span>A seguir</span></a>
+      <a href="#exponencial"><span class="n">08</span><span>Exponencial</span></a>
+      <a href="#gama"><span class="n">09</span><span>Erlang e Gama</span></a>
+      <a href="#weibull"><span class="n">10</span><span>Weibull</span></a>
+      <a href="#lognormal"><span class="n">11</span><span>Lognormal</span></a>
+      <a href="#beta"><span class="n">12</span><span>Beta</span></a>
+      <a href="#resumo"><span class="n">13</span><span>Resumo</span></a>
     </nav>
     <div class="rail-foot">
       <button class="rail-btn accent" id="presentBtn" type="button">▶ Modo apresentação</button>
@@ -1440,7 +1442,7 @@ html { scroll-behavior: smooth; }
         <div class="slide" data-sec="§ 06 · Distribuição normal">
           <div class="demo">
             <div class="demo-head">
-              <span class="t">Como μ e σ mexem no sino</span>
+              <span class="t">Como <span class="gr">μ</span> e <span class="gr">σ</span> mexem no sino</span>
               <span class="h">μ desloca · σ achata ou afina</span>
             </div>
             <div class="demo-body">
@@ -1480,7 +1482,7 @@ html { scroll-behavior: smooth; }
           </p>
           <div class="demo">
             <div class="demo-head">
-              <span class="t">Discreta × normal de mesma μ e σ²</span>
+              <span class="t">Discreta × normal de mesma <span class="gr">μ</span> e <span class="gr">σ²</span></span>
               <span class="h">aumente n ou λ</span>
             </div>
             <div class="demo-body">
@@ -1781,27 +1783,641 @@ html { scroll-behavior: smooth; }
     </section>
 
     <!-- ============ 08 ============ -->
-    <section id="seguir">
+    <section id="exponencial">
       <div class="wrap">
-        <div class="slide" data-sec="§ 08 · A seguir">
+        <div class="slide" data-sec="§ 08 · Exponencial">
           <div class="sec-head">
             <span class="n">§ 08</span>
-            <h2>A seguir: mais distribuições contínuas</h2>
-            <span class="sub">Cada uma com seu tipo de fenômeno, como na aula 02</span>
+            <h2>Distribuição exponencial</h2>
+            <span class="sub">Quanto falta para a próxima contagem de um processo de Poisson</span>
           </div>
-          <div class="proximas">
-            <div><b>Exponencial</b><span>Já apareceu no tempo de reação do § 03: tempo até o próximo evento de um processo de Poisson.</span></div>
-            <div><b>Erlang e Gama</b><span>Tempo até o <span class="v">r</span>-ésimo evento; o análogo contínuo da binomial negativa.</span></div>
-            <div><b>Weibull</b><span>Tempo até a falha de componentes, com taxa de falha que muda com o uso.</span></div>
-            <div><b>Lognormal</b><span>Quando o logaritmo da variável é normal: grandezas que crescem por fatores multiplicativos.</span></div>
-            <div><b>Beta</b><span>Proporções e probabilidades: variáveis que vivem no intervalo [0, 1].</span></div>
+          <p>
+            Uma variável aleatória exponencial descreve o <strong>comprimento</strong> (de tempo,
+            de distância) até que a primeira contagem seja obtida em um processo de Poisson.
+          </p>
+          <div class="note">
+            <span class="lab">Revisitando o processo de Poisson (aula 02)</span>
+            <p>
+              Contagens independentes em trechos disjuntos, probabilidade de uma contagem
+              proporcional à extensão do trecho e nunca duas ao mesmo tempo. O número de
+              contagens <span class="v">N</span> num trecho de extensão <span class="v">x</span> é
+              Poisson com média λ<span class="v">x</span>. Lá contávamos <strong>quantas</strong>
+              chegadas; aqui medimos <strong>quanto falta</strong> para a próxima.
+            </p>
+          </div>
+          <div class="defn">
+            <span class="lab">Definição — variável aleatória exponencial</span>
+            <p>
+              A variável aleatória <span class="v">X</span>, igual à distância entre contagens
+              sucessivas de um processo de Poisson com média λ &gt; 0, é uma variável exponencial
+              com parâmetro λ. Sua função densidade de probabilidade é
+            </p>
+            <div class="eq">
+              <span class="v">f</span>(<span class="v">x</span>) = λ<span class="v">e</span><sup>−λ<span class="v">x</span></sup>,
+              &nbsp; 0 ≤ <span class="v">x</span> &lt; ∞
+            </div>
+          </div>
+          <ul>
+            <li>Média: <span class="v">E</span>(<span class="v">X</span>) = <span class="frac"><span>1</span><span>λ</span></span></li>
+            <li>Variância: <span class="v">E</span>[(<span class="v">X</span> − μ)²] = <span class="frac"><span>1</span><span>λ²</span></span></li>
+          </ul>
+        </div>
+
+        <div class="slide" data-sec="§ 08 · Exponencial">
+          <div class="ex" data-steps>
+            <span class="lab">Demonstração — de onde vem a densidade</span>
+            <p>
+              Por que a distância até a primeira contagem de um processo de Poisson tem
+              densidade λ<span class="v">e</span><sup>−λ<span class="v">x</span></sup>?
+            </p>
+            <ol class="steps">
+              <li class="step">
+                <p><strong>Traduzindo o evento.</strong> A primeira contagem só vem depois de <span class="v">x</span> se o trecho [0, <span class="v">x</span>] ficar vazio:</p>
+                <div class="eq sm">
+                  <span class="v">X</span> &gt; <span class="v">x</span> &nbsp;⟺&nbsp; <span class="v">N</span> = 0 no trecho [0, <span class="v">x</span>]
+                </div>
+              </li>
+              <li class="step">
+                <p><strong>Usando a Poisson.</strong> Com <span class="v">N</span> ∼ Poisson(λ<span class="v">x</span>):</p>
+                <div class="eq sm">
+                  <span class="v">P</span>(<span class="v">X</span> &gt; <span class="v">x</span>) = <span class="v">P</span>(<span class="v">N</span> = 0) =
+                  <span class="frac"><span><span class="v">e</span><sup>−λ<span class="v">x</span></sup>(λ<span class="v">x</span>)<sup>0</sup></span><span>0!</span></span>
+                  = <span class="v">e</span><sup>−λ<span class="v">x</span></sup>
+                </div>
+              </li>
+              <li class="step">
+                <p><strong>A acumulada.</strong> É o complemento:</p>
+                <div class="eq sm">
+                  <span class="v">F</span>(<span class="v">x</span>) = <span class="v">P</span>(<span class="v">X</span> ≤ <span class="v">x</span>) = 1 − <span class="v">e</span><sup>−λ<span class="v">x</span></sup>, &nbsp; <span class="v">x</span> ≥ 0
+                </div>
+              </li>
+              <li class="step fim">
+                <p><strong>Derivando</strong>, pelo teorema fundamental do cálculo (§ 03):</p>
+                <div class="eq sm">
+                  <span class="v">f</span>(<span class="v">x</span>) = <span class="frac"><span><span class="v">d</span></span><span><span class="v">dx</span></span></span> <span class="v">F</span>(<span class="v">x</span>) = <span class="res">λ<span class="v">e</span><sup>−λ<span class="v">x</span></sup></span>
+                </div>
+                <p>
+                  O tempo de reação do § 03, <span class="v">F</span>(<span class="v">x</span>) = 1 − <span class="v">e</span><sup>−0,01<span class="v">x</span></sup>,
+                  já era uma exponencial: λ = 0,01 por ms, e portanto μ = σ = 100 ms.
+                </p>
+              </li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 08 · Exponencial">
+          <div class="demo">
+            <div class="demo-head">
+              <span class="t">Exp(<span class="gr">λ</span>): taxa alta, espera curta</span>
+              <span class="h">λ é a taxa de contagens por unidade</span>
+            </div>
+            <div class="demo-body">
+              <div class="sliders">
+                <div class="sld">
+                  <label for="xL">taxa λ</label>
+                  <input type="range" id="xL" min="0.2" max="3" step="0.05" value="0.8">
+                  <output id="oXL">0,80</output>
+                </div>
+                <div class="sld">
+                  <label for="xX"><span class="v">x</span></label>
+                  <input type="range" id="xX" min="0" max="8" step="0.05" value="2">
+                  <output id="oXX">2,00</output>
+                </div>
+              </div>
+              <canvas class="plot" id="expCanvas" aria-label="Densidade exponencial com a área de zero até x sombreada e a média marcada"></canvas>
+              <div class="readout">
+                <div><span class="k">μ = σ = 1/λ</span><span class="val" id="xMu">—</span></div>
+                <div><span class="k"><span class="v">F</span>(<span class="v">x</span>) = 1 − <span class="v">e</span><sup>−λ<span class="v">x</span></sup></span><span class="val acum" id="xF">—</span></div>
+                <div><span class="k"><span class="v">P</span>(<span class="v">X</span> &gt; <span class="v">x</span>) = <span class="v">e</span><sup>−λ<span class="v">x</span></sup></span><span class="val dens" id="xS">—</span></div>
+                <div><span class="k"><span class="v">P</span>(<span class="v">X</span> ≤ μ)</span><span class="val" id="xPm">—</span></div>
+              </div>
+            </div>
+          </div>
+          <p style="font-size:.95rem; color:var(--ink-soft)">
+            A média e o desvio padrão são iguais. E, qualquer que seja λ,
+            <span class="v">P</span>(<span class="v">X</span> ≤ μ) = 1 − <span class="v">e</span><sup>−1</sup> ≈ 63 %:
+            a cauda longa puxa a média para a direita da maior parte das observações.
+          </p>
+        </div>
+
+        <div class="slide" data-sec="§ 08 · Exponencial">
+          <h3>Propriedade de falta de memória</h3>
+          <div class="defn">
+            <span class="lab">Falta de memória</span>
+            <p>Para uma variável aleatória exponencial <span class="v">X</span>, temos</p>
+            <div class="eq">
+              <span class="v">P</span>(<span class="v">X</span> &lt; <span class="v">t</span><sub>1</sub> + <span class="v">t</span><sub>2</sub> | <span class="v">X</span> &gt; <span class="v">t</span><sub>1</sub>)
+              = <span class="v">P</span>(<span class="v">X</span> &lt; <span class="v">t</span><sub>2</sub>)
+            </div>
+          </div>
+          <p>
+            Já ter esperado <span class="v">t</span><sub>1</sub> sem contagem nenhuma não muda a
+            chance de a contagem chegar nos próximos <span class="v">t</span><sub>2</sub>. É a
+            condição (1) do processo de Poisson, trechos disjuntos independentes, vista pelo lado
+            do tempo de espera.
+          </p>
+          <div class="ex" data-steps>
+            <span class="lab">Demonstração</span>
+            <p>Pela definição de probabilidade condicional, com <span class="v">F</span>(<span class="v">x</span>) = 1 − <span class="v">e</span><sup>−λ<span class="v">x</span></sup>:</p>
+            <ol class="steps">
+              <li class="step">
+                <div class="eq sm">
+                  <span class="v">P</span>(<span class="v">X</span> &lt; <span class="v">t</span><sub>1</sub> + <span class="v">t</span><sub>2</sub> | <span class="v">X</span> &gt; <span class="v">t</span><sub>1</sub>) =
+                  <span class="frac"><span><span class="v">P</span>(<span class="v">t</span><sub>1</sub> &lt; <span class="v">X</span> &lt; <span class="v">t</span><sub>1</sub> + <span class="v">t</span><sub>2</sub>)</span><span><span class="v">P</span>(<span class="v">X</span> &gt; <span class="v">t</span><sub>1</sub>)</span></span>
+                </div>
+              </li>
+              <li class="step">
+                <div class="eq sm">
+                  = <span class="frac"><span><span class="v">e</span><sup>−λ<span class="v">t</span><sub>1</sub></sup> − <span class="v">e</span><sup>−λ(<span class="v">t</span><sub>1</sub> + <span class="v">t</span><sub>2</sub>)</sup></span><span><span class="v">e</span><sup>−λ<span class="v">t</span><sub>1</sub></sup></span></span>
+                  = 1 − <span class="v">e</span><sup>−λ<span class="v">t</span><sub>2</sub></sup>
+                </div>
+                <p>O fator <span class="v">e</span><sup>−λ<span class="v">t</span><sub>1</sub></sup> cancela: a exponencial transforma soma de tempos em produto de fatores.</p>
+              </li>
+              <li class="step fim">
+                <div class="eq sm">
+                  = <span class="v">F</span>(<span class="v">t</span><sub>2</sub>) = <span class="res"><span class="v">P</span>(<span class="v">X</span> &lt; <span class="v">t</span><sub>2</sub>)</span>
+                </div>
+                <p><span class="v">t</span><sub>1</sub> sumiu do resultado. A exponencial é a única distribuição contínua com essa propriedade.</p>
+              </li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 08 · Exponencial">
+          <div class="demo">
+            <div class="demo-head">
+              <span class="t">Recomeçar a contagem em t₁ não muda nada</span>
+              <span class="h">compare as duas áreas relativas</span>
+            </div>
+            <div class="demo-body">
+              <div class="sliders">
+                <div class="sld">
+                  <label for="mL">taxa λ</label>
+                  <input type="range" id="mL" min="0.2" max="2" step="0.05" value="0.5">
+                  <output id="oML">0,50</output>
+                </div>
+                <div class="sld">
+                  <label for="mT1">já esperou <span class="v">t</span><sub>1</sub></label>
+                  <input type="range" id="mT1" min="0" max="6" step="0.05" value="3">
+                  <output id="oMT1">3,00</output>
+                </div>
+                <div class="sld">
+                  <label for="mT2">mais <span class="v">t</span><sub>2</sub></label>
+                  <input type="range" id="mT2" min="0.1" max="4" step="0.05" value="1.5">
+                  <output id="oMT2">1,50</output>
+                </div>
+              </div>
+              <canvas class="plot tall" id="memCanvas" aria-label="Em cima, a densidade exponencial com o trecho de 0 a t2 sombreado; embaixo, a mesma densidade com o trecho de t1 a t1 mais t2 sombreado e a região antes de t1 descartada"></canvas>
+              <div class="readout">
+                <div><span class="k"><span class="v">P</span>(<span class="v">X</span> &lt; <span class="v">t</span><sub>2</sub>)</span><span class="val dens" id="mA">—</span></div>
+                <div><span class="k"><span class="v">P</span>(<span class="v">X</span> &gt; <span class="v">t</span><sub>1</sub>)</span><span class="val" id="mS">—</span></div>
+                <div><span class="k"><span class="v">P</span>(<span class="v">X</span> &lt; <span class="v">t</span><sub>1</sub> + <span class="v">t</span><sub>2</sub> | <span class="v">X</span> &gt; <span class="v">t</span><sub>1</sub>)</span><span class="val acum" id="mB">—</span></div>
+              </div>
+            </div>
+          </div>
+          <p style="font-size:.95rem; color:var(--ink-soft)">
+            Embaixo, a curva à direita de <span class="v">t</span><sub>1</sub> é a de cima, só que
+            mais baixa, por um fator <span class="v">e</span><sup>−λ<span class="v">t</span><sub>1</sub></sup>.
+            Dividir pela área que sobrou devolve exatamente a mesma proporção.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 09 ============ -->
+    <section id="gama">
+      <div class="wrap">
+        <div class="slide" data-sec="§ 09 · Erlang e Gama">
+          <div class="sec-head">
+            <span class="n">§ 09</span>
+            <h2>Distribuições de Erlang e Gama</h2>
+            <span class="sub">Esperar a r-ésima contagem, e depois deixar r ser qualquer real positivo</span>
+          </div>
+          <p>
+            Uma generalização da distribuição exponencial é o comprimento até que
+            <span class="v">r</span> contagens ocorram em um processo de Poisson. A função
+            densidade de probabilidade dessa distribuição, a de <strong>Erlang</strong>, é
+          </p>
+          <div class="defn">
+            <span class="lab">Definição — distribuição de Erlang</span>
+            <div class="eq">
+              <span class="v">f</span>(<span class="v">x</span>) =
+              <span class="frac"><span>λ<sup><span class="v">r</span></sup> <span class="v">x</span><sup><span class="v">r</span> − 1</sup> <span class="v">e</span><sup>−λ<span class="v">x</span></sup></span><span>(<span class="v">r</span> − 1)!</span></span>,
+              &nbsp; <span class="v">x</span> &gt; 0 &nbsp;e&nbsp; <span class="v">r</span> = 1, 2, …
+            </div>
+          </div>
+          <p>
+            Com <span class="v">r</span> = 1 voltamos à exponencial. Esperar a
+            <span class="v">r</span>-ésima contagem é somar <span class="v">r</span> esperas
+            exponenciais independentes: é o análogo contínuo da binomial negativa da aula 02.
+          </p>
+          <div class="note problema">
+            <span class="lab">A limitação</span>
+            <p>
+              O fatorial só existe para <span class="v">r</span> ∈ ℤ⁺. Para liberar
+              <span class="v">r</span>, precisamos de uma função que estenda o fatorial aos reais.
+            </p>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 09 · Erlang e Gama">
+          <h3>A função gama</h3>
+          <div class="defn">
+            <span class="lab">Definição — função gama</span>
+            <p>Existe uma função que generaliza a recursão fatorial para números reais positivos:</p>
+            <div class="eq">
+              Γ(<span class="v">r</span>) =
+              <span class="int"><span class="s">∫</span><span class="lims"><span>∞</span><span>0</span></span></span>
+              <span class="v">x</span><sup><span class="v">r</span> − 1</sup> <span class="v">e</span><sup>−<span class="v">x</span></sup> <span class="v">dx</span>,
+              &nbsp; <span class="v">r</span> &gt; 0
+            </div>
+          </div>
+          <div class="ex" data-steps>
+            <span class="lab">Demonstração — a recursão Γ(r) = (r − 1) Γ(r − 1)</span>
+            <p>Integração por partes, com <span class="v">u</span> = <span class="v">x</span><sup><span class="v">r</span>−1</sup> e <span class="v">dv</span> = <span class="v">e</span><sup>−<span class="v">x</span></sup><span class="v">dx</span>, para <span class="v">r</span> &gt; 1:</p>
+            <ol class="steps">
+              <li class="step">
+                <div class="eq sm">
+                  Γ(<span class="v">r</span>) =
+                  <span class="brk">[</span> −<span class="v">x</span><sup><span class="v">r</span>−1</sup><span class="v">e</span><sup>−<span class="v">x</span></sup>
+                  <span class="ev"><span class="s">]</span><span class="lims"><span>∞</span><span>0</span></span></span>
+                  + (<span class="v">r</span> − 1)
+                  <span class="int"><span class="s">∫</span><span class="lims"><span>∞</span><span>0</span></span></span>
+                  <span class="v">x</span><sup><span class="v">r</span> − 2</sup> <span class="v">e</span><sup>−<span class="v">x</span></sup> <span class="v">dx</span>
+                </div>
+              </li>
+              <li class="step">
+                <p><strong>O termo de fronteira some:</strong> em 0 porque <span class="v">x</span><sup><span class="v">r</span>−1</sup> = 0, e no infinito porque <span class="v">e</span><sup>−<span class="v">x</span></sup> vence qualquer potência. A integral que sobrou é Γ(<span class="v">r</span> − 1).</p>
+              </li>
+              <li class="step fim">
+                <div class="eq sm">
+                  Γ(<span class="v">r</span>) = <span class="res">(<span class="v">r</span> − 1) Γ(<span class="v">r</span> − 1)</span>
+                  &nbsp;&nbsp;·&nbsp;&nbsp; Γ(1) = <span class="int"><span class="s">∫</span><span class="lims"><span>∞</span><span>0</span></span></span> <span class="v">e</span><sup>−<span class="v">x</span></sup><span class="v">dx</span> = 1
+                </div>
+                <p>Logo, para <span class="v">r</span> inteiro, Γ(<span class="v">r</span>) = (<span class="v">r</span> − 1)!, exatamente o denominador da Erlang.</p>
+              </li>
+            </ol>
+          </div>
+          <div class="note problema">
+            <span class="lab">Cuidado</span>
+            <p>
+              0! = 1 = Γ(1), mas <strong>Γ(0) não é 0!</strong>: a integral diverge em
+              <span class="v">r</span> = 0. Por isso a exigência <span class="v">r</span> &gt; 0.
+            </p>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 09 · Erlang e Gama">
+          <div class="note">
+            <span class="lab">Calculando Γ na prática</span>
+            <p>
+              Para resolver questões, é comum aplicar a recursão até chegar a um valor conhecido:
+              Γ(1) = 1 ou Γ(1/2) = √π. Por exemplo,
+            </p>
+            <div class="eq sm">
+              Γ(3,5) = 2,5 · Γ(2,5) = 2,5 · 1,5 · Γ(1,5) = 2,5 · 1,5 · 0,5 · Γ(0,5) = 1,875 √π ≈ <span class="res">3,3234</span>
+            </div>
+          </div>
+          <div class="defn">
+            <span class="lab">Definição — distribuição gama</span>
+            <p>A distribuição de Erlang é generalizada pela distribuição gama, com densidade</p>
+            <div class="eq">
+              <span class="v">f</span>(<span class="v">x</span>) =
+              <span class="frac"><span>λ<sup><span class="v">r</span></sup> <span class="v">x</span><sup><span class="v">r</span> − 1</sup> <span class="v">e</span><sup>−λ<span class="v">x</span></sup></span><span>Γ(<span class="v">r</span>)</span></span>,
+              &nbsp; <span class="v">x</span> &gt; 0
+            </div>
+            <p>com parâmetro de escala λ &gt; 0 e de forma <span class="v">r</span> &gt; 0.</p>
+          </div>
+          <ul>
+            <li>Média: <span class="v">E</span>(<span class="v">X</span>) = <span class="frac"><span><span class="v">r</span></span><span>λ</span></span></li>
+            <li>Variância: <span class="v">E</span>[(<span class="v">X</span> − μ)²] = <span class="frac"><span><span class="v">r</span></span><span>λ²</span></span></li>
+          </ul>
+          <div class="note">
+            <span class="lab">Um caso especial que volta mais adiante</span>
+            <p>
+              A distribuição <strong>qui-quadrado</strong> χ², muito usada em estimação de
+              intervalos e testes de hipóteses, é a gama com λ = 0,5 e
+              <span class="v">r</span> ∈ {0,5; 1; 1,5; 2; …}. Com <span class="v">k</span> graus de
+              liberdade, <span class="v">r</span> = <span class="v">k</span>/2.
+            </p>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 09 · Erlang e Gama">
+          <div class="demo">
+            <div class="demo-head">
+              <span class="t">Gama(r, <span class="gr">λ</span>) e a soma de r exponenciais</span>
+              <span class="h">r inteiro: histograma de 20.000 somas simuladas</span>
+            </div>
+            <div class="demo-body">
+              <div class="ctl">
+                <button class="b" type="button" data-gama="1,1">r = 1 (exponencial)</button>
+                <button class="b" type="button" data-gama="3,1">Erlang r = 3</button>
+                <button class="b" type="button" data-gama="1.5,0.5">χ² com 3 g.l.</button>
+                <button class="b" type="button" id="gNova">Nova amostra</button>
+              </div>
+              <div class="sliders">
+                <div class="sld">
+                  <label for="gR">forma <span class="v">r</span></label>
+                  <input type="range" id="gR" min="0.5" max="10" step="0.5" value="3">
+                  <output id="oGR">3,0</output>
+                </div>
+                <div class="sld">
+                  <label for="gL">taxa λ</label>
+                  <input type="range" id="gL" min="0.25" max="3" step="0.05" value="1">
+                  <output id="oGL">1,00</output>
+                </div>
+              </div>
+              <canvas class="plot" id="gamaCanvas" aria-label="Densidade gama com histograma de somas de exponenciais sobreposto quando r é inteiro, e a exponencial de mesma taxa tracejada"></canvas>
+              <div class="legend"><span class="l-dens">densidade gama</span><span class="l-acum">histograma: soma de <span class="v">r</span> exponenciais</span><span class="l-ref">Exp(λ), o caso <span class="v">r</span> = 1</span></div>
+              <div class="readout">
+                <div><span class="k">Γ(<span class="v">r</span>)</span><span class="val" id="gG">—</span></div>
+                <div><span class="k">μ = <span class="v">r</span>/λ</span><span class="val dens" id="gMu">—</span></div>
+                <div><span class="k">σ² = <span class="v">r</span>/λ²</span><span class="val acum" id="gVar">—</span></div>
+              </div>
+              <div class="verdict ok" id="gVerdict"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 10 ============ -->
+    <section id="weibull">
+      <div class="wrap">
+        <div class="slide" data-sec="§ 10 · Weibull">
+          <div class="sec-head">
+            <span class="n">§ 10</span>
+            <h2>Distribuição de Weibull</h2>
+            <span class="sub">Tempo até a falha, quando o risco muda com o uso</span>
+          </div>
+          <p>
+            A distribuição de Weibull é frequentemente usada para modelar o tempo até a falha de
+            muitos sistemas físicos diferentes, em que o número de falhas:
+          </p>
+          <ul>
+            <li><strong>aumenta</strong> com o tempo (desgaste de rolamentos);</li>
+            <li><strong>diminui</strong> com o tempo (alguns semicondutores);</li>
+            <li><strong>permanece constante</strong> com o tempo (falhas causadas por choques externos ao sistema).</li>
+          </ul>
+          <div class="defn">
+            <span class="lab">Definição — variável aleatória de Weibull</span>
+            <p>A variável aleatória <span class="v">X</span>, com função densidade de probabilidade</p>
+            <div class="eq">
+              <span class="v">f</span>(<span class="v">x</span>) =
+              <span class="frac"><span>β</span><span>δ</span></span>
+              <span class="brk">(</span><span class="frac"><span><span class="v">x</span></span><span>δ</span></span><span class="brk">)</span><sup>β − 1</sup>
+              <span class="v">e</span><sup>−(<span class="v">x</span>/δ)<sup>β</sup></sup>,
+              &nbsp; <span class="v">x</span> &gt; 0
+            </div>
+            <p>
+              é uma variável aleatória de Weibull, com parâmetro de <strong>escala</strong> δ &gt; 0
+              e parâmetro de <strong>forma</strong> β &gt; 0.
+            </p>
+          </div>
+          <ul>
+            <li>Média: <span class="v">E</span>(<span class="v">X</span>) = δ Γ<span class="brk" style="font-size:1.3em">(</span>1 + <span class="frac"><span>1</span><span>β</span></span><span class="brk" style="font-size:1.3em">)</span></li>
+            <li>Variância: <span class="v">E</span>[(<span class="v">X</span> − μ)²] = δ² Γ<span class="brk" style="font-size:1.3em">(</span>1 + <span class="frac"><span>2</span><span>β</span></span><span class="brk" style="font-size:1.3em">)</span> − δ² <span class="brk" style="font-size:1.3em">[</span>Γ<span class="brk" style="font-size:1.3em">(</span>1 + <span class="frac"><span>1</span><span>β</span></span><span class="brk" style="font-size:1.3em">)</span><span class="brk" style="font-size:1.3em">]</span>²</li>
+          </ul>
+          <p>
+            Casos especiais: com β = 1 volta a exponencial, com λ = 1/δ; com β = 2 temos a
+            distribuição de <strong>Rayleigh</strong>.
+          </p>
+        </div>
+
+        <div class="slide" data-sec="§ 10 · Weibull">
+          <div class="demo">
+            <div class="demo-head">
+              <span class="t">A forma <span class="gr">β</span> decide se o risco sobe, cai ou fica</span>
+              <span class="h">em baixo, a taxa de falha</span>
+            </div>
+            <div class="demo-body">
+              <div class="ctl">
+                <button class="b" type="button" data-beta="0.6">β = 0,6 · mortalidade infantil</button>
+                <button class="b" type="button" data-beta="1">β = 1 · exponencial</button>
+                <button class="b" type="button" data-beta="2">β = 2 · Rayleigh</button>
+                <button class="b" type="button" data-beta="3.5">β = 3,5 · desgaste</button>
+              </div>
+              <div class="sliders">
+                <div class="sld">
+                  <label for="wB">forma β</label>
+                  <input type="range" id="wB" min="0.4" max="5" step="0.05" value="2">
+                  <output id="oWB">2,00</output>
+                </div>
+                <div class="sld">
+                  <label for="wD">escala δ</label>
+                  <input type="range" id="wD" min="0.5" max="4" step="0.05" value="2">
+                  <output id="oWD">2,00</output>
+                </div>
+              </div>
+              <canvas class="plot tall" id="weibCanvas" aria-label="Em cima, a densidade de Weibull; embaixo, a taxa de falha, crescente, constante ou decrescente conforme beta"></canvas>
+              <div class="readout">
+                <div><span class="k">μ = δΓ(1 + 1/β)</span><span class="val dens" id="wMu">—</span></div>
+                <div><span class="k">σ²</span><span class="val acum" id="wVar">—</span></div>
+                <div><span class="k"><span class="v">P</span>(<span class="v">X</span> ≤ δ)</span><span class="val" id="wPd">—</span></div>
+              </div>
+              <div class="verdict ok" id="wVerdict"></div>
+            </div>
+          </div>
+          <p style="font-size:.95rem; color:var(--ink-soft)">
+            A <strong>taxa de falha</strong> <span class="v">h</span>(<span class="v">x</span>) =
+            <span class="v">f</span>(<span class="v">x</span>)/[1 − <span class="v">F</span>(<span class="v">x</span>)]
+            = (β/δ)(<span class="v">x</span>/δ)<sup>β−1</sup> mede o risco de falhar logo após
+            <span class="v">x</span>, sabendo que o componente sobreviveu até ali. Constante só
+            com β = 1: a falta de memória da exponencial. Repare também que
+            <span class="v">P</span>(<span class="v">X</span> ≤ δ) = 1 − <span class="v">e</span><sup>−1</sup> para todo β.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 11 ============ -->
+    <section id="lognormal">
+      <div class="wrap">
+        <div class="slide" data-sec="§ 11 · Lognormal">
+          <div class="sec-head">
+            <span class="n">§ 11</span>
+            <h2>Distribuição lognormal</h2>
+            <span class="sub">A exponencial de uma normal: positiva e com cauda à direita</span>
+          </div>
+          <div class="defn">
+            <span class="lab">Definição — variável aleatória lognormal</span>
+            <p>
+              Seja <span class="v">W</span> normal, com média θ e variância ω². Então
+              <span class="v">X</span> = <span class="v">e</span><sup><span class="v">W</span></sup>
+              é uma variável aleatória lognormal, com densidade
+            </p>
+            <div class="eq">
+              <span class="v">f</span>(<span class="v">x</span>) =
+              <span class="frac"><span>1</span><span><span class="v">x</span>ω<span class="sqrt">√<span>2π</span></span></span></span>
+              <span class="v">e</span><sup>−(ln <span class="v">x</span> − θ)² / 2ω²</sup>,
+              &nbsp; 0 &lt; <span class="v">x</span> &lt; ∞
+            </div>
+          </div>
+          <ul>
+            <li>Média: <span class="v">E</span>(<span class="v">X</span>) = <span class="v">e</span><sup>θ + ω²/2</sup></li>
+            <li>Variância: <span class="v">E</span>[(<span class="v">X</span> − μ)²] = <span class="v">e</span><sup>2θ + ω²</sup>(<span class="v">e</span><sup>ω²</sup> − 1)</li>
+          </ul>
+          <div class="note problema">
+            <span class="lab">Atenção aos parâmetros</span>
+            <p>
+              θ e ω² são a média e a variância de <span class="v">W</span> = ln <span class="v">X</span>,
+              <strong>não</strong> de <span class="v">X</span>. A mediana de <span class="v">X</span> é
+              <span class="v">e</span><sup>θ</sup>, e a média fica acima dela.
+            </p>
+          </div>
+          <p>
+            O tempo de vida de um produto que degrada ao longo do tempo é frequentemente modelado
+            por uma variável lognormal, como o tempo de vida de um laser semicondutor. O motivo:
+            se o dano se acumula por <strong>fatores multiplicativos</strong> independentes, o
+            logaritmo vira uma soma, e somas tendem à normal (§ 06).
+          </p>
+        </div>
+
+        <div class="slide" data-sec="§ 11 · Lognormal">
+          <div class="demo">
+            <div class="demo-head">
+              <span class="t">W normal em cima, X = e<sup>W</sup> embaixo</span>
+              <span class="h">a mesma probabilidade, outra régua</span>
+            </div>
+            <div class="demo-body">
+              <div class="sliders">
+                <div class="sld">
+                  <label for="lT">θ (média de <span class="v">W</span>)</label>
+                  <input type="range" id="lT" min="-0.5" max="1.5" step="0.05" value="0.5">
+                  <output id="oLT">0,50</output>
+                </div>
+                <div class="sld">
+                  <label for="lW">ω (desvio de <span class="v">W</span>)</label>
+                  <input type="range" id="lW" min="0.1" max="1.2" step="0.05" value="0.5">
+                  <output id="oLW">0,50</output>
+                </div>
+              </div>
+              <canvas class="plot tall" id="lognCanvas" aria-label="Em cima, a normal de W com a área abaixo de theta sombreada; embaixo, a lognormal de X com a área abaixo da mediana sombreada e a média marcada"></canvas>
+              <div class="readout">
+                <div><span class="k">mediana <span class="v">e</span><sup>θ</sup></span><span class="val" id="lMed">—</span></div>
+                <div><span class="k">μ = <span class="v">e</span><sup>θ + ω²/2</sup></span><span class="val dens" id="lMu">—</span></div>
+                <div><span class="k">σ²</span><span class="val acum" id="lVar">—</span></div>
+              </div>
+            </div>
+          </div>
+          <p style="font-size:.95rem; color:var(--ink-soft)">
+            As duas áreas sombreadas valem 0,5: <span class="v">W</span> &lt; θ é o mesmo evento
+            que <span class="v">X</span> &lt; <span class="v">e</span><sup>θ</sup>. Aumente ω e veja
+            a cauda direita de <span class="v">X</span> esticar, afastando a média da mediana.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 12 ============ -->
+    <section id="beta">
+      <div class="wrap">
+        <div class="slide" data-sec="§ 12 · Beta">
+          <div class="sec-head">
+            <span class="n">§ 12</span>
+            <h2>Distribuição beta</h2>
+            <span class="sub">Uma família flexível para variáveis que vivem em [0, 1]</span>
+          </div>
+          <div class="defn">
+            <span class="lab">Definição — variável aleatória beta</span>
+            <p>A variável aleatória <span class="v">X</span>, com função densidade de probabilidade</p>
+            <div class="eq">
+              <span class="v">f</span>(<span class="v">x</span>) =
+              <span class="frac"><span>Γ(α + β)</span><span>Γ(α) Γ(β)</span></span>
+              <span class="v">x</span><sup>α − 1</sup> (1 − <span class="v">x</span>)<sup>β − 1</sup>,
+              &nbsp; 0 ≤ <span class="v">x</span> ≤ 1
+            </div>
+            <p>é uma variável aleatória beta, com parâmetros α &gt; 0 e β &gt; 0.</p>
+          </div>
+          <ul>
+            <li>Média: <span class="v">E</span>(<span class="v">X</span>) = <span class="frac"><span>α</span><span>α + β</span></span></li>
+            <li>Variância: <span class="v">E</span>[(<span class="v">X</span> − μ)²] = <span class="frac"><span>αβ</span><span>(α + β)²(α + β + 1)</span></span></li>
+          </ul>
+          <p>
+            A fração de gamas é só a constante que faz a área dar 1; a forma vem de
+            <span class="v">x</span><sup>α−1</sup>(1 − <span class="v">x</span>)<sup>β−1</sup>. Com
+            α = β = 1 ela vira a uniforme <span class="v">U</span>(0, 1) do § 05. Serve para
+            proporções: fração de peças defeituosas, fração do tempo em que um servidor está
+            ocupado, a própria probabilidade <span class="v">p</span> de uma binomial.
+          </p>
+        </div>
+
+        <div class="slide" data-sec="§ 12 · Beta">
+          <div class="demo">
+            <div class="demo-head">
+              <span class="t">Beta(<span class="gr">α</span>, <span class="gr">β</span>): <span class="gr">α</span> puxa para 1, <span class="gr">β</span> puxa para 0</span>
+              <span class="h">experimente os atalhos</span>
+            </div>
+            <div class="demo-body">
+              <div class="ctl">
+                <button class="b" type="button" data-ab="1,1">α = β = 1 · uniforme</button>
+                <button class="b" type="button" data-ab="2,5">2, 5</button>
+                <button class="b" type="button" data-ab="5,2">5, 2</button>
+                <button class="b" type="button" data-ab="5,5">5, 5</button>
+                <button class="b" type="button" data-ab="0.5,0.5">0,5; 0,5 · forma de U</button>
+              </div>
+              <div class="sliders">
+                <div class="sld">
+                  <label for="bA">α</label>
+                  <input type="range" id="bA" min="0.3" max="10" step="0.1" value="2">
+                  <output id="oBA">2,0</output>
+                </div>
+                <div class="sld">
+                  <label for="bB">β</label>
+                  <input type="range" id="bB" min="0.3" max="10" step="0.1" value="5">
+                  <output id="oBB">5,0</output>
+                </div>
+              </div>
+              <canvas class="plot" id="betaCanvas" aria-label="Densidade beta no intervalo de zero a um com a média marcada"></canvas>
+              <div class="readout">
+                <div><span class="k">μ = α/(α + β)</span><span class="val dens" id="bMu">—</span></div>
+                <div><span class="k">σ²</span><span class="val acum" id="bVar">—</span></div>
+                <div><span class="k">constante Γ(α+β)/Γ(α)Γ(β)</span><span class="val" id="bK">—</span></div>
+              </div>
+            </div>
+          </div>
+          <p style="font-size:.95rem; color:var(--ink-soft)">
+            Com α = β a curva é simétrica em torno de 0,5. Aumentando os dois na mesma proporção,
+            a média fica e a variância cai: a curva se concentra.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 13 ============ -->
+    <section id="resumo">
+      <div class="wrap">
+        <div class="slide" data-sec="§ 13 · Resumo">
+          <div class="sec-head">
+            <span class="n">§ 13</span>
+            <h2>Como escolher a distribuição</h2>
+            <span class="sub">As distribuições contínuas desta aula, lado a lado</span>
+          </div>
+          <div class="tbl-scroll">
+            <table class="tri">
+              <thead>
+                <tr><th>Distribuição</th><th>Notação</th><th>Faixa</th><th>Pergunta que ela responde</th><th><span class="gr">μ</span></th><th><span class="gr">σ²</span></th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Uniforme</td><td class="num dens"><span class="v">U</span>(<span class="v">a</span>, <span class="v">b</span>)</td><td class="num">[<span class="v">a</span>, <span class="v">b</span>]</td><td>Todo trecho de mesmo comprimento tem a mesma chance?</td><td class="num dens">(<span class="v">a</span>+<span class="v">b</span>)/2</td><td class="num acum">(<span class="v">b</span>−<span class="v">a</span>)²/12</td></tr>
+                <tr><td>Normal</td><td class="num dens">𝒩(μ, σ²)</td><td class="num">ℝ</td><td>Soma ou média de <strong>muitos efeitos</strong> independentes?</td><td class="num dens">μ</td><td class="num acum">σ²</td></tr>
+                <tr><td>Exponencial</td><td class="num dens">Exp(λ)</td><td class="num"><span class="v">x</span> ≥ 0</td><td>Quanto falta até a <strong>1ª contagem</strong> de um processo de Poisson?</td><td class="num dens">1/λ</td><td class="num acum">1/λ²</td></tr>
+                <tr><td>Erlang</td><td class="num dens">Erlang(<span class="v">r</span>, λ)</td><td class="num"><span class="v">x</span> &gt; 0</td><td>Quanto falta até a <strong><span class="v">r</span>-ésima contagem</strong>? (<span class="v">r</span> inteiro)</td><td class="num dens"><span class="v">r</span>/λ</td><td class="num acum"><span class="v">r</span>/λ²</td></tr>
+                <tr><td>Gama</td><td class="num dens">Gama(<span class="v">r</span>, λ)</td><td class="num"><span class="v">x</span> &gt; 0</td><td>Erlang com <span class="v">r</span> &gt; 0 real; inclui a χ² (λ = 0,5)</td><td class="num dens"><span class="v">r</span>/λ</td><td class="num acum"><span class="v">r</span>/λ²</td></tr>
+                <tr><td>Weibull</td><td class="num dens">Weibull(δ, β)</td><td class="num"><span class="v">x</span> &gt; 0</td><td>Tempo até a <strong>falha</strong>, com risco que sobe, cai ou fica constante?</td><td class="num dens">δΓ(1+1/β)</td><td class="num acum">δ²Γ(1+2/β) − μ²</td></tr>
+                <tr><td>Lognormal</td><td class="num dens">LN(θ, ω²)</td><td class="num"><span class="v">x</span> &gt; 0</td><td>Grandeza que cresce ou degrada por <strong>fatores multiplicativos</strong>?</td><td class="num dens"><span class="v">e</span><sup>θ+ω²/2</sup></td><td class="num acum"><span class="v">e</span><sup>2θ+ω²</sup>(<span class="v">e</span><sup>ω²</sup>−1)</td></tr>
+                <tr><td>Beta</td><td class="num dens">Beta(α, β)</td><td class="num">[0, 1]</td><td>Uma <strong>proporção</strong> ou probabilidade?</td><td class="num dens">α/(α+β)</td><td class="num acum">αβ/[(α+β)²(α+β+1)]</td></tr>
+              </tbody>
+            </table>
           </div>
           <div class="note">
-            <span class="lab">Para levar desta aula</span>
+            <span class="lab">As perguntas que separam quase tudo</span>
             <p>
-              No contínuo, <strong>probabilidade é área</strong>. A densidade
-              <span class="v">f</span> dá a forma, a acumulada <span class="v">F</span> dá as
-              respostas, e μ e σ² saem das mesmas definições da aula 02 com ∫ no lugar de Σ.
+              <strong>Qual é a faixa?</strong> [0, 1] → beta; a reta toda → normal; só positivos →
+              tempos de espera e de vida. <strong>Esperando o quê?</strong> A 1ª contagem →
+              exponencial; a <span class="v">r</span>-ésima → Erlang/gama; uma falha com risco que
+              muda com a idade → Weibull; degradação por fatores → lognormal.
             </p>
           </div>
         </div>
@@ -2444,6 +3060,240 @@ html { scroll-behavior: smooth; }
   });
   ["zMu", "zSig", "zX"].forEach(function (id) { $(id).addEventListener("input", drawZ); });
   wireSeg("zSeg", function (k) { zTail = k; drawZ(); });
+
+  /* ---------------- função gama ---------------- */
+  /* ln Γ por Lanczos (g = 7, 9 termos): ~15 dígitos para z > 0 */
+  var LANC = [0.99999999999980993, 676.5203681218851, -1259.1392167224028, 771.32342877765313,
+    -176.61502916214059, 12.507343278686905, -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7];
+  function lnGamma(z) {
+    if (z < 0.5) return Math.log(Math.PI / Math.sin(Math.PI * z)) - lnGamma(1 - z);
+    z -= 1;
+    var x = LANC[0];
+    for (var i = 1; i < 9; i++) x += LANC[i] / (z + i);
+    var t = z + 7.5;
+    return 0.5 * Math.log(2 * Math.PI) + (z + 0.5) * Math.log(t) - t + Math.log(x);
+  }
+  function gammaFn(z) { return Math.exp(lnGamma(z)); }
+  /* formata sem estourar: valores grandes em notação científica */
+  function fmtG(v) { return v >= 1e5 ? sci(v, 3) : d4(v); }
+  function pico(fn, a, b) {
+    var pk = 0;
+    for (var t = 0; t <= 300; t++) { var y = fn(a + (t / 300) * (b - a)); if (isFinite(y)) pk = Math.max(pk, y); }
+    return pk;
+  }
+
+  /* ---------------- §08 exponencial ---------------- */
+  var drawExp = reg(function () {
+    var l = +$("xL").value, x = +$("xX").value;
+    var F = 1 - Math.exp(-l * x);
+    txt("oXL", d2(l)); txt("oXX", d2(x));
+    txt("xMu", d4(1 / l)); txt("xF", d4(F)); txt("xS", d4(1 - F));
+    txt("xPm", d4(1 - Math.exp(-1)));
+    var fr = fit($("expCanvas"));
+    if (!fr) return;
+    var f = function (u) { return u < 0 ? 0 : l * Math.exp(-l * u); };
+    var P = panel(fr, { x0: 0, x1: 8, y0: 0, y1: l * 1.12, padL: 44 });
+    P.area(f, 0, x, css("--teorico"), .3);
+    P.curve(f, css("--teorico"), 2.2);
+    P.vline(x, css("--empirico"), [4, 3], 1.4);
+    if (1 / l < 8) {
+      P.vline(1 / l, css("--ink-mute"), [2, 3], 1, f(1 / l));
+      P.label("μ", 1 / l, f(1 / l), css("--ink-mute"), "center", -6);
+    }
+    if (x > 0.3) P.label("F(x) = " + d4(F), Math.min(x + .15, 5.6), l * .78, css("--empirico"), "left");
+  });
+  ["xL", "xX"].forEach(function (id) { $(id).addEventListener("input", drawExp); });
+
+  /* ---------------- §08 falta de memória ---------------- */
+  var drawMem = reg(function () {
+    var l = +$("mL").value, t1 = +$("mT1").value, t2 = +$("mT2").value;
+    txt("oML", d2(l)); txt("oMT1", d2(t1)); txt("oMT2", d2(t2));
+    var pa = 1 - Math.exp(-l * t2), sv = Math.exp(-l * t1);
+    var pb = (Math.exp(-l * t1) - Math.exp(-l * (t1 + t2))) / sv;
+    txt("mA", d4(pa)); txt("mS", d4(sv)); txt("mB", d4(pb));
+    var fr = fit($("memCanvas"));
+    if (!fr) return;
+    var hh = fr.h / 2, ym = l * 1.12;
+    var f = function (u) { return u < 0 ? 0 : l * Math.exp(-l * u); };
+    var A = panel(fr, { x0: 0, x1: 10, y0: 0, y1: ym, top: 0, h: hh, padL: 44, ylabel: "sem condição" });
+    A.area(f, 0, t2, css("--teorico"), .35);
+    A.curve(f, css("--teorico"), 2.2);
+    A.vline(t2, css("--teorico"), [4, 3], 1.2);
+    A.label("t₂", t2, ym * .55, css("--teorico"));
+
+    var B = panel(fr, { x0: 0, x1: 10, y0: 0, y1: ym, top: hh, h: hh, padL: 44, ylabel: "sabendo que X > t₁" });
+    var ctx = B.ctx;
+    if (t1 > 0) {
+      ctx.fillStyle = css("--ink-mute"); ctx.globalAlpha = .12;
+      ctx.fillRect(B.X(0), B.top + B.T, B.X(t1) - B.X(0), B.base - B.top - B.T);
+      ctx.globalAlpha = 1;
+    }
+    B.area(f, t1, 10, css("--teorico"), .12);
+    B.area(f, t1, t1 + t2, css("--empirico"), .45);
+    B.curve(f, css("--teorico"), 2.2);
+    /* a curva de cima, transladada para começar em t1: é f/P(X > t1) */
+    B.curve(function (u) { return u < t1 ? NaN : f(u - t1); }, css("--ink-mute"), 1.3, [5, 4]);
+    B.vline(t1, css("--ink-mute"), [2, 3], 1);
+    B.vline(t1 + t2, css("--empirico"), [4, 3], 1.2);
+    if (t1 > 0.8) B.label("descartado", t1 / 2, ym * .55, css("--ink-mute"));
+    B.label("t₁", t1, ym * .82, css("--ink-mute"));
+  });
+  ["mL", "mT1", "mT2"].forEach(function (id) { $(id).addEventListener("input", drawMem); });
+
+  /* ---------------- §09 gama ---------------- */
+  /* 20.000 × 10 esperas Exp(1) com somas acumuladas: a soma de r esperas de taxa λ
+     sai de cs[i][r-1]/λ, sem ressortear a cada movimento. */
+  var GR = 20000, GC = 10, gamaCs = null;
+  function novaGama() {
+    gamaCs = new Float64Array(GR * GC);
+    for (var i = 0; i < GR; i++) {
+      var s = 0;
+      for (var c = 0; c < GC; c++) { s += -Math.log(1 - Math.random()); gamaCs[i * GC + c] = s; }
+    }
+  }
+  function gamaPdf(x, r, l) {
+    if (x <= 0) return r < 1 ? Infinity : (r === 1 ? l : 0);
+    return Math.exp(r * Math.log(l) + (r - 1) * Math.log(x) - l * x - lnGamma(r));
+  }
+  var drawGama = reg(function () {
+    if (!gamaCs) novaGama();
+    var r = +$("gR").value, l = +$("gL").value;
+    var inteiro = Math.abs(r - Math.round(r)) < 1e-9;
+    txt("oGR", dn(r, 1)); txt("oGL", d2(l));
+    txt("gG", fmtG(gammaFn(r)) + (inteiro ? " = " + (r - 1) + "!" : ""));
+    txt("gMu", d4(r / l)); txt("gVar", d4(r / (l * l)));
+    var msg = r === 1
+      ? "r = 1: a própria exponencial, a espera pela primeira contagem."
+      : inteiro
+        ? "r = " + r + " inteiro: Erlang, a espera pela " + r + "ª contagem. O histograma soma " + r + " esperas exponenciais simuladas e cai sobre a curva."
+        : "r = " + dn(r, 1) + " não é inteiro: não há como somar “meia” exponencial, então não há Erlang nem simulação. A gama continua valendo, graças a Γ(r).";
+    if (Math.abs(l - 0.5) < 1e-9) msg += " Com λ = 0,5, esta é a χ² com " + dn(2 * r, 0) + " graus de liberdade.";
+    txt("gVerdict", msg);
+    var fr = fit($("gamaCanvas"));
+    if (!fr) return;
+    var mu = r / l, sg = Math.sqrt(r) / l;
+    var x1 = Math.max(mu + 4.5 * sg, 3 / l);
+    var f = function (x) { return gamaPdf(x, r, l); };
+    var hs = [], xs = [], K = 50, bw = x1 / K;
+    if (inteiro) {
+      var cnt = new Array(K).fill(0);
+      for (var i = 0; i < GR; i++) {
+        var j = Math.floor(gamaCs[i * GC + r - 1] / l / bw);
+        if (j < K) cnt[j]++;
+      }
+      hs = cnt.map(function (c) { return c / (GR * bw); });
+      xs = cnt.map(function (c, k) { return (k + .5) * bw; });
+    }
+    var pk = pico(f, x1 * (r < 1 ? .03 : .002), x1);
+    var ymax = Math.max(pk, hs.length ? Math.max.apply(null, hs) : 0, r === 1 ? l : 0) * 1.1;
+    var P = panel(fr, { x0: 0, x1: x1, y0: 0, y1: ymax, padL: 50, xlabel: "x" });
+    if (inteiro) bars(P, xs, hs, bw, css("--empirico"), .45);
+    if (r !== 1) P.curve(function (x) { return x < 0 ? 0 : l * Math.exp(-l * x); }, css("--ink-mute"), 1.3, [5, 4]);
+    P.area(f, 0, x1, css("--teorico"), .12);
+    P.curve(f, css("--teorico"), 2.4);
+    P.vline(mu, css("--ink-mute"), [2, 3], 1, f(mu));
+    P.label("μ = r/λ", mu, f(mu), css("--ink-mute"), "center", -6);
+  });
+  ["gR", "gL"].forEach(function (id) { $(id).addEventListener("input", drawGama); });
+  $("gNova").addEventListener("click", function () { novaGama(); drawGama(); });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-gama]"), function (b) {
+    b.addEventListener("click", function () {
+      var v = b.getAttribute("data-gama").split(",");
+      $("gR").value = v[0]; $("gL").value = v[1]; drawGama();
+    });
+  });
+
+  /* ---------------- §10 Weibull ---------------- */
+  var drawWeib = reg(function () {
+    var be = +$("wB").value, de = +$("wD").value;
+    txt("oWB", d2(be)); txt("oWD", d2(de));
+    var g1 = gammaFn(1 + 1 / be), g2 = gammaFn(1 + 2 / be);
+    var mu = de * g1, vr = de * de * (g2 - g1 * g1);
+    txt("wMu", d4(mu)); txt("wVar", d4(vr)); txt("wPd", d4(1 - Math.exp(-1)));
+    var msg;
+    if (Math.abs(be - 1) < 0.026) msg = "β = 1: taxa de falha constante, igual a 1/δ = " + d4(1 / de) + ". É a exponencial com λ = 1/δ: sem desgaste e sem memória, como falhas por choques externos.";
+    else if (be < 1) msg = "β < 1: a taxa de falha cai com o tempo. Quem tinha defeito de fabricação falha cedo; quem sobrevive fica mais confiável (alguns semicondutores).";
+    else msg = "β > 1: a taxa de falha sobe com o tempo, o componente se desgasta (rolamentos)." + (Math.abs(be - 2) < 0.026 ? " Com β = 2 exato, a taxa cresce em linha reta: é a Rayleigh." : "");
+    txt("wVerdict", msg);
+    var fr = fit($("weibCanvas"));
+    if (!fr) return;
+    var hh = fr.h / 2;
+    var f = function (x) { return x <= 0 ? (be < 1 ? Infinity : be === 1 ? 1 / de : 0) : (be / de) * Math.pow(x / de, be - 1) * Math.exp(-Math.pow(x / de, be)); };
+    var h = function (x) { return x <= 0 ? (be < 1 ? Infinity : be === 1 ? 1 / de : 0) : (be / de) * Math.pow(x / de, be - 1); };
+    var pk = Math.min(pico(f, 0.08, 8), 4);
+    var A = panel(fr, { x0: 0, x1: 8, y0: 0, y1: pk * 1.15, top: 0, h: hh, padL: 44, ylabel: "f(x)" });
+    A.area(f, 0, 8, css("--teorico"), .15);
+    A.curve(f, css("--teorico"), 2.2);
+    if (mu < 8) { A.vline(mu, css("--ink-mute"), [2, 3], 1, f(mu)); A.label("μ", mu, f(mu), css("--ink-mute"), "center", -6); }
+    var B = panel(fr, { x0: 0, x1: 8, y0: 0, y1: 3, top: hh, h: hh, padL: 44, ylabel: "taxa de falha h(x)" });
+    B.curve(h, css("--empirico"), 2.2);
+  });
+  ["wB", "wD"].forEach(function (id) { $(id).addEventListener("input", drawWeib); });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-beta]"), function (b) {
+    b.addEventListener("click", function () { $("wB").value = b.getAttribute("data-beta"); drawWeib(); });
+  });
+
+  /* ---------------- §11 lognormal ---------------- */
+  var drawLogn = reg(function () {
+    var th = +$("lT").value, om = +$("lW").value;
+    txt("oLT", d2(th)); txt("oLW", d2(om));
+    var med = Math.exp(th), mu = Math.exp(th + om * om / 2), vr = Math.exp(2 * th + om * om) * (Math.exp(om * om) - 1);
+    txt("lMed", d4(med)); txt("lMu", d4(mu)); txt("lVar", d4(vr));
+    var fr = fit($("lognCanvas"));
+    if (!fr) return;
+    var hh = fr.h / 2;
+    var fw = function (w) { return npdf(w, th, om); };
+    var A = panel(fr, { x0: -4, x1: 5.5, y0: 0, y1: fw(th) * 1.2, top: 0, h: hh, padL: 44, xlabel: "W" });
+    A.area(fw, -4, th, css("--teorico"), .3);
+    A.curve(fw, css("--teorico"), 2.2);
+    A.vline(th, css("--ink-mute"), [2, 3], 1, fw(th));
+    A.label("θ", th, fw(th), css("--ink-mute"), "center", -6);
+
+    var fx = function (x) { return x <= 0 ? 0 : npdf(Math.log(x), th, om) / x; };
+    var moda = Math.exp(th - om * om);
+    var B = panel(fr, { x0: 0, x1: 12, y0: 0, y1: fx(moda) * 1.2, top: hh, h: hh, padL: 44, xlabel: "X = eᵂ" });
+    B.area(fx, 0, med, css("--teorico"), .3);
+    B.curve(fx, css("--teorico"), 2.2);
+    B.vline(med, css("--ink-mute"), [2, 3], 1, fx(med));
+    B.label("mediana", med, fx(moda) * 1.08, css("--ink-mute"), "right", 0);
+    if (mu < 12) {
+      B.vline(mu, css("--empirico"), [4, 3], 1.4);
+      B.label("μ", mu, fx(moda) * 1.08, css("--empirico"), "left", 0);
+    }
+    var ctx = fr.ctx;
+    ctx.strokeStyle = css("--ink-mute"); ctx.globalAlpha = .5; ctx.setLineDash([2, 4]);
+    ctx.beginPath(); ctx.moveTo(A.X(th), A.base + 18); ctx.lineTo(B.X(Math.min(12, med)), B.top + B.T); ctx.stroke();
+    ctx.setLineDash([]); ctx.globalAlpha = 1;
+  });
+  ["lT", "lW"].forEach(function (id) { $(id).addEventListener("input", drawLogn); });
+
+  /* ---------------- §12 beta ---------------- */
+  var drawBeta = reg(function () {
+    var a = +$("bA").value, b = +$("bB").value;
+    txt("oBA", dn(a, 1)); txt("oBB", dn(b, 1));
+    var lnK = lnGamma(a + b) - lnGamma(a) - lnGamma(b);
+    var mu = a / (a + b), vr = a * b / ((a + b) * (a + b) * (a + b + 1));
+    txt("bMu", d4(mu)); txt("bVar", d4(vr)); txt("bK", fmtG(Math.exp(lnK)));
+    var fr = fit($("betaCanvas"));
+    if (!fr) return;
+    var f = function (x) {
+      if (x < 0 || x > 1) return 0;
+      return Math.exp(lnK + (a - 1) * Math.log(x) + (b - 1) * Math.log(1 - x));
+    };
+    var pk = Math.max(pico(f, 0.01, 0.99), 1.2);
+    var P = panel(fr, { x0: 0, x1: 1, y0: 0, y1: pk * 1.12, padL: 44 });
+    P.area(f, 0, 1, css("--teorico"), .2);
+    P.curve(f, css("--teorico"), 2.4);
+    P.vline(mu, css("--empirico"), [4, 3], 1.4, f(mu));
+    P.label("μ", mu, f(mu), css("--empirico"), "center", -6);
+  });
+  ["bA", "bB"].forEach(function (id) { $(id).addEventListener("input", drawBeta); });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-ab]"), function (bt) {
+    bt.addEventListener("click", function () {
+      var v = bt.getAttribute("data-ab").split(",");
+      $("bA").value = v[0]; $("bB").value = v[1]; drawBeta();
+    });
+  });
 
   /* ---------------- soluções passo a passo ---------------- */
   Array.prototype.forEach.call(document.querySelectorAll("[data-steps]"), function (box) {

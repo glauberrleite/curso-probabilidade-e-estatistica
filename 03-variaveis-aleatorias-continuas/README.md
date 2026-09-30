@@ -168,16 +168,16 @@ $$P(X < t_1 + t_2 | X > t_1) = P(X < t_2)$$
 Uma generalização da distribuição exponencial é o comprimento até que $r$ contagens ocorram em um processo de Poisson. Temos que a função densidade de probabilidade de uma distribuição de Erlang é
 $$f(x) = \frac{\lambda^r x^{r - 1} e^{-\lambda x}}{(r - 1)!}, \text{ para } x > 0 \text{ e } r = 1,2, \dots$$
 
-Se $r = 1$, temos a distribuição exponencial. Uma limitação é que $r \mathbb{Z}^{+}$
+Se $r = 1$, temos a distribuição exponencial. Uma limitação é que $r \in \mathbb{Z}^{+}$
 
 > Existe uma função que generaliza a recursão fatorial para números reais positivos. Essa é a função gama:
-> $$\Gamma(r) = \inf_0^\infty x^{r - 1} e^{-x} dx \text{, para } r > 0$$
+> $$\Gamma(r) = \int_0^\infty x^{r - 1} e^{-x} dx \text{, para } r > 0$$
 
 🤔 Aplicando integração por partes, temos a recursão: $\Gamma(r) = (r - 1) \Gamma(r - 1)$
 
 ⚠️ $\Gamma(0) \neq (0)!$, então $r > 0$ para fazer sentido.
 
-💡 Para resolver questões, é comum usar recursao para chegar em paradas como $\Gamma(1) = 1$ ou $\Gamma(0.5) = \pi^0.5$
+💡 Para resolver questões, é comum usar recursão para chegar em paradas como $\Gamma(1) = 1$ ou $\Gamma(0.5) = \pi^{0.5}$
 
 A distribuição de Erlang pode ser generalizada pela distribuição Gama, que tem função densidade de probabilidade:
 $$f(x) = \frac{\lambda^r x^{r-1} e^{-\lambda x}}{\Gamma(r)} \text{, para } x > 0$$
@@ -201,7 +201,7 @@ $$f(x) = \frac{\beta}{\delta} \left( \frac{x}{\delta} \right)^{\beta - 1} e^{- \
 
 é uma variável aleatória de Weibull, com parâmetro de escala $\delta > 0$ e parâmetro de forma $\beta > 0$.
 
-💡 A distribuição de Raleigh é um caso especial, quando $\beta = 2$.
+💡 A distribuição de Rayleigh é um caso especial, quando $\beta = 2$.
 
 - Média: $E(X) = \delta \Gamma \left( 1 + \frac{1}{\beta} \right)$
 - Variância: $E[(X-\mu)^2]= \delta^2 \Gamma \left( 1 + \frac{2}{\beta} \right) - \delta^2 \left[ \Gamma \left( 1 + \frac{1}{\beta} \right) \right]^2$
@@ -221,7 +221,7 @@ O tempo de vida de um produto que degrada ao longo do tempo é frequentemente mo
 
 A variável aleatória $X$ com função densidade de probabilidade
 
-$$f(x) \frac{\Gamma(\alpha + \beta)}{\Gamma(\alpha) \Gamma(\beta)} x^{\alpha - 1} (1 - x)^{\beta - 1} \text{, para } x \in [0, 1]$$
+$$f(x) = \frac{\Gamma(\alpha + \beta)}{\Gamma(\alpha) \Gamma(\beta)} x^{\alpha - 1} (1 - x)^{\beta - 1} \text{, para } x \in [0, 1]$$
 
 é uma variável aleatória beta com parâmetros $\alpha > 0$ e $\beta > 0$.
 
