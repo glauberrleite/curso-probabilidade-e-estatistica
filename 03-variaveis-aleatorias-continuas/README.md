@@ -107,7 +107,7 @@ Claramente:
 - Média: $E(X) = \mu$
 - Variância: $E[(X-\mu)^2]= \sigma^2$
 
-🤔Distribuições binomiais e de poisson podem ser sintonizadas (através dos seus parâmetros) para se tornar gaussianas.
+🤔 Distribuições binomiais e de poisson podem ser sintonizadas (através dos seus parâmetros) para se tornar gaussianas.
 
 ---
 
@@ -128,7 +128,9 @@ Um resultado útil é explorar a simetria... De forma geral, temos:
 
 $$P(\mu - \sigma < X < \mu + \sigma) = 0,6827$$
 $$P(\mu - 2\sigma < X < \mu + 2\sigma) = 0,9545$$
-$$P(\mu - 3\sigma < X < \mu + 3\sigma) = 0,9973$$![](https://www.mathsisfun.com/data/images/normal-distrubution-large.svg)
+$$P(\mu - 3\sigma < X < \mu + 3\sigma) = 0,9973$$
+
+![](https://www.mathsisfun.com/data/images/normal-distrubution-large.svg)
 
 ⚠️A distribuição normal padrão (ou *Standard Normal Distribuition*) nada mais é do que $\mathcal{N}(x; 0, 1)$. Isso facilita algumas tomadas de decisões.
 
@@ -146,6 +148,22 @@ será uma variável aleatória normal, com $E(Z) = 0$ e $V(Z) = 1$. Ou seja, $Z$
 
 💡Revisitar questão da máquina que fabrica resistores.
 
+### Sobre aproximação da Binomial pela normal
+
+Se $X$ for uma variável aleatória binomial com parâmetros $n$ e $p$,
+
+$$Z = \frac{X - np}{\sqrt{np(1 - p)}}$$
+
+será aproximadamente uma variável aleatória normal padrão.
+
+A aproximação é boa para $np > 5$ e $n (1-p) > 5$.
+
+Ainda assim, como se trata de uma variável discreta indo para uma representação contínua, precisamos do fator de correção a seguir:
+
+$$P(X \leq x) \approx P(X \leq x + 0.5)$$
+
+$$P(X \geq x) \approx P(X \geq x - 0.5)$$
+
 ## Distribuição Exponencial
 
 Uma variável aleatória exponencial descreve o comprimento até que a primeira contagem seja obtida em um processo de Poisson.
@@ -157,6 +175,14 @@ $$f(x) = \lambda e^{-\lambda x}, \text{ para } 0 \leq x < \infty$$
 
 - Média: $E(X) = \frac{1}{\lambda}$
 - Variância: $E[(X-\mu)^2]= \frac{1}{\lambda^2}$
+
+---
+
+A vida, em anos, de certo tipo de interruptor elétrico tem distribuição exponencial com vida média de 2 anos. Se 100 desses interruptores são instalados em sistemas diferentes, qual é a probabilidade de que no máximo 30 falhem durante o primeiro ano?
+
+⚠️ Para conseguir resolver essa, vai precisar resolver uma probabilidade cumulativa de uma binomial trabalhosa. Uma abordagem eficiente é aproximar para uma distribuição normal.
+
+---
 
 ### Propriedade de falta de memória
 
@@ -175,15 +201,25 @@ Se $r = 1$, temos a distribuição exponencial. Uma limitação é que $r \in \m
 
 🤔 Aplicando integração por partes, temos a recursão: $\Gamma(r) = (r - 1) \Gamma(r - 1)$
 
-⚠️ $\Gamma(0) \neq (0)!$, então $r > 0$ para fazer sentido.
+Com isso $\Gamma(r) = (r - 1)!$
 
 💡 Para resolver questões, é comum usar recursão para chegar em paradas como $\Gamma(1) = 1$ ou $\Gamma(0.5) = \pi^{0.5}$
+
+💡 Também é comum usar a [tabela gama incompleta](https://pt.scribd.com/document/661752762/Tablas-Gamma-Incompleta)
 
 A distribuição de Erlang pode ser generalizada pela distribuição Gama, que tem função densidade de probabilidade:
 $$f(x) = \frac{\lambda^r x^{r-1} e^{-\lambda x}}{\Gamma(r)} \text{, para } x > 0$$
 
 - Média: $E(X) = \frac{r}{\lambda}$
 - Variância: $E[(X-\mu)^2]= \frac{r}{\lambda^2}$
+
+---
+
+Em um estudo biomédico com ratos, uma investigação sobre resposta à dose é usada para determinar o efeito da dose de uma substância tóxica no tempo de sobrevivência dos ratos. Essa substância é uma daquelas frequentemente despejadas na atmosfera por motores a jato. Para certa dose da substância, o estudo determina que o tempo de sobrevivência, em semanas, tem uma distribuição gama que espera a 5ª contagem de um processo de Poisson com uma taxa média de 1 para cada 10 semanas. Qual a probabilidade d que um rato não sobreviva mais do que 60 semanas?
+
+Solução: Pode ser vista como uma distribuição de Erlang ou Gama. Queremos $P(X \leq 60) = \int_{0}^{60} f(u) du \approx 0.715$ (aplicando transformações e usando a tabela).
+
+---
 
 💡Uma distribuição muito usada (estimação de intervalos, testes de hipóteses) é um caso especial da distribuição gama. A distribuição qui-quadrado $\chi^2$ é o caso em que $\lambda = 0.5$ e $r$ assume um dos valores $0.5, 1, 1.5, 2, \dots$
 

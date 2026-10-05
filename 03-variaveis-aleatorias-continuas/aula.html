@@ -1,7 +1,7 @@
 <meta charset="utf-8">
 <title>Variáveis aleatórias contínuas — densidade, F(x), valor esperado e distribuições</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="ECOM020 — Probabilidade e Estatística. Aula 03: variáveis aleatórias contínuas, função densidade de probabilidade, distribuição cumulativa, valor esperado, distribuições uniforme contínua, normal, exponencial, Erlang, gama, Weibull, lognormal e beta, z-score.">
+<meta name="description" content="ECOM020 — Probabilidade e Estatística. Aula 03: variáveis aleatórias contínuas, função densidade de probabilidade, distribuição cumulativa, valor esperado, distribuições uniforme contínua, normal, exponencial, Erlang, gama, Weibull, lognormal e beta, z-score, aproximação normal da binomial.">
 <style>
 /* ============================================================
    ECOM020 — Probabilidade e Estatística · Aula 03
@@ -1779,6 +1779,73 @@ html { scroll-behavior: smooth; }
             </ol>
           </div>
         </div>
+
+        <div class="slide" data-sec="§ 07 · Simetria e z-score">
+          <h3>Aproximação da binomial pela normal</h3>
+          <p>
+            No § 06 vimos a binomial virar sino quando <span class="v">n</span> cresce. Com o
+            z-score, isso vira uma ferramenta de cálculo: padronizamos a binomial com a sua própria
+            média e variância e usamos a tabela de Φ.
+          </p>
+          <div class="defn">
+            <span class="lab">Aproximação normal da binomial</span>
+            <p>
+              Se <span class="v">X</span> for uma variável aleatória binomial com parâmetros
+              <span class="v">n</span> e <span class="v">p</span>,
+            </p>
+            <div class="eq">
+              <span class="v">Z</span> = <span class="frac"><span><span class="v">X</span> − <span class="v">np</span></span><span><span class="sqrt">√<span><span class="v">np</span>(1 − <span class="v">p</span>)</span></span></span></span>
+            </div>
+            <p>será <strong>aproximadamente</strong> uma variável aleatória normal padrão.</p>
+          </div>
+          <div class="note problema">
+            <span class="lab">Quando a aproximação é boa</span>
+            <p>
+              A regra prática é exigir <span class="v">np</span> &gt; 5 &nbsp;e&nbsp;
+              <span class="v">n</span>(1 − <span class="v">p</span>) &gt; 5. Com <span class="v">p</span>
+              perto de 0 ou de 1 a binomial fica assimétrica, e é preciso um <span class="v">n</span>
+              maior para o sino aparecer.
+            </p>
+          </div>
+          <p>
+            A vantagem aparece em somas longas: <span class="v">P</span>(<span class="v">X</span> ≤ 30)
+            com <span class="v">n</span> = 100 exige 31 termos da binomial, mas só uma consulta à
+            tabela da normal. O exemplo dos interruptores, no § 08, faz exatamente isso.
+          </p>
+        </div>
+
+        <div class="slide" data-sec="§ 07 · Simetria e z-score">
+          <h3>Correção de continuidade</h3>
+          <p>
+            Ainda assim, estamos levando uma variável <strong>discreta</strong> para uma
+            representação <strong>contínua</strong>. Na binomial, o valor <span class="v">x</span>
+            é uma barra de largura 1 centrada em <span class="v">x</span>, que vai de
+            <span class="v">x</span> − 0,5 a <span class="v">x</span> + 0,5. Para a área sob a
+            normal contar a barra inteira, precisamos do fator de correção a seguir:
+          </p>
+          <div class="defn">
+            <span class="lab">Fator de correção de continuidade</span>
+            <div class="eq">
+              <span class="v">P</span>(<span class="v">X</span> ≤ <span class="v">x</span>) ≈
+              <span class="v">P</span>(<span class="v">X</span> ≤ <span class="v">x</span> + 0,5) =
+              <span class="v">P</span><span class="brk">(</span><span class="v">Z</span> ≤ <span class="frac"><span><span class="v">x</span> + 0,5 − <span class="v">np</span></span><span><span class="sqrt">√<span><span class="v">np</span>(1 − <span class="v">p</span>)</span></span></span></span><span class="brk">)</span>
+            </div>
+            <div class="eq">
+              <span class="v">P</span>(<span class="v">X</span> ≥ <span class="v">x</span>) ≈
+              <span class="v">P</span>(<span class="v">X</span> ≥ <span class="v">x</span> − 0,5) =
+              <span class="v">P</span><span class="brk">(</span><span class="v">Z</span> ≥ <span class="frac"><span><span class="v">x</span> − 0,5 − <span class="v">np</span></span><span><span class="sqrt">√<span><span class="v">np</span>(1 − <span class="v">p</span>)</span></span></span></span><span class="brk">)</span>
+            </div>
+          </div>
+          <div class="note">
+            <span class="lab">Regra prática</span>
+            <p>
+              Alargue o intervalo meia unidade para fora, para incluir a barra de cada extremo. Nas
+              desigualdades estritas, como <span class="v">X</span> &lt; <span class="v">x</span> =
+              <span class="v">X</span> ≤ <span class="v">x</span> − 1, primeiro reescreva com ≤ ou
+              ≥: na binomial, &lt; e ≤ <strong>não</strong> são a mesma coisa (§ 02).
+            </p>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -1898,6 +1965,65 @@ html { scroll-behavior: smooth; }
             <span class="v">P</span>(<span class="v">X</span> ≤ μ) = 1 − <span class="v">e</span><sup>−1</sup> ≈ 63 %:
             a cauda longa puxa a média para a direita da maior parte das observações.
           </p>
+        </div>
+
+        <div class="slide" data-sec="§ 08 · Exponencial">
+          <div class="ex" data-steps>
+            <span class="lab">Exemplo — interruptores elétricos</span>
+            <p>
+              A vida, em anos, de certo tipo de interruptor elétrico tem distribuição exponencial
+              com vida média de 2 anos. Se 100 desses interruptores são instalados em sistemas
+              diferentes, qual é a probabilidade de que <strong>no máximo 30</strong> falhem durante
+              o primeiro ano?
+            </p>
+            <ol class="steps">
+              <li class="step">
+                <p><strong>Um interruptor.</strong> Seja <span class="v">T</span> a vida de um interruptor. Média 2 anos dá λ = 1/2 por ano, e a chance de falhar no primeiro ano é</p>
+                <div class="eq sm">
+                  <span class="v">p</span> = <span class="v">P</span>(<span class="v">T</span> ≤ 1) = 1 − <span class="v">e</span><sup>−1/2</sup> ≈ 0,3935
+                </div>
+              </li>
+              <li class="step">
+                <p><strong>Cem interruptores.</strong> Os sistemas são diferentes, então as falhas são independentes. O número <span class="v">X</span> de falhas no primeiro ano é binomial:</p>
+                <div class="eq sm">
+                  <span class="v">X</span> ∼ Bin(100; 0,3935)
+                </div>
+                <div class="eq sm">
+                  <span class="v">P</span>(<span class="v">X</span> ≤ 30) =
+                  <span class="int"><span class="s">∑</span><span class="lims"><span>30</span><span><span class="v">k</span>=0</span></span></span>
+                  <span class="brk">(</span><span class="frac"><span>100</span><span><span class="v">k</span></span></span><span class="brk">)</span>
+                  <span class="v">p</span><sup><span class="v">k</span></sup>(1 − <span class="v">p</span>)<sup>100−<span class="v">k</span></sup>
+                </div>
+                <p>São 31 termos com potências enormes: trabalhoso demais à mão.</p>
+              </li>
+              <li class="step">
+                <p><strong>Aproximando pela normal (§ 07).</strong> <span class="v">np</span> ≈ 39,35 e <span class="v">n</span>(1 − <span class="v">p</span>) ≈ 60,65, ambos bem acima de 5:</p>
+                <div class="eq sm">
+                  μ = <span class="v">np</span> ≈ 39,35 &nbsp;&nbsp;·&nbsp;&nbsp;
+                  σ = <span class="sqrt">√<span><span class="v">np</span>(1 − <span class="v">p</span>)</span></span> ≈ <span class="sqrt">√<span>23,87</span></span> ≈ 4,885
+                </div>
+              </li>
+              <li class="step">
+                <p><strong>Corrigindo e padronizando.</strong> Pelo fator de correção de continuidade (§ 07), <span class="v">P</span>(<span class="v">X</span> ≤ 30) ≈ <span class="v">P</span>(<span class="v">X</span> ≤ 30,5):</p>
+                <div class="eq sm">
+                  <span class="v">P</span>(<span class="v">X</span> ≤ 30) ≈
+                  <span class="v">P</span><span class="brk">(</span><span class="v">Z</span> ≤ <span class="frac"><span>30,5 − 39,35</span><span>4,885</span></span><span class="brk">)</span>
+                </div>
+                <div class="eq sm">
+                  = Φ(−1,81) = 1 − Φ(1,81) ≈ 1 − 0,9649
+                </div>
+              </li>
+              <li class="step fim">
+                <div class="eq sm">
+                  <span class="v">P</span>(<span class="v">X</span> ≤ 30) ≈ <span class="res">0,035</span>
+                </div>
+                <p>
+                  Cerca de 3,5 %. A soma exata da binomial dá 0,0335. Sem a correção (usando 30 em
+                  vez de 30,5) teríamos Φ(−1,91) ≈ 0,028, bem mais longe: a meia unidade faz diferença.
+                </p>
+              </li>
+            </ol>
+          </div>
         </div>
 
         <div class="slide" data-sec="§ 08 · Exponencial">
@@ -2058,13 +2184,6 @@ html { scroll-behavior: smooth; }
               </li>
             </ol>
           </div>
-          <div class="note problema">
-            <span class="lab">Cuidado</span>
-            <p>
-              0! = 1 = Γ(1), mas <strong>Γ(0) não é 0!</strong>: a integral diverge em
-              <span class="v">r</span> = 0. Por isso a exigência <span class="v">r</span> &gt; 0.
-            </p>
-          </div>
         </div>
 
         <div class="slide" data-sec="§ 09 · Erlang e Gama">
@@ -2077,6 +2196,11 @@ html { scroll-behavior: smooth; }
             <div class="eq sm">
               Γ(3,5) = 2,5 · Γ(2,5) = 2,5 · 1,5 · Γ(1,5) = 2,5 · 1,5 · 0,5 · Γ(0,5) = 1,875 √π ≈ <span class="res">3,3234</span>
             </div>
+            <p>
+              Para probabilidades acumuladas, também é comum usar a
+              <a href="https://pt.scribd.com/document/661752762/Tablas-Gamma-Incompleta">tabela gama incompleta</a>,
+              que faz para a gama o papel que a tabela de Φ faz para a normal.
+            </p>
           </div>
           <div class="defn">
             <span class="lab">Definição — distribuição gama</span>
@@ -2137,6 +2261,59 @@ html { scroll-behavior: smooth; }
               </div>
               <div class="verdict ok" id="gVerdict"></div>
             </div>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 09 · Erlang e Gama">
+          <div class="ex" data-steps>
+            <span class="lab">Exemplo — sobrevivência de ratos</span>
+            <p>
+              Em um estudo biomédico com ratos, uma investigação sobre resposta à dose é usada para
+              determinar o efeito da dose de uma substância tóxica, frequentemente despejada na
+              atmosfera por motores a jato, no tempo de sobrevivência dos ratos. Para certa dose, o
+              tempo de sobrevivência, em semanas, tem distribuição gama que espera a
+              <strong>5ª contagem</strong> de um processo de Poisson com taxa média de 1 a cada 10
+              semanas. Qual a probabilidade de que um rato não sobreviva mais do que 60 semanas?
+            </p>
+            <ol class="steps">
+              <li class="step">
+                <p><strong>Modelando.</strong> <span class="v">r</span> = 5 é inteiro, então podemos ver <span class="v">X</span> como Erlang ou como gama, com λ = 0,1 por semana:</p>
+                <div class="eq sm">
+                  <span class="v">X</span> ∼ Gama(5; 0,1)
+                </div>
+                <div class="eq sm">
+                  <span class="v">P</span>(<span class="v">X</span> ≤ 60) =
+                  <span class="int"><span class="s">∫</span><span class="lims"><span>60</span><span>0</span></span></span>
+                  <span class="frac"><span>0,1<sup>5</sup> <span class="v">u</span><sup>4</sup> <span class="v">e</span><sup>−0,1<span class="v">u</span></sup></span><span>Γ(5)</span></span> <span class="v">du</span>
+                </div>
+              </li>
+              <li class="step">
+                <p><strong>Mudando a escala.</strong> Com <span class="v">y</span> = λ<span class="v">u</span> = 0,1<span class="v">u</span>, o limite 60 vira 6 e λ some do integrando:</p>
+                <div class="eq sm">
+                  <span class="v">P</span>(<span class="v">X</span> ≤ 60) =
+                  <span class="int"><span class="s">∫</span><span class="lims"><span>6</span><span>0</span></span></span>
+                  <span class="frac"><span><span class="v">y</span><sup>4</sup> <span class="v">e</span><sup>−<span class="v">y</span></sup></span><span>Γ(5)</span></span> <span class="v">dy</span>
+                </div>
+                <p>Essa é a forma tabelada na tabela gama incompleta, com <span class="v">r</span> = 5 e limite 6.</p>
+              </li>
+              <li class="step">
+                <p><strong>Ou, sem tabela, pela Poisson.</strong> O rato morre até a semana 60 se a 5ª contagem chega até lá, isto é, se houver ao menos 5 contagens em 60 semanas. Com <span class="v">N</span> ∼ Poisson(λ · 60 = 6):</p>
+                <div class="eq sm">
+                  <span class="v">P</span>(<span class="v">X</span> ≤ 60) = <span class="v">P</span>(<span class="v">N</span> ≥ 5) =
+                  1 − <span class="int"><span class="s">∑</span><span class="lims"><span>4</span><span><span class="v">k</span>=0</span></span></span>
+                  <span class="frac"><span><span class="v">e</span><sup>−6</sup> 6<sup><span class="v">k</span></sup></span><span><span class="v">k</span>!</span></span>
+                </div>
+                <div class="eq sm">
+                  = 1 − <span class="v">e</span><sup>−6</sup>(1 + 6 + 18 + 36 + 54)
+                </div>
+              </li>
+              <li class="step fim">
+                <div class="eq sm">
+                  <span class="v">P</span>(<span class="v">X</span> ≤ 60) = 1 − 115 <span class="v">e</span><sup>−6</sup> ≈ 1 − 0,2851 ≈ <span class="res">0,715</span>
+                </div>
+                <p>Cerca de 71,5 % dos ratos não passam de 60 semanas, embora a média seja <span class="v">r</span>/λ = 50 semanas.</p>
+              </li>
+            </ol>
           </div>
         </div>
       </div>
