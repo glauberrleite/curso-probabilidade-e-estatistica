@@ -1,0 +1,2233 @@
+<meta charset="utf-8">
+<title>Distribuições conjuntas — densidade conjunta, marginais, covariância e condicionais</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ECOM020 — Probabilidade e Estatística. Aula 04: distribuições de probabilidade conjuntas, função de probabilidade e densidade conjunta, marginais, valor esperado, covariância, correlação, distribuição condicional, independência e generalização para p variáveis, com o exemplo do servidor.">
+<style>
+/* ============================================================
+   ECOM020 — Probabilidade e Estatística · Aula 04
+   Mesmo registro visual das demais aulas: caderno de laboratório.
+
+   Acentos com significado fixo no curso:
+     --empirico (âmbar) = medido, acumulado, observado
+     --teorico  (teal)  = exato, pontual, deduzido
+   Nesta aula em particular:
+     teal  = a densidade conjunta f(x, y) e as marginais
+     âmbar = a região R, a fatia e a condicional
+
+   Dois modos sobre o MESMO DOM:
+     documento     — .slide é display:contents (some do layout)
+     apresentação  — .slide vira slide de tela cheia (tecla P)
+   ============================================================ */
+
+:root {
+  --paper:      #f2f5f6;
+  --surface:    #ffffff;
+  --surface-2:  #e9eef0;
+  --ink:        #131b20;
+  --ink-soft:   #45565e;
+  --ink-mute:   #6d7f88;
+  --rule:       #d5dde1;
+  --rule-soft:  #e5eaed;
+
+  --empirico:   #a8620a;
+  --empirico-bg:#f6ecdd;
+  --teorico:    #0d6e7d;
+  --teorico-bg: #dfeef0;
+  --alerta:     #9d332e;
+  --alerta-bg:  #f7e7e5;
+
+  --serif: ui-serif, "Iowan Old Style", Charter, "Bitstream Charter", "Palatino Linotype", Palatino, Georgia, serif;
+  --sans:  ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --mono:  ui-monospace, "SF Mono", SFMono-Regular, "JetBrains Mono", Menlo, Consolas, monospace;
+
+  --measure: 68ch;
+  --rail: 15rem;
+  --ps: 1;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper:#0d1418; --surface:#131e23; --surface-2:#1a272d;
+    --ink:#e3eaed; --ink-soft:#b3c3ca; --ink-mute:#8598a1;
+    --rule:#263740; --rule-soft:#1c2a31;
+    --empirico:#e2a355; --empirico-bg:#2a2013;
+    --teorico:#55c0d2; --teorico-bg:#102a30;
+    --alerta:#e2867d; --alerta-bg:#2c1817;
+  }
+}
+:root[data-theme="dark"] {
+  --paper:#0d1418; --surface:#131e23; --surface-2:#1a272d;
+  --ink:#e3eaed; --ink-soft:#b3c3ca; --ink-mute:#8598a1;
+  --rule:#263740; --rule-soft:#1c2a31;
+  --empirico:#e2a355; --empirico-bg:#2a2013;
+  --teorico:#55c0d2; --teorico-bg:#102a30;
+  --alerta:#e2867d; --alerta-bg:#2c1817;
+}
+:root[data-theme="light"] {
+  --paper:#f2f5f6; --surface:#ffffff; --surface-2:#e9eef0;
+  --ink:#131b20; --ink-soft:#45565e; --ink-mute:#6d7f88;
+  --rule:#d5dde1; --rule-soft:#e5eaed;
+  --empirico:#a8620a; --empirico-bg:#f6ecdd;
+  --teorico:#0d6e7d; --teorico-bg:#dfeef0;
+  --alerta:#9d332e; --alerta-bg:#f7e7e5;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+
+body {
+  margin: 0; background: var(--paper); color: var(--ink);
+  font-family: var(--serif); font-size: 1.0625rem; line-height: 1.62;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------- estrutura ---------- */
+
+.shell { display: grid; grid-template-columns: var(--rail) minmax(0, 1fr); }
+
+.rail {
+  position: sticky; top: 0; height: 100vh;
+  padding: 2rem 1.25rem 2rem 1.75rem;
+  border-right: 1px solid var(--rule);
+  display: flex; flex-direction: column; gap: 1.2rem; overflow-y: auto;
+}
+.rail-brand {
+  font-family: var(--mono); font-size: .7rem; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--ink-mute); line-height: 1.5;
+}
+.rail-brand b { color: var(--ink); font-weight: 600; display: block; letter-spacing: .1em; }
+
+.rail nav { display: flex; flex-direction: column; }
+.rail nav a {
+  display: grid; grid-template-columns: 1.9rem 1fr; gap: .45rem; align-items: baseline;
+  padding: .34rem 0; text-decoration: none; color: var(--ink-soft);
+  font-family: var(--sans); font-size: .78rem; line-height: 1.25;
+  border-top: 1px solid var(--rule-soft);
+}
+.rail nav a:first-child { border-top: 0; }
+.rail nav a .n { font-family: var(--mono); font-size: .66rem; color: var(--ink-mute); }
+.rail nav a:hover { color: var(--ink); }
+.rail nav a.on, .rail nav a.on .n { color: var(--teorico); }
+
+.rail-foot {
+  margin-top: auto; font-family: var(--sans); font-size: .75rem;
+  color: var(--ink-mute); display: flex; flex-direction: column; gap: .5rem;
+}
+.rail-btn {
+  font-family: var(--mono); font-size: .68rem; letter-spacing: .1em; text-transform: uppercase;
+  background: transparent; color: var(--ink-mute); border: 1px solid var(--rule);
+  padding: .45rem .6rem; cursor: pointer; text-align: left; text-decoration: none;
+}
+.rail-btn:hover { color: var(--ink); border-color: var(--ink-mute); }
+.rail-btn.accent { color: var(--teorico); border-color: var(--teorico); }
+.rail-btn.accent:hover { background: var(--teorico); color: var(--paper); }
+
+main { padding: 0 0 8rem; min-width: 0; }
+.wrap { max-width: var(--measure); padding: 0 2.5rem; }
+.slide { display: contents; }
+
+/* ---------- capa ---------- */
+
+.hero {
+  border-bottom: 1px solid var(--rule); padding: 4.5rem 0 2.5rem;
+  background-image:
+    linear-gradient(to right, var(--rule-soft) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--rule-soft) 1px, transparent 1px);
+  background-size: 28px 28px; background-position: -1px -1px;
+}
+.eyebrow {
+  font-family: var(--mono); font-size: .7rem; letter-spacing: .16em;
+  text-transform: uppercase; color: var(--ink-mute);
+}
+h1 {
+  font-size: clamp(2.1rem, 4.4vw, 3.15rem); line-height: 1.08; font-weight: 600;
+  letter-spacing: -0.018em; margin: .7rem 0 0; text-wrap: balance; max-width: 20ch;
+}
+h1 em { font-style: italic; color: var(--teorico); }
+.dek { margin: 1.1rem 0 0; font-size: 1.15rem; color: var(--ink-soft); max-width: 52ch; }
+
+.hero-fig { margin-top: 2.2rem; }
+.hero-fig canvas {
+  display: block; width: 100%; height: 130px;
+  border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+}
+.hero-cap {
+  margin-top: .55rem; font-family: var(--sans); font-size: .78rem;
+  color: var(--ink-mute); display: flex; gap: 1.4rem; flex-wrap: wrap;
+}
+.hero-cap span::before {
+  content: ""; display: inline-block; width: 1.6rem; height: 2px;
+  vertical-align: middle; margin-right: .45rem;
+}
+.hero-cap .k-dens::before { background: var(--teorico); }
+.hero-cap .k-acum::before { background: var(--empirico); }
+
+/* ---------- seções ---------- */
+
+section { padding-top: 4.5rem; }
+
+.sec-head {
+  display: grid; grid-template-columns: 4.5rem 1fr; gap: .5rem; align-items: start;
+  border-top: 2px solid var(--ink); padding-top: .7rem; margin-bottom: 1.5rem;
+}
+.sec-head .n {
+  font-family: var(--mono); font-size: .72rem; letter-spacing: .1em;
+  color: var(--ink-mute); padding-top: .45rem;
+}
+h2 {
+  font-size: clamp(1.5rem, 2.6vw, 1.95rem); line-height: 1.15; font-weight: 600;
+  letter-spacing: -0.012em; margin: 0; text-wrap: balance;
+}
+.sec-head .sub {
+  grid-column: 2; font-family: var(--sans); font-size: .84rem;
+  color: var(--ink-mute); margin-top: .3rem;
+}
+h3 {
+  font-family: var(--sans); font-size: .76rem; font-weight: 650; letter-spacing: .13em;
+  text-transform: uppercase; color: var(--ink-mute);
+  margin: 2.2rem 0 .8rem; padding-bottom: .35rem; border-bottom: 1px solid var(--rule);
+}
+
+p { margin: 0 0 1rem; }
+p:last-child { margin-bottom: 0; }
+ul, ol { margin: 0 0 1rem; padding-left: 1.3rem; }
+li { margin-bottom: .4rem; }
+li::marker { color: var(--ink-mute); }
+a { color: var(--teorico); text-underline-offset: 2px; }
+strong { font-weight: 650; }
+:focus-visible { outline: 2px solid var(--teorico); outline-offset: 2px; }
+
+/* ---------- definições e avisos ---------- */
+
+.defn {
+  border-left: 2px solid var(--teorico); background: var(--teorico-bg);
+  padding: .95rem 1.2rem; margin: 0 0 1.1rem;
+}
+.defn .lab {
+  display: block; font-family: var(--mono); font-size: .66rem; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--teorico); margin-bottom: .3rem;
+}
+.defn p { margin: 0 0 .7rem; }
+.defn p:last-child { margin-bottom: 0; }
+.defn ol, .defn ul { margin: .5rem 0 0; }
+
+blockquote {
+  margin: 0 0 1.1rem; padding: 0 0 0 1.2rem;
+  border-left: 1px solid var(--rule); color: var(--ink-soft);
+}
+blockquote cite {
+  display: block; margin-top: .5rem; font-style: normal;
+  font-family: var(--sans); font-size: .78rem; color: var(--ink-mute);
+}
+
+.note {
+  border: 1px solid var(--rule); border-left: 2px solid var(--ink-mute);
+  padding: .8rem 1.1rem; margin: 0 0 1.1rem; background: var(--surface);
+}
+.note.problema { border-left-color: var(--alerta); background: var(--alerta-bg); }
+.note.problema .lab { color: var(--alerta); }
+.note .lab {
+  display: block; font-family: var(--mono); font-size: .66rem; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--ink-mute); margin-bottom: .3rem;
+}
+.note p { margin: 0 0 .55rem; }
+.note p:last-child { margin-bottom: 0; }
+
+/* ---------- matemática ---------- */
+
+.eq {
+  font-family: var(--serif); font-size: 1.2rem; line-height: 1.25;
+  text-align: center; margin: 1.4rem 0; overflow-x: auto; padding: .35rem 0;
+  white-space: nowrap;
+}
+.eq.sm { font-size: 1.05rem; margin: .9rem 0; }
+.v { font-style: italic; }
+.frac {
+  display: inline-flex; flex-direction: column; vertical-align: middle;
+  text-align: center; margin: 0 .18em;
+}
+.frac > span:first-child { border-bottom: 1px solid currentColor; padding: 0 .4em .12em; }
+.frac > span:last-child { padding: .12em .4em 0; }
+.cases { display: inline-grid; grid-template-columns: auto auto; gap: .1em 1.2em; text-align: left; font-size: .82em; vertical-align: middle; }
+.brace { font-size: 2.6em; font-weight: 200; line-height: 1; vertical-align: middle; }
+/* integral e barra de avaliação: o símbolo grande e os limites empilhados à direita */
+.int, .ev { display: inline-flex; align-items: stretch; vertical-align: middle; margin: 0 .1em 0 .12em; }
+.int .s, .ev .s, .brk { font-size: 1.9em; line-height: 1.05; font-weight: 300; }
+.brk { vertical-align: middle; }
+.int .lims, .ev .lims {
+  display: flex; flex-direction: column; justify-content: space-between;
+  font-size: .6em; line-height: 1; padding: .05em 0 .05em .06em;
+}
+.int .lims { margin-left: -.15em; }
+.sqrt { white-space: nowrap; }
+.sqrt > span { border-top: 1px solid currentColor; padding: 0 .12em; }
+.res { font-family: var(--mono); font-variant-numeric: tabular-nums; color: var(--empirico); }
+
+/* ---------- demos ---------- */
+
+.demo { border: 1px solid var(--rule); background: var(--surface); margin: 1.3rem 0; }
+.demo-head {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 1rem;
+  flex-wrap: wrap; padding: .7rem 1.1rem;
+  border-bottom: 1px solid var(--rule); background: var(--surface-2);
+}
+.demo-head .t { font-family: var(--sans); font-size: .78rem; font-weight: 650; letter-spacing: .1em; text-transform: uppercase; }
+.demo-head .h { font-family: var(--sans); font-size: .76rem; color: var(--ink-mute); }
+.demo-body { padding: 1.1rem; }
+
+.ctl { display: flex; gap: .45rem; flex-wrap: wrap; align-items: center; margin-bottom: .9rem; }
+
+button.b, a.b {
+  font-family: var(--sans); font-size: .8rem; font-weight: 550; padding: .42rem .85rem;
+  border: 1px solid var(--rule); background: var(--surface); color: var(--ink); cursor: pointer;
+  text-decoration: none; display: inline-block;
+}
+button.b:hover, a.b:hover { border-color: var(--ink-mute); }
+button.b.primary, a.b.primary { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+button.b:disabled { opacity: .4; cursor: default; }
+
+.seg { display: inline-flex; flex-wrap: wrap; max-width: 100%; border: 1px solid var(--rule); }
+.seg button {
+  font-family: var(--sans); font-size: .78rem; padding: .4rem .8rem;
+  border: 0; border-left: 1px solid var(--rule);
+  background: var(--surface); color: var(--ink-soft); cursor: pointer;
+}
+.seg button:first-child { border-left: 0; }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+
+.sliders { display: flex; flex-direction: column; gap: .55rem; margin-bottom: .9rem; }
+.sld { display: grid; grid-template-columns: 10rem 1fr 5.6rem; gap: .6rem; align-items: center; }
+.sld > label { font-family: var(--sans); font-size: .8rem; color: var(--ink-soft); }
+.sld > output {
+  font-family: var(--mono); font-variant-numeric: tabular-nums;
+  font-size: .85rem; color: var(--teorico); text-align: right;
+}
+input[type="range"] {
+  -webkit-appearance: none; appearance: none; width: 100%; height: 1.05rem;
+  background: transparent; cursor: pointer; margin: 0;
+}
+input[type="range"]::-webkit-slider-runnable-track { height: .3rem; background: var(--rule); border: 0; }
+input[type="range"]::-moz-range-track { height: .3rem; background: var(--rule); border: 0; }
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: .95rem; height: .95rem; margin-top: -.33rem;
+  background: var(--teorico); border: 0; border-radius: 50%;
+}
+input[type="range"]::-moz-range-thumb {
+  width: .95rem; height: .95rem; background: var(--teorico); border: 0; border-radius: 50%;
+}
+
+.readout {
+  display: flex; gap: 1.8rem; flex-wrap: wrap;
+  font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: .82rem;
+  margin-top: .9rem; padding-top: .8rem; border-top: 1px solid var(--rule-soft);
+}
+.readout div { display: flex; flex-direction: column; gap: .15rem; }
+/* Sem uppercase: os rótulos trazem f(x) e F(x), e a caixa é o conteúdo.
+   Classes .dens/.acum em vez de .f/.F: sem doctype a página roda em quirks
+   mode, onde seletores de classe ignoram maiúsculas. */
+.readout .k { font-size: .68rem; letter-spacing: .06em; color: var(--ink-mute); }
+.readout .val { font-size: 1.15rem; }
+.readout .val.dens { color: var(--teorico); }
+.readout .val.acum { color: var(--empirico); }
+
+canvas.plot { display: block; width: 100%; height: 220px; }
+canvas.plot.tall { height: 320px; }
+
+.verdict { font-family: var(--sans); font-size: .82rem; margin-top: .8rem; padding: .5rem .7rem; border-left: 2px solid; }
+.verdict.ok { color: var(--teorico); border-color: var(--teorico); background: var(--teorico-bg); }
+
+.legend {
+  display: flex; gap: 1.2rem; flex-wrap: wrap; margin-top: .5rem;
+  font-family: var(--sans); font-size: .76rem; color: var(--ink-mute);
+}
+.legend > span::before {
+  content: ""; display: inline-block; width: 1.3rem; height: 2px;
+  vertical-align: middle; margin-right: .4rem; background: currentColor;
+}
+.legend .l-dens { color: var(--teorico); }
+.legend .l-acum { color: var(--empirico); }
+.legend .l-ref::before { background: none; border-top: 2px dashed var(--ink-mute); height: 0; }
+
+/* ---------- exemplos com solução passo a passo ---------- */
+
+.ex {
+  border: 1px solid var(--rule); border-left: 2px solid var(--empirico);
+  padding: .95rem 1.1rem; margin: 0 0 .9rem; background: var(--surface);
+  scroll-margin-top: 1rem;
+}
+.ex .lab {
+  font-family: var(--mono); font-size: .66rem; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--empirico); display: block; margin-bottom: .35rem;
+}
+.ex p { margin: 0 0 .8rem; }
+.ex .items { margin: 0 0 .8rem; padding-left: 0; list-style: none; }
+.ex .items li { margin-bottom: .25rem; }
+
+.steps { list-style: none; padding: 0; margin: .9rem 0 0; counter-reset: passo; }
+.steps[hidden] { display: none; }
+.step {
+  counter-increment: passo; position: relative;
+  padding: .7rem 0 .7rem 1.1rem; border-top: 1px solid var(--rule-soft); margin: 0;
+  animation: surge .25s ease;
+}
+.step[hidden] { display: none; }
+.step::before {
+  content: "Passo " counter(passo); display: block;
+  font-family: var(--mono); font-size: .64rem; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--empirico); margin-bottom: .25rem;
+}
+.step::after {
+  content: ""; position: absolute; left: 0; top: .85rem; bottom: .85rem;
+  width: 2px; background: var(--empirico-bg);
+}
+.step p { margin: 0 0 .5rem; }
+.step p:last-child { margin-bottom: 0; }
+.step .eq { margin: .6rem 0; }
+.step.fim::before { content: "Resposta"; }
+.step.fim { background: var(--empirico-bg); padding-right: .9rem; }
+@keyframes surge { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+.step-nav {
+  display: flex; gap: .45rem; flex-wrap: wrap; align-items: center;
+  margin-top: .8rem; padding-top: .7rem; border-top: 1px solid var(--rule-soft);
+}
+.step-nav[hidden] { display: none; }
+.step-nav .cnt {
+  margin-left: auto; font-family: var(--mono); font-size: .72rem;
+  font-variant-numeric: tabular-nums; color: var(--ink-mute);
+}
+
+/* ---------- tabelas ---------- */
+
+.tbl-scroll { overflow-x: auto; }
+.tri { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+.tri th, .tri td { text-align: left; padding: .45rem .6rem; border-bottom: 1px solid var(--rule); vertical-align: middle; }
+.tri th {
+  font-family: var(--sans); font-size: .68rem; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--ink-mute); font-weight: 600; white-space: nowrap;
+}
+.tri td { font-size: .95rem; }
+.tri td:first-child { font-family: var(--sans); font-size: .82rem; color: var(--ink-soft); }
+.tri td.num {
+  font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: .85rem; white-space: nowrap;
+}
+.tri td.num.dens { color: var(--teorico); }
+.tri td.num.acum { color: var(--empirico); }
+#resumo .tri td { font-family: var(--sans); font-size: .85rem; }
+#resumo .tri td.num { font-family: var(--mono); }
+.gr { text-transform: none; }
+
+/* ============================================================
+   MODO APRESENTAÇÃO
+   ============================================================ */
+
+.hud { display: none; }
+
+:root[data-mode="present"] { font-size: calc(clamp(15px, 1.45vw, 30px) * var(--ps)); }
+:root[data-mode="present"] body { overflow: hidden; font-size: 1.12rem; line-height: 1.5; }
+:root[data-mode="present"] .rail { display: none; }
+:root[data-mode="present"] .shell { display: block; }
+:root[data-mode="present"] main { padding: 0; }
+:root[data-mode="present"] section,
+:root[data-mode="present"] .wrap,
+:root[data-mode="present"] .hero { display: contents; }
+
+:root[data-mode="present"] .slide { display: none; }
+:root[data-mode="present"] .slide.on {
+  display: flex; flex-direction: column; justify-content: safe center; align-items: center;
+  gap: .7rem; position: fixed; inset: 0;
+  padding: 1.6rem clamp(1rem, 4vw, 4rem) 2.9rem;
+  overflow-y: auto; background: var(--paper);
+}
+:root[data-mode="present"] .slide.on > * { width: 100%; max-width: 52rem; flex-shrink: 0; }
+:root[data-mode="present"] .slide.on > .sec-head { margin-bottom: .2rem; }
+:root[data-mode="present"] .defn,
+:root[data-mode="present"] .note,
+:root[data-mode="present"] .ex,
+:root[data-mode="present"] blockquote { margin-bottom: 0; }
+
+:root[data-mode="present"] h1 { font-size: 3rem; max-width: 22ch; }
+:root[data-mode="present"] h2 { font-size: 2rem; }
+:root[data-mode="present"] .dek { font-size: 1.35rem; max-width: 44ch; }
+:root[data-mode="present"] .eq { font-size: 1.6rem; margin: .9rem 0; }
+:root[data-mode="present"] .eq.sm,
+:root[data-mode="present"] .step .eq { font-size: 1.3rem; margin: .5rem 0; }
+:root[data-mode="present"] .defn .eq { margin: .55rem 0; }
+:root[data-mode="present"] h3 { margin-top: 0; }
+:root[data-mode="present"] canvas.plot { height: clamp(190px, 32vh, 440px); }
+:root[data-mode="present"] canvas.plot.tall { height: clamp(260px, 44vh, 600px); }
+:root[data-mode="present"] .hero-fig canvas { height: clamp(110px, 16vh, 260px); }
+:root[data-mode="present"] .sliders { gap: .35rem; margin-bottom: .6rem; }
+:root[data-mode="present"] .ctl { margin-bottom: .6rem; }
+
+:root[data-mode="present"] .hud {
+  display: flex; align-items: center; gap: .7rem;
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 10;
+  padding: .4rem clamp(.6rem, 2vw, 2rem);
+  background: var(--surface); border-top: 1px solid var(--rule);
+  font-family: var(--sans); font-size: clamp(12px, .55rem, 20px); color: var(--ink-mute);
+}
+.hud .where { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hud .where b { color: var(--ink); font-weight: 600; }
+.hud .count, .hud .zoom {
+  font-family: var(--mono); font-variant-numeric: tabular-nums; letter-spacing: .04em; white-space: nowrap;
+}
+.hud button {
+  font-family: var(--sans); font-size: inherit; padding: .25rem .6rem;
+  border: 1px solid var(--rule); background: var(--surface); color: var(--ink); cursor: pointer;
+}
+.hud button:hover { border-color: var(--ink-mute); }
+.hud .sep { width: 1px; align-self: stretch; background: var(--rule); }
+.hud .bar { position: absolute; left: 0; top: -1px; height: 2px; background: var(--teorico); transition: width .18s ease; }
+
+/* ---------- responsivo ---------- */
+
+@media (max-width: 62rem) {
+  .shell { grid-template-columns: 1fr; }
+  .rail { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--rule); padding: 1.5rem; }
+  .rail nav { display: grid; grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr)); gap: 0 1.2rem; }
+  .rail-foot { margin-top: 1rem; }
+  .wrap { padding-left: 1rem; padding-right: 1rem; }
+}
+@media (max-width: 36rem) {
+  .sld { grid-template-columns: 1fr 4.8rem; }
+  .sld > label { grid-column: 1 / -1; }
+  .sec-head { grid-template-columns: 1fr; }
+  .sec-head .sub { grid-column: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+html { scroll-behavior: smooth; }
+
+/* ---------- aula 04: figuras, tabela conjunta, 3D ---------- */
+
+figure { margin: 1.3rem 0; }
+figure img, figure video {
+  display: block; width: 100%; height: auto;
+  border: 1px solid var(--rule); background: var(--surface);
+}
+figcaption { font-family: var(--sans); font-size: .78rem; color: var(--ink-mute); margin-top: .5rem; }
+:root[data-mode="present"] figure video { max-height: 62vh; width: auto; max-width: 100%; margin: 0 auto; }
+:root[data-mode="present"] figure img { max-height: 46vh; width: auto; max-width: 100%; margin: 0 auto; }
+
+.joint th, .joint td { text-align: center; }
+.joint tbody th { font-family: var(--mono); font-size: .85rem; color: var(--ink-soft); }
+.joint td.num { background: color-mix(in srgb, var(--teorico) var(--p, 0%), transparent); }
+.joint td.zero { color: var(--ink-mute); }
+.joint .mg { color: var(--empirico); background: var(--empirico-bg); }
+.joint thead th.mg, .joint tbody th.mg { font-family: var(--sans); font-size: .68rem; letter-spacing: .06em; text-transform: uppercase; }
+
+.legend .l-neg { color: var(--alerta); }
+canvas.s3d { cursor: grab; touch-action: none; }
+canvas.s3d:active { cursor: grabbing; }
+.hero-fig canvas { height: 150px; }
+</style>
+
+<div class="shell">
+  <aside class="rail">
+    <div class="rail-brand">
+      <b>ECOM020</b>
+      Probabilidade e Estatística<br>
+      Aula 04 · Eng. de Computação · UFAL
+    </div>
+    <nav id="toc">
+      <a href="#motivacao"><span class="n">01</span><span>Duas variáveis, um experimento</span></a>
+      <a href="#discreta"><span class="n">02</span><span>Função de probabilidade conjunta</span></a>
+      <a href="#densidade"><span class="n">03</span><span>Densidade conjunta</span></a>
+      <a href="#marginal"><span class="n">04</span><span>Distribuições marginais</span></a>
+      <a href="#esperado"><span class="n">05</span><span>Valor esperado</span></a>
+      <a href="#covariancia"><span class="n">06</span><span>Covariância e correlação</span></a>
+      <a href="#condicional"><span class="n">07</span><span>Distribuição condicional</span></a>
+      <a href="#independencia"><span class="n">08</span><span>Independência</span></a>
+      <a href="#generalizacao"><span class="n">09</span><span>Mais de duas variáveis</span></a>
+      <a href="#resumo"><span class="n">10</span><span>Resumo</span></a>
+    </nav>
+    <div class="rail-foot">
+      <button class="rail-btn accent" id="presentBtn" type="button">▶ Modo apresentação</button>
+      <button class="rail-btn" id="themeBtn" type="button">Tema: automático</button>
+      <a class="rail-btn" href="../index.html">← Início do curso</a>
+      <span>Prof. Glauber R. Leite</span>
+    </div>
+  </aside>
+
+  <main>
+
+    <!-- ============ CAPA ============ -->
+    <header class="hero">
+      <div class="wrap">
+        <div class="slide" data-sec="Abertura">
+          <div>
+            <div class="eyebrow">Aula 04 · Distribuições conjuntas</div>
+            <h1>Duas variáveis, <em>uma</em> superfície de probabilidade</h1>
+            <p class="dek">
+              Quando um experimento produz duas medidas ao mesmo tempo, a densidade deixa de ser
+              uma curva e vira uma superfície. Probabilidade passa a ser volume, e a relação entre
+              as variáveis entra na conta.
+            </p>
+          </div>
+          <div class="hero-fig">
+            <canvas id="heroCanvas" aria-label="Pontos sorteados do exemplo do servidor no plano x, y; todos caem acima da diagonal y = x"></canvas>
+            <div class="hero-cap">
+              <span class="k-dens">(<span class="v">x</span>, <span class="v">y</span>) sorteados: conexão × autorização</span>
+              <span class="k-acum">a diagonal <span class="v">y</span> = <span class="v">x</span>: nenhum ponto abaixo dela</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ============ 01 ============ -->
+    <section id="motivacao">
+      <div class="wrap">
+        <div class="slide" data-sec="§ 01 · Duas variáveis, um experimento">
+          <div class="sec-head">
+            <span class="n">§ 01</span>
+            <h2>Mais de uma variável no mesmo experimento</h2>
+            <span class="sub">Até aqui, uma variável aleatória por vez</span>
+          </div>
+          <p>
+            Estudamos até então distribuições de probabilidade para uma única variável aleatória.
+            É frequentemente útil ter <strong>mais de uma</strong> variável aleatória definida no
+            mesmo experimento aleatório.
+          </p>
+          <div class="note">
+            <span class="lab">Exemplo — peça moldada por injeção</span>
+            <p>
+              <span class="v">X</span> é o comprimento de uma dimensão da peça e
+              <span class="v">Y</span> o de outra. Queremos a chance de a peça vir com
+              <span class="v">X</span> entre 2,95 e 3,05 mm <strong>e</strong>
+              <span class="v">Y</span> entre 7,60 e 7,80 mm:
+            </p>
+            <div class="eq sm">
+              <span class="v">P</span>(2,95 &lt; <span class="v">X</span> &lt; 3,05 e 7,60 &lt; <span class="v">Y</span> &lt; 7,80)
+              = <span class="v">P</span>((<span class="v">X</span>, <span class="v">Y</span>) ∈ <span class="v">R</span>),
+              &nbsp; <span class="v">R</span> = [2,95; 3,05] × [7,60; 7,80]
+            </div>
+          </div>
+          <div class="note problema">
+            <span class="lab">R não precisa ser um retângulo</span>
+            <p>
+              A região pode ter qualquer formato: uma condição como <span class="v">x</span> &lt;
+              <span class="v">y</span>, um disco, ou uma função de restrição (<i>constraint</i>)
+              qualquer. O exemplo a seguir já nasce com uma restrição dessas.
+            </p>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 01 · Duas variáveis, um experimento">
+          <h3>O exemplo que vai nos acompanhar: o servidor</h3>
+          <p>
+            Sua máquina pede acesso a um servidor. Seja <span class="v">X</span> o tempo (em ms) até
+            o servidor <strong>conectar</strong> e <span class="v">Y</span> o tempo (em ms) até ele
+            <strong>autorizar</strong> você como usuário válido. Os dois relógios disparam no mesmo
+            instante, e a autorização só acontece depois da conexão: <span class="v">X</span> &lt;
+            <span class="v">Y</span>.
+          </p>
+          <div class="defn">
+            <span class="lab">Modelo — densidade conjunta do servidor</span>
+            <div class="eq">
+              <span class="v">f</span><sub><span class="v">XY</span></sub>(<span class="v">x</span>, <span class="v">y</span>)
+              = 6 × 10<sup>−6</sup> exp(−0,001<span class="v">x</span> − 0,002<span class="v">y</span>),
+              &nbsp; para 0 &lt; <span class="v">x</span> &lt; <span class="v">y</span>
+            </div>
+          </div>
+          <p>
+            Cada conceito novo desta aula vai ser testado nele: é uma densidade válida? Qual a chance
+            de conectar em até 1 s e autorizar em até 2 s? Quanto tempo se espera pela autorização?
+            Saber que já conectou muda essa espera? <span class="v">X</span> e <span class="v">Y</span>
+            são independentes?
+          </p>
+          <div class="note">
+            <span class="lab">Repare na capa</span>
+            <p>
+              Os pontos sorteados na abertura são pares (<span class="v">x</span>, <span class="v">y</span>)
+              desse modelo. Todos caem acima da diagonal: a restrição <span class="v">x</span> &lt;
+              <span class="v">y</span> é uma região <span class="v">R</span> não retangular.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 02 ============ -->
+    <section id="discreta">
+      <div class="wrap">
+        <div class="slide" data-sec="§ 02 · Função de probabilidade conjunta">
+          <div class="sec-head">
+            <span class="n">§ 02</span>
+            <h2>Função de probabilidade conjunta</h2>
+            <span class="sub">O caso discreto: uma tabela de duas entradas</span>
+          </div>
+          <div class="defn">
+            <span class="lab">Definição — função de probabilidade conjunta</span>
+            <p>
+              A função de probabilidade conjunta das variáveis aleatórias discretas
+              <span class="v">X</span> e <span class="v">Y</span>, denotada por
+              <span class="v">f</span><sub><span class="v">XY</span></sub>(<span class="v">x</span>, <span class="v">y</span>), satisfaz
+            </p>
+            <ol>
+              <li><span class="v">f</span><sub><span class="v">XY</span></sub>(<span class="v">x</span>, <span class="v">y</span>) ≥ 0</li>
+              <li>∑<sub><span class="v">x</span></sub> ∑<sub><span class="v">y</span></sub> <span class="v">f</span><sub><span class="v">XY</span></sub>(<span class="v">x</span>, <span class="v">y</span>) = 1</li>
+              <li><span class="v">f</span><sub><span class="v">XY</span></sub>(<span class="v">x</span>, <span class="v">y</span>) = <span class="v">P</span>(<span class="v">X</span> = <span class="v">x</span>, <span class="v">Y</span> = <span class="v">y</span>)</li>
+            </ol>
+          </div>
+          <p>
+            As mesmas três condições da aula 02, agora com <strong>dois</strong> índices. A vírgula em
+            <span class="v">P</span>(<span class="v">X</span> = <span class="v">x</span>,
+            <span class="v">Y</span> = <span class="v">y</span>) é um “e”: a interseção dos dois eventos.
+          </p>
+        </div>
+
+        <div class="slide" data-sec="§ 02 · Função de probabilidade conjunta">
+          <h3>O servidor visto num relógio grosseiro</h3>
+          <p>
+            Suponha que só dá para ler o relógio em blocos de 500 ms. Sejam
+            <span class="v">X̃</span> e <span class="v">Ỹ</span> o número de blocos completos até
+            conectar e até autorizar (com “3+” para 1500 ms ou mais). Agora as variáveis são
+            discretas, e a distribuição conjunta cabe numa tabela:
+          </p>
+          <div class="tbl-scroll">
+            <table class="tri joint" id="tabConj">
+              <thead>
+                <tr><th><span class="v">x̃</span> \ <span class="v">ỹ</span></th><th>0</th><th>1</th><th>2</th><th>3+</th><th class="mg">soma da linha</th></tr>
+              </thead>
+              <tbody>
+                <tr><th>0</th><td class="num" style="--p:55%">0,3426</td><td class="num" style="--p:44%">0,2745</td><td class="num" style="--p:16%">0,1010</td><td class="num" style="--p:9%">0,0588</td><td class="num mg">0,7769</td></tr>
+                <tr><th>1</th><td class="num zero">0</td><td class="num" style="--p:12%">0,0764</td><td class="num" style="--p:10%">0,0612</td><td class="num" style="--p:6%">0,0356</td><td class="num mg">0,1733</td></tr>
+                <tr><th>2</th><td class="num zero">0</td><td class="num zero">0</td><td class="num" style="--p:3%">0,0171</td><td class="num" style="--p:3%">0,0216</td><td class="num mg">0,0387</td></tr>
+                <tr><th>3+</th><td class="num zero">0</td><td class="num zero">0</td><td class="num zero">0</td><td class="num" style="--p:2%">0,0111</td><td class="num mg">0,0111</td></tr>
+                <tr class="mgrow"><th class="mg">soma da coluna</th><td class="num mg">0,3426</td><td class="num mg">0,3509</td><td class="num mg">0,1793</td><td class="num mg">0,1271</td><td class="num mg">1</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p style="font-size:.95rem; color:var(--ink-soft)">
+            Cada célula é <span class="v">P</span>(<span class="v">X̃</span> = <span class="v">x̃</span>,
+            <span class="v">Ỹ</span> = <span class="v">ỹ</span>); a cor é proporcional a ela. As
+            condições valem: nada negativo e tudo soma 1. Abaixo da diagonal há <strong>zeros
+            estruturais</strong>: autorizar num bloco anterior ao da conexão é impossível. As somas de
+            linha e de coluna nas bordas voltam no § 04. (Valores arredondados; cada célula vem da
+            densidade do § 03 integrada sobre um quadrado de 500 × 500 ms.)
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 03 ============ -->
+    <section id="densidade">
+      <div class="wrap">
+        <div class="slide" data-sec="§ 03 · Densidade conjunta">
+          <div class="sec-head">
+            <span class="n">§ 03</span>
+            <h2>Função densidade de probabilidade conjunta</h2>
+            <span class="sub">No contínuo, a probabilidade é volume sob uma superfície</span>
+          </div>
+          <div class="defn">
+            <span class="lab">Definição — densidade conjunta</span>
+            <p>
+              Uma função densidade de probabilidade conjunta para variáveis aleatórias contínuas
+              <span class="v">X</span> e <span class="v">Y</span>, denotada por
+              <span class="v">f</span><sub><span class="v">XY</span></sub>(<span class="v">x</span>, <span class="v">y</span>), satisfaz
+            </p>
+            <ol>
+              <li><span class="v">f</span><sub><span class="v">XY</span></sub>(<span class="v">x</span>, <span class="v">y</span>) ≥ 0 &nbsp; para todo <span class="v">x</span>, <span class="v">y</span></li>
+              <li>
+                <span class="int"><span class="s">∫</span><span class="lims"><span>∞</span><span>−∞</span></span></span><span class="int"><span class="s">∫</span><span class="lims"><span>∞</span><span>−∞</span></span></span>
+                <span class="v">f</span><sub><span class="v">XY</span></sub>(<span class="v">x</span>, <span class="v">y</span>) <span class="v">dx</span> <span class="v">dy</span> = 1
+              </li>
+              <li>
+                <span class="v">P</span>((<span class="v">X</span>, <span class="v">Y</span>) ∈ <span class="v">R</span>) =
+                <span class="int"><span class="s">∬</span><span class="lims"><span>&nbsp;</span><span class="v">R</span></span></span>
+                <span class="v">f</span><sub><span class="v">XY</span></sub>(<span class="v">x</span>, <span class="v">y</span>) <span class="v">dx</span> <span class="v">dy</span>
+              </li>
+            </ol>
+          </div>
+          <p>
+            Na aula 03, <span class="v">f</span>(<span class="v">x</span>) era uma curva e a
+            probabilidade era <strong>área</strong> sob ela. Agora
+            <span class="v">f</span><sub><span class="v">XY</span></sub> é uma <strong>superfície</strong>
+            sobre o plano (<span class="v">x</span>, <span class="v">y</span>), e a probabilidade de uma
+            região <span class="v">R</span> é o <strong>volume</strong> sob a superfície, acima de
+            <span class="v">R</span>. Volume total: 1.
+          </p>
+        </div>
+
+        <div class="slide" data-sec="§ 03 · Densidade conjunta">
+          <div class="demo">
+            <div class="demo-head">
+              <span class="t">A superfície do servidor</span>
+              <span class="h">arraste para girar · mova os limites de R</span>
+            </div>
+            <div class="demo-body">
+              <div class="ctl">
+                <div class="seg" id="s3dVista">
+                  <button type="button" data-k="persp" aria-pressed="true">Perspectiva</button>
+                  <button type="button" data-k="cima" aria-pressed="false">De cima</button>
+                  <button type="button" data-k="lado" aria-pressed="false">De lado</button>
+                </div>
+                <button class="b" type="button" id="s3dGira">Girar</button>
+              </div>
+              <div class="sliders">
+                <div class="sld">
+                  <label for="rA">limite <span class="v">X</span> &lt; <span class="v">a</span> (ms)</label>
+                  <input type="range" id="rA" min="0" max="2500" step="50" value="1000">
+                  <output id="oRA">1000</output>
+                </div>
+                <div class="sld">
+                  <label for="rB">limite <span class="v">Y</span> &lt; <span class="v">b</span> (ms)</label>
+                  <input type="range" id="rB" min="0" max="2500" step="50" value="2000">
+                  <output id="oRB">2000</output>
+                </div>
+              </div>
+              <canvas class="plot tall s3d" id="s3dCanvas" aria-label="Superfície 3D da densidade conjunta do servidor sobre o triângulo 0 < x < y, com a parte acima da região R destacada"></canvas>
+              <div class="legend"><span class="l-dens"><span class="v">f</span><sub><span class="v">XY</span></sub>(<span class="v">x</span>, <span class="v">y</span>)</span><span class="l-acum">parte da superfície acima de <span class="v">R</span></span></div>
+              <div class="readout">
+                <div><span class="k">P(X &lt; a, Y &lt; b) = volume em R</span><span class="val acum" id="rP">—</span></div>
+                <div><span class="k">altura máxima f(0, 0)</span><span class="val dens">6·10⁻⁶</span></div>
+              </div>
+            </div>
+          </div>
+          <p style="font-size:.95rem; color:var(--ink-soft)">
+            Note a <strong>parede</strong> sobre a diagonal: a densidade salta de 0 (onde
+            <span class="v">x</span> &gt; <span class="v">y</span>) para seu valor máximo. Veja de cima:
+            o suporte é o triângulo 0 &lt; <span class="v">x</span> &lt; <span class="v">y</span>, e
+            com <span class="v">a</span> ≥ <span class="v">b</span> o limite em <span class="v">X</span>
+            deixa de importar.
+          </p>
+        </div>
+
+        <div class="slide" data-sec="§ 03 · Densidade conjunta">
+          <h3>A superfície sendo montada</h3>
+          <figure>
+            <video src="./media/ServidorDensidadeConjunta.mp4" controls preload="metadata" playsinline></video>
+            <figcaption>
+              <a href="./scripts/servidor_manim.py">Animação em Manim</a>: o suporte
+              0 &lt; <span class="v">x</span> &lt; <span class="v">y</span> no plano, as fatias com
+              <span class="v">x</span> fixo, a superfície que as preenche, o volume sobre
+              <span class="v">R</span> e, no fim, a área de cada fatia virando a marginal de
+              <span class="v">X</span> (§ 04).
+            </figcaption>
+          </figure>
+        </div>
+
+        <div class="slide" data-sec="§ 03 · Densidade conjunta">
+          <div class="ex" data-steps>
+            <span class="lab">Exemplo — o servidor, parte 1</span>
+            <p>
+              Com <span class="v">f</span><sub><span class="v">XY</span></sub>(<span class="v">x</span>, <span class="v">y</span>)
+              = 6 × 10<sup>−6</sup> exp(−0,001<span class="v">x</span> − 0,002<span class="v">y</span>)
+              para 0 &lt; <span class="v">x</span> &lt; <span class="v">y</span>:
+            </p>
+            <ul class="items">
+              <li>(a) Mostre que é uma função densidade de probabilidade válida.</li>
+              <li>(b) Determine <span class="v">P</span>(<span class="v">X</span> &lt; 1000, <span class="v">Y</span> &lt; 2000).</li>
+            </ul>
+            <ol class="steps">
+              <li class="step">
+                <p>
+                  <strong>(a) Positividade.</strong> 6 × 10<sup>−6</sup> &gt; 0 e a exponencial é
+                  sempre positiva; fora do triângulo a densidade é 0. A condição 1 vale.
+                </p>
+              </li>
+              <li class="step">
+                <p>
+                  <strong>(a) Os limites de integração.</strong> O trabalho todo está em descrever o
+                  triângulo: para cada <span class="v">x</span> &gt; 0, o <span class="v">y</span> vai de
+                  <span class="v">x</span> até ∞. Integramos primeiro em <span class="v">y</span>:
+                </p>
+                <div class="eq sm">
+                  <span class="int"><span class="s">∫</span><span class="lims"><span>∞</span><span>0</span></span></span>
+                  <span class="int"><span class="s">∫</span><span class="lims"><span>∞</span><span class="v">x</span></span></span>
+                  6 × 10<sup>−6</sup> <span class="v">e</span><sup>−0,001<span class="v">x</span> − 0,002<span class="v">y</span></sup> <span class="v">dy</span> <span class="v">dx</span>
+                </div>
+              </li>
+              <li class="step">
+                <p><strong>(a) Integral interna.</strong> O termo em <span class="v">x</span> sai como constante:</p>
+                <div class="eq sm">
+                  <span class="int"><span class="s">∫</span><span class="lims"><span>∞</span><span class="v">x</span></span></span>
+                  <span class="v">e</span><sup>−0,002<span class="v">y</span></sup> <span class="v">dy</span> =
+                  <span class="frac"><span><span class="v">e</span><sup>−0,002<span class="v">x</span></sup></span><span>0,002</span></span>
+                  &nbsp;⇒&nbsp;
+                  6 × 10<sup>−6</sup> <span class="v">e</span><sup>−0,001<span class="v">x</span></sup> ·
+                  <span class="frac"><span><span class="v">e</span><sup>−0,002<span class="v">x</span></sup></span><span>0,002</span></span>
+                  = 0,003 <span class="v">e</span><sup>−0,003<span class="v">x</span></sup>
+                </div>
+              </li>
+              <li class="step">
+                <p><strong>(a) Integral externa.</strong></p>
+                <div class="eq sm">
+                  <span class="int"><span class="s">∫</span><span class="lims"><span>∞</span><span>0</span></span></span>
+                  0,003 <span class="v">e</span><sup>−0,003<span class="v">x</span></sup> <span class="v">dx</span>
+                  = 0,003 · <span class="frac"><span>1</span><span>0,003</span></span> = 1 &nbsp;✓
+                </div>
+                <p>
+                  É uma densidade válida. Guarde o resultado intermediário
+                  0,003<span class="v">e</span><sup>−0,003<span class="v">x</span></sup>: ele volta no § 04.
+                </p>
+              </li>
+              <li class="step">
+                <p>
+                  <strong>(b) A região.</strong> <span class="v">R</span> é o retângulo
+                  {<span class="v">x</span> &lt; 1000, <span class="v">y</span> &lt; 2000} cortado pelo
+                  suporte: para cada 0 &lt; <span class="v">x</span> &lt; 1000, o <span class="v">y</span>
+                  vai de <span class="v">x</span> até 2000.
+                </p>
+                <div class="eq sm">
+                  <span class="int"><span class="s">∫</span><span class="lims"><span>1000</span><span>0</span></span></span>
+                  <span class="int"><span class="s">∫</span><span class="lims"><span>2000</span><span class="v">x</span></span></span>
+                  6 × 10<sup>−6</sup> <span class="v">e</span><sup>−0,001<span class="v">x</span> − 0,002<span class="v">y</span></sup> <span class="v">dy</span> <span class="v">dx</span>
+                  = 0,003 <span class="int"><span class="s">∫</span><span class="lims"><span>1000</span><span>0</span></span></span>
+                  <span class="v">e</span><sup>−0,001<span class="v">x</span></sup>(<span class="v">e</span><sup>−0,002<span class="v">x</span></sup> − <span class="v">e</span><sup>−4</sup>) <span class="v">dx</span>
+                </div>
+              </li>
+              <li class="step">
+                <p><strong>(b) Integral externa</strong>, termo a termo:</p>
+                <div class="eq sm">
+                  0,003 <span class="brk">[</span>
+                  <span class="frac"><span>1 − <span class="v">e</span><sup>−3</sup></span><span>0,003</span></span>
+                  − <span class="v">e</span><sup>−4</sup> <span class="frac"><span>1 − <span class="v">e</span><sup>−1</sup></span><span>0,001</span></span>
+                  <span class="brk">]</span>
+                  = (1 − <span class="v">e</span><sup>−3</sup>) − 3<span class="v">e</span><sup>−4</sup>(1 − <span class="v">e</span><sup>−1</sup>)
+                </div>
+              </li>
+              <li class="step fim">
+                <div class="eq sm">
+                  <span class="v">P</span>(<span class="v">X</span> &lt; 1000, <span class="v">Y</span> &lt; 2000)
+                  = 0,9502 − 0,0347 ≈ <span class="res">0,915</span>
+                </div>
+                <p>Confira no gráfico 3D com <span class="v">a</span> = 1000 e <span class="v">b</span> = 2000.</p>
+              </li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 04 ============ -->
+    <section id="marginal">
+      <div class="wrap">
+        <div class="slide" data-sec="§ 04 · Distribuições marginais">
+          <div class="sec-head">
+            <span class="n">§ 04</span>
+            <h2>Distribuições marginais</h2>
+            <span class="sub">Recuperando a distribuição de uma variável sozinha</span>
+          </div>
+          <div class="defn">
+            <span class="lab">Definição — marginais</span>
+            <p>
+              Se <span class="v">X</span> e <span class="v">Y</span> têm função de probabilidade (ou
+              densidade) conjunta <span class="v">f</span><sub><span class="v">XY</span></sub>(<span class="v">x</span>, <span class="v">y</span>),
+              as funções marginais de <span class="v">X</span> e de <span class="v">Y</span> são
+            </p>
+            <div class="eq sm">
+              <span class="v">f</span><sub><span class="v">X</span></sub>(<span class="v">x</span>) =
+              <span class="int"><span class="s">∫</span><span class="lims"><span>&nbsp;</span><span>&nbsp;</span></span></span>
+              <span class="v">f</span><sub><span class="v">XY</span></sub>(<span class="v">x</span>, <span class="v">y</span>) <span class="v">dy</span>
+              &nbsp;&nbsp;e&nbsp;&nbsp;
+              <span class="v">f</span><sub><span class="v">Y</span></sub>(<span class="v">y</span>) =
+              <span class="int"><span class="s">∫</span><span class="lims"><span>&nbsp;</span><span>&nbsp;</span></span></span>
+              <span class="v">f</span><sub><span class="v">XY</span></sub>(<span class="v">x</span>, <span class="v">y</span>) <span class="v">dx</span>
+            </div>
+            <p>(no caso discreto, trocam-se as integrais por somas)</p>
+          </div>
+          <p>
+            A marginal de <span class="v">X</span> é simplesmente a distribuição de
+            <span class="v">X</span> <strong>ignorando</strong> <span class="v">Y</span>. Integra-se
+            fora a variável que não interessa:
+          </p>
+          <div class="eq sm">
+            <span class="v">P</span>(<span class="v">a</span> &lt; <span class="v">X</span> &lt; <span class="v">b</span>) =
+            <span class="int"><span class="s">∫</span><span class="lims"><span class="v">b</span><span class="v">a</span></span></span>
+            <span class="v">f</span><sub><span class="v">X</span></sub>(<span class="v">x</span>) <span class="v">dx</span> =
+            <span class="int"><span class="s">∫</span><span class="lims"><span class="v">b</span><span class="v">a</span></span></span>
+            <span class="int"><span class="s">∫</span><span class="lims"><span>∞</span><span>−∞</span></span></span>
+            <span class="v">f</span><sub><span class="v">XY</span></sub>(<span class="v">x</span>, <span class="v">y</span>) <span class="v">dy</span> <span class="v">dx</span>
+          </div>
+          <div class="note">
+            <span class="lab">De volta à tabela do § 02</span>
+            <p>
+              As somas de linha são <span class="v">f</span><sub><span class="v">X̃</span></sub>
+              e as de coluna, <span class="v">f</span><sub><span class="v">Ỹ</span></sub>: por exemplo,
+              <span class="v">P</span>(<span class="v">X̃</span> = 0) = 0,7769. O nome vem daí — as
+              marginais eram escritas na <strong>margem</strong> da tabela.
+            </p>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 04 · Distribuições marginais">
+          <div class="demo">
+            <div class="demo-head">
+              <span class="t">Fatias da superfície</span>
+              <span class="h">fixe x = x₀; a área da fatia é f<sub>X</sub>(x₀)</span>
+            </div>
+            <div class="demo-body">
+              <div class="sliders">
+                <div class="sld">
+                  <label for="mX">fatia em <span class="v">x</span><sub>0</sub> (ms)</label>
+                  <input type="range" id="mX" min="0" max="2000" step="25" value="400">
+                  <output id="oMX">400</output>
+                </div>
+              </div>
+              <canvas class="plot tall s3d" id="m3dCanvas" aria-label="Superfície 3D do servidor cortada por um plano em x igual a x zero; a fatia sob a superfície aparece em âmbar"></canvas>
+              <canvas class="plot" id="margCanvas" aria-label="Marginal de X, uma exponencial com taxa 0,003, com um ponto marcando x zero"></canvas>
+              <div class="legend"><span class="l-acum">fatia em <span class="v">x</span><sub>0</sub></span><span class="l-dens">marginal <span class="v">f</span><sub><span class="v">X</span></sub>(<span class="v">x</span>) = 0,003<span class="v">e</span><sup>−0,003<span class="v">x</span></sup></span></div>
+              <div class="readout">
+                <div><span class="k">área da fatia = f_X(x₀)</span><span class="val acum" id="mA">—</span></div>
+                <div><span class="k">altura da parede f(x₀, x₀)</span><span class="val dens" id="mH">—</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 04 · Distribuições marginais">
+          <div class="ex" data-steps>
+            <span class="lab">Exemplo — o servidor, parte 2</span>
+            <p>Encontre as marginais de <span class="v">X</span> e de <span class="v">Y</span> e calcule <span class="v">P</span>(<span class="v">Y</span> &gt; 2000).</p>
+            <ol class="steps">
+              <li class="step">
+                <p>
+                  <strong>Marginal de X.</strong> Já foi feita no § 03! A integral interna em
+                  <span class="v">y</span>, de <span class="v">x</span> a ∞, deu
+                </p>
+                <div class="eq sm">
+                  <span class="v">f</span><sub><span class="v">X</span></sub>(<span class="v">x</span>) = 0,003 <span class="v">e</span><sup>−0,003<span class="v">x</span></sup>, &nbsp; <span class="v">x</span> &gt; 0
+                </div>
+                <p>
+                  Uma <strong>exponencial</strong> com λ = 0,003 (aula 03): o tempo até conectar tem
+                  média 1/0,003 ≈ 333 ms.
+                </p>
+              </li>
+              <li class="step">
+                <p>
+                  <strong>Marginal de Y.</strong> Agora integra-se em <span class="v">x</span>. Para um
+                  <span class="v">y</span> fixo, o suporte exige 0 &lt; <span class="v">x</span> &lt; <span class="v">y</span>:
+                </p>
+                <div class="eq sm">
+                  <span class="v">f</span><sub><span class="v">Y</span></sub>(<span class="v">y</span>) =
+                  <span class="int"><span class="s">∫</span><span class="lims"><span class="v">y</span><span>0</span></span></span>
+                  6 × 10<sup>−6</sup> <span class="v">e</span><sup>−0,001<span class="v">x</span> − 0,002<span class="v">y</span></sup> <span class="v">dx</span>
+                  = 6 × 10<sup>−3</sup> <span class="v">e</span><sup>−0,002<span class="v">y</span></sup>(1 − <span class="v">e</span><sup>−0,001<span class="v">y</span></sup>), &nbsp; <span class="v">y</span> &gt; 0
+                </div>
+                <p>Essa não é uma exponencial: começa em zero (é preciso conectar antes de autorizar).</p>
+              </li>
+              <li class="step">
+                <p><strong>P(Y &gt; 2000)</strong> pela marginal:</p>
+                <div class="eq sm">
+                  <span class="int"><span class="s">∫</span><span class="lims"><span>∞</span><span>2000</span></span></span>
+                  6 × 10<sup>−3</sup> (<span class="v">e</span><sup>−0,002<span class="v">y</span></sup> − <span class="v">e</span><sup>−0,003<span class="v">y</span></sup>) <span class="v">dy</span>
+                  = 6 × 10<sup>−3</sup> <span class="brk">[</span>
+                  <span class="frac"><span><span class="v">e</span><sup>−4</sup></span><span>0,002</span></span> −
+                  <span class="frac"><span><span class="v">e</span><sup>−6</sup></span><span>0,003</span></span>
+                  <span class="brk">]</span>
+                </div>
+              </li>
+              <li class="step fim">
+                <div class="eq sm">
+                  <span class="v">P</span>(<span class="v">Y</span> &gt; 2000) = 3<span class="v">e</span><sup>−4</sup> − 2<span class="v">e</span><sup>−6</sup> ≈ <span class="res">0,05</span>
+                </div>
+                <p>Em 5 % dos acessos, a autorização demora mais de 2 s.</p>
+              </li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 05 ============ -->
+    <section id="esperado">
+      <div class="wrap">
+        <div class="slide" data-sec="§ 05 · Valor esperado">
+          <div class="sec-head">
+            <span class="n">§ 05</span>
+            <h2>Valor esperado</h2>
+            <span class="sub">De uma função das duas variáveis</span>
+          </div>
+          <div class="defn">
+            <span class="lab">Definição — valor esperado de g(X, Y)</span>
+            <ul>
+              <li>Caso discreto: <span class="v">E</span>[<span class="v">g</span>(<span class="v">X</span>, <span class="v">Y</span>)] = ∑<sub><span class="v">x</span></sub> ∑<sub><span class="v">y</span></sub> <span class="v">g</span>(<span class="v">x</span>, <span class="v">y</span>) <span class="v">f</span><sub><span class="v">XY</span></sub>(<span class="v">x</span>, <span class="v">y</span>)</li>
+              <li>Caso contínuo: <span class="v">E</span>[<span class="v">g</span>(<span class="v">X</span>, <span class="v">Y</span>)] =
+                <span class="int"><span class="s">∫</span><span class="lims"><span>∞</span><span>−∞</span></span></span><span class="int"><span class="s">∫</span><span class="lims"><span>∞</span><span>−∞</span></span></span>
+                <span class="v">g</span>(<span class="v">x</span>, <span class="v">y</span>) <span class="v">f</span><sub><span class="v">XY</span></sub>(<span class="v">x</span>, <span class="v">y</span>) <span class="v">dx</span> <span class="v">dy</span></li>
+            </ul>
+          </div>
+          <div class="note problema">
+            <span class="lab">Atenção</span>
+            <p>
+              Mesmo com (<span class="v">X</span>, <span class="v">Y</span>) sendo um vetor, o valor
+              esperado de <span class="v">g</span>(<span class="v">X</span>, <span class="v">Y</span>) é um
+              <strong>escalar</strong>: uma integral definida, um número.
+            </p>
+          </div>
+          <h3>Casos especiais: usando a marginal</h3>
+          <p>Quando <span class="v">g</span> só depende de uma das variáveis, a marginal basta:</p>
+          <div class="eq sm">
+            <span class="v">E</span>[<span class="v">X</span>] =
+            <span class="int"><span class="s">∫</span><span class="lims"><span>∞</span><span>−∞</span></span></span>
+            <span class="v">x</span> <span class="v">f</span><sub><span class="v">X</span></sub>(<span class="v">x</span>) <span class="v">dx</span> = μ<sub><span class="v">X</span></sub>
+            &nbsp;&nbsp;&nbsp;
+            <span class="v">V</span>(<span class="v">X</span>) =
+            <span class="int"><span class="s">∫</span><span class="lims"><span>∞</span><span>−∞</span></span></span>
+            (<span class="v">x</span> − μ<sub><span class="v">X</span></sub>)² <span class="v">f</span><sub><span class="v">X</span></sub>(<span class="v">x</span>) <span class="v">dx</span> = σ²<sub><span class="v">X</span></sub>
+          </div>
+          <p>
+            Para <span class="v">Y</span> é análogo. No servidor, <span class="v">X</span> é exponencial:
+            μ<sub><span class="v">X</span></sub> = 1/0,003 ≈ <span class="res">333,3 ms</span> e
+            σ<sub><span class="v">X</span></sub> ≈ 333,3 ms. Da marginal de <span class="v">Y</span>,
+            μ<sub><span class="v">Y</span></sub> ≈ <span class="res">833,3 ms</span>.
+          </p>
+        </div>
+
+        <div class="slide" data-sec="§ 05 · Valor esperado">
+          <div class="ex" data-steps>
+            <span class="lab">Exemplo — o servidor, parte 3</span>
+            <p>
+              Depois de conectado, quanto tempo se espera, em média, pela autorização? Ou seja,
+              calcule <span class="v">E</span>[<span class="v">Y</span> − <span class="v">X</span>].
+            </p>
+            <ol class="steps">
+              <li class="step">
+                <p><strong>Montando.</strong> Aqui <span class="v">g</span>(<span class="v">x</span>, <span class="v">y</span>) = <span class="v">y</span> − <span class="v">x</span>, sobre o mesmo triângulo:</p>
+                <div class="eq sm">
+                  <span class="v">E</span>[<span class="v">Y</span> − <span class="v">X</span>] =
+                  <span class="int"><span class="s">∫</span><span class="lims"><span>∞</span><span>0</span></span></span>
+                  <span class="int"><span class="s">∫</span><span class="lims"><span>∞</span><span class="v">x</span></span></span>
+                  (<span class="v">y</span> − <span class="v">x</span>) · 6 × 10<sup>−6</sup> <span class="v">e</span><sup>−0,001<span class="v">x</span> − 0,002<span class="v">y</span></sup> <span class="v">dy</span> <span class="v">dx</span>
+                </div>
+              </li>
+              <li class="step">
+                <p>
+                  <strong>Troca de variável na integral interna.</strong> Com <span class="v">u</span> =
+                  <span class="v">y</span> − <span class="v">x</span> (a espera depois da conexão),
+                  <span class="v">e</span><sup>−0,002<span class="v">y</span></sup> =
+                  <span class="v">e</span><sup>−0,002<span class="v">x</span></sup><span class="v">e</span><sup>−0,002<span class="v">u</span></sup>:
+                </p>
+                <div class="eq sm">
+                  6 × 10<sup>−6</sup> <span class="v">e</span><sup>−0,003<span class="v">x</span></sup>
+                  <span class="int"><span class="s">∫</span><span class="lims"><span>∞</span><span>0</span></span></span>
+                  <span class="v">u</span> <span class="v">e</span><sup>−0,002<span class="v">u</span></sup> <span class="v">du</span>
+                  = 6 × 10<sup>−6</sup> <span class="v">e</span><sup>−0,003<span class="v">x</span></sup> · <span class="frac"><span>1</span><span>0,002²</span></span>
+                  = 1,5 <span class="v">e</span><sup>−0,003<span class="v">x</span></sup>
+                </div>
+              </li>
+              <li class="step fim">
+                <div class="eq sm">
+                  <span class="v">E</span>[<span class="v">Y</span> − <span class="v">X</span>] =
+                  <span class="int"><span class="s">∫</span><span class="lims"><span>∞</span><span>0</span></span></span>
+                  1,5 <span class="v">e</span><sup>−0,003<span class="v">x</span></sup> <span class="v">dx</span>
+                  = <span class="frac"><span>1,5</span><span>0,003</span></span> = <span class="res">500 ms</span>
+                </div>
+                <p>
+                  Coerente: μ<sub><span class="v">Y</span></sub> − μ<sub><span class="v">X</span></sub> =
+                  833,3 − 333,3 = 500. (O valor esperado é linear, então isso não é coincidência.)
+                </p>
+              </li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 06 ============ -->
+    <section id="covariancia">
+      <div class="wrap">
+        <div class="slide" data-sec="§ 06 · Covariância e correlação">
+          <div class="sec-head">
+            <span class="n">§ 06</span>
+            <h2>Covariância e correlação</h2>
+            <span class="sub">Um número para a relação entre as duas variáveis</span>
+          </div>
+          <div class="defn">
+            <span class="lab">Definição — covariância</span>
+            <p>
+              A covariância entre <span class="v">X</span> e <span class="v">Y</span>, denotada por
+              cov(<span class="v">X</span>, <span class="v">Y</span>) ou σ<sub><span class="v">XY</span></sub>, é
+            </p>
+            <div class="eq sm">
+              σ<sub><span class="v">XY</span></sub> = <span class="v">E</span>[(<span class="v">X</span> − μ<sub><span class="v">X</span></sub>)(<span class="v">Y</span> − μ<sub><span class="v">Y</span></sub>)]
+              = <span class="v">E</span>[<span class="v">XY</span>] − μ<sub><span class="v">X</span></sub>μ<sub><span class="v">Y</span></sub>
+            </div>
+          </div>
+          <p>
+            É um valor esperado com <span class="v">g</span>(<span class="v">x</span>, <span class="v">y</span>) =
+            (<span class="v">x</span> − μ<sub><span class="v">X</span></sub>)(<span class="v">y</span> − μ<sub><span class="v">Y</span></sub>).
+            Se os pontos com probabilidade positiva tendem a cair ao longo de uma reta de inclinação
+            positiva (negativa), os produtos são majoritariamente positivos (negativos), e
+            σ<sub><span class="v">XY</span></sub> também.
+          </p>
+          <figure>
+            <img src="./media/covariance.png" alt="Diagramas de dispersão com covariância positiva, negativa e nula">
+            <figcaption>Formas típicas de distribuição conjunta e o sinal da covariância.</figcaption>
+          </figure>
+        </div>
+
+        <div class="slide" data-sec="§ 06 · Covariância e correlação">
+          <div class="defn">
+            <span class="lab">Definição — correlação</span>
+            <div class="eq sm">
+              ρ<sub><span class="v">XY</span></sub> =
+              <span class="frac"><span>cov(<span class="v">X</span>, <span class="v">Y</span>)</span><span><span class="sqrt">√<span><span class="v">V</span>(<span class="v">X</span>) <span class="v">V</span>(<span class="v">Y</span>)</span></span></span></span>
+              = <span class="frac"><span>σ<sub><span class="v">XY</span></sub></span><span>σ<sub><span class="v">X</span></sub> σ<sub><span class="v">Y</span></sub></span></span>,
+              &nbsp;&nbsp; −1 ≤ ρ<sub><span class="v">XY</span></sub> ≤ 1
+            </div>
+          </div>
+          <p>
+            A covariância carrega as unidades das duas variáveis (no servidor, ms²) e por isso é
+            difícil de julgar. A correlação divide pelos desvios-padrão e fica adimensional, entre
+            −1 e 1: muito mais fácil de interpretar.
+          </p>
+          <div class="demo">
+            <div class="demo-head">
+              <span class="t">Os sinais dos produtos</span>
+              <span class="h">cada ponto: um acesso ao servidor</span>
+            </div>
+            <div class="demo-body">
+              <div class="ctl">
+                <div class="seg" id="covSeg">
+                  <button type="button" data-k="serv" aria-pressed="true">Servidor (X &lt; Y)</button>
+                  <button type="button" data-k="ind" aria-pressed="false">Mesmas marginais, independentes</button>
+                </div>
+                <button class="b" type="button" id="covNova">Nova amostra</button>
+              </div>
+              <canvas class="plot tall" id="covCanvas" aria-label="Diagrama de dispersão de pares x, y com linhas nas médias; pontos coloridos pelo sinal de (x − μx)(y − μy)"></canvas>
+              <div class="legend"><span class="l-dens">(<span class="v">x</span> − μ<sub>X</sub>)(<span class="v">y</span> − μ<sub>Y</sub>) &gt; 0</span><span class="l-neg">(<span class="v">x</span> − μ<sub>X</sub>)(<span class="v">y</span> − μ<sub>Y</sub>) &lt; 0</span></div>
+              <div class="readout">
+                <div><span class="k">cov amostral (ms²)</span><span class="val acum" id="cC">—</span></div>
+                <div><span class="k">ρ amostral</span><span class="val acum" id="cR">—</span></div>
+                <div><span class="k">ρ teórico</span><span class="val dens" id="cT">—</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 06 · Covariância e correlação">
+          <div class="ex" data-steps>
+            <span class="lab">Exemplo — o servidor, parte 4</span>
+            <p>
+              Calcule cov(<span class="v">X</span>, <span class="v">Y</span>) e ρ<sub><span class="v">XY</span></sub>,
+              sabendo que μ<sub><span class="v">X</span></sub> = 1000/3, μ<sub><span class="v">Y</span></sub> = 2500/3,
+              σ²<sub><span class="v">X</span></sub> ≈ 111 111 e σ²<sub><span class="v">Y</span></sub> ≈ 361 111 (ms²).
+            </p>
+            <ol class="steps">
+              <li class="step">
+                <p><strong>E[XY], integral interna.</strong> Por partes, ∫<sub><span class="v">x</span></sub><sup>∞</sup> <span class="v">y</span><span class="v">e</span><sup>−0,002<span class="v">y</span></sup><span class="v">dy</span> = <span class="v">e</span><sup>−0,002<span class="v">x</span></sup>(500<span class="v">x</span> + 250 000). Então</p>
+                <div class="eq sm">
+                  <span class="v">E</span>[<span class="v">XY</span>] = 6 × 10<sup>−6</sup>
+                  <span class="int"><span class="s">∫</span><span class="lims"><span>∞</span><span>0</span></span></span>
+                  <span class="v">x</span> <span class="v">e</span><sup>−0,003<span class="v">x</span></sup>(500<span class="v">x</span> + 250 000) <span class="v">dx</span>
+                </div>
+              </li>
+              <li class="step">
+                <p>
+                  <strong>Integral externa.</strong> Com ∫<sub>0</sub><sup>∞</sup> <span class="v">x</span><sup><span class="v">n</span></sup><span class="v">e</span><sup>−λ<span class="v">x</span></sup><span class="v">dx</span> = <span class="v">n</span>!/λ<sup><span class="v">n</span>+1</sup> (a gama da aula 03):
+                </p>
+                <div class="eq sm">
+                  6 × 10<sup>−6</sup> <span class="brk">[</span>
+                  500 · <span class="frac"><span>2</span><span>0,003³</span></span> + 250 000 · <span class="frac"><span>1</span><span>0,003²</span></span>
+                  <span class="brk">]</span> ≈ 388 889 ms²
+                </div>
+              </li>
+              <li class="step">
+                <p><strong>Covariância.</strong></p>
+                <div class="eq sm">
+                  σ<sub><span class="v">XY</span></sub> = 388 889 − <span class="frac"><span>1000</span><span>3</span></span> · <span class="frac"><span>2500</span><span>3</span></span>
+                  = 388 889 − 277 778 ≈ <span class="res">111 111 ms²</span>
+                </div>
+                <p>Positiva: conexões demoradas vêm acompanhadas de autorizações demoradas.</p>
+              </li>
+              <li class="step fim">
+                <div class="eq sm">
+                  ρ<sub><span class="v">XY</span></sub> =
+                  <span class="frac"><span>111 111</span><span><span class="sqrt">√<span>111 111 · 361 111</span></span></span></span>
+                  ≈ <span class="frac"><span>111 111</span><span>333,3 · 600,9</span></span> ≈ <span class="res">0,555</span>
+                </div>
+                <p>Uma associação positiva moderada. Compare com o ρ amostral da demonstração.</p>
+              </li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 07 ============ -->
+    <section id="condicional">
+      <div class="wrap">
+        <div class="slide" data-sec="§ 07 · Distribuição condicional">
+          <div class="sec-head">
+            <span class="n">§ 07</span>
+            <h2>Distribuição de probabilidade condicional</h2>
+            <span class="sub">O que sobra de Y quando X já é conhecido</span>
+          </div>
+          <div class="defn">
+            <span class="lab">Definição — densidade condicional</span>
+            <p>
+              Dadas <span class="v">X</span> e <span class="v">Y</span> com densidade conjunta
+              <span class="v">f</span><sub><span class="v">XY</span></sub>(<span class="v">x</span>, <span class="v">y</span>),
+              a densidade condicional de <span class="v">Y</span>, considerando que
+              <span class="v">X</span> = <span class="v">x</span>, é
+            </p>
+            <div class="eq sm">
+              <span class="v">f</span><sub><span class="v">Y</span>|<span class="v">x</span></sub>(<span class="v">y</span>) =
+              <span class="frac"><span><span class="v">f</span><sub><span class="v">XY</span></sub>(<span class="v">x</span>, <span class="v">y</span>)</span><span><span class="v">f</span><sub><span class="v">X</span></sub>(<span class="v">x</span>)</span></span>
+              &nbsp; para <span class="v">f</span><sub><span class="v">X</span></sub>(<span class="v">x</span>) &gt; 0
+            </div>
+          </div>
+          <p>
+            É a mesma ideia de <span class="v">P</span>(<span class="v">B</span> | <span class="v">A</span>) =
+            <span class="v">P</span>(<span class="v">A</span> ∩ <span class="v">B</span>)/<span class="v">P</span>(<span class="v">A</span>)
+            da aula 01. Geometricamente: pegue a <strong>fatia</strong> da superfície em
+            <span class="v">x</span> fixo (§ 04) e divida pela área dela, <span class="v">f</span><sub><span class="v">X</span></sub>(<span class="v">x</span>).
+            A fatia vira uma densidade de verdade, com área 1.
+          </p>
+        </div>
+
+        <div class="slide" data-sec="§ 07 · Distribuição condicional">
+          <div class="demo">
+            <div class="demo-head">
+              <span class="t">Da fatia à condicional</span>
+              <span class="h">mova o instante de conexão x</span>
+            </div>
+            <div class="demo-body">
+              <div class="sliders">
+                <div class="sld">
+                  <label for="cX">conectou em <span class="v">x</span> (ms)</label>
+                  <input type="range" id="cX" min="0" max="1800" step="25" value="300">
+                  <output id="oCX">300</output>
+                </div>
+              </div>
+              <canvas class="plot" id="fatCanvas" aria-label="Fatia da densidade conjunta em x fixo, em escala absoluta"></canvas>
+              <canvas class="plot" id="condCanvas" aria-label="Densidade condicional de Y dado x, com a área acima de 2000 ms destacada"></canvas>
+              <div class="legend"><span class="l-dens">fatia <span class="v">f</span><sub><span class="v">XY</span></sub>(<span class="v">x</span>, <span class="v">y</span>), área = <span class="v">f</span><sub><span class="v">X</span></sub>(<span class="v">x</span>)</span><span class="l-acum">condicional <span class="v">f</span><sub><span class="v">Y</span>|<span class="v">x</span></sub>(<span class="v">y</span>), área = 1</span></div>
+              <div class="readout">
+                <div><span class="k">f_X(x)</span><span class="val dens" id="cFX">—</span></div>
+                <div><span class="k">E[Y | X = x]</span><span class="val acum" id="cEY">—</span></div>
+                <div><span class="k">P(Y &gt; 2000 | X = x)</span><span class="val acum" id="cPY">—</span></div>
+              </div>
+            </div>
+          </div>
+          <p style="font-size:.95rem; color:var(--ink-soft)">
+            A fatia encolhe à medida que <span class="v">x</span> cresce, mas depois de dividida pela área
+            tem <strong>sempre a mesma forma</strong>, só deslocada: começa em <span class="v">x</span> e
+            decai com taxa 0,002. Isso vai ser importante no § 08.
+          </p>
+        </div>
+
+        <div class="slide" data-sec="§ 07 · Distribuição condicional">
+          <div class="ex" data-steps>
+            <span class="lab">Exemplo — o servidor, parte 5</span>
+            <p>
+              Encontre <span class="v">f</span><sub><span class="v">Y</span>|<span class="v">x</span></sub>(<span class="v">y</span>).
+              Se a conexão aconteceu em 1500 ms, qual a probabilidade de a autorização passar de 2000 ms?
+              E qual é o tempo esperado de autorização?
+            </p>
+            <ol class="steps">
+              <li class="step">
+                <p><strong>Dividindo pela marginal</strong> do § 04:</p>
+                <div class="eq sm">
+                  <span class="v">f</span><sub><span class="v">Y</span>|<span class="v">x</span></sub>(<span class="v">y</span>) =
+                  <span class="frac"><span>6 × 10<sup>−6</sup> <span class="v">e</span><sup>−0,001<span class="v">x</span> − 0,002<span class="v">y</span></sup></span><span>0,003 <span class="v">e</span><sup>−0,003<span class="v">x</span></sup></span></span>
+                  = 0,002 <span class="v">e</span><sup>−0,002(<span class="v">y</span> − <span class="v">x</span>)</sup>, &nbsp; <span class="v">y</span> &gt; <span class="v">x</span>
+                </div>
+                <p>Uma exponencial de taxa 0,002 que começa em <span class="v">x</span>.</p>
+              </li>
+              <li class="step">
+                <p><strong>A probabilidade</strong>, com <span class="v">x</span> = 1500:</p>
+                <div class="eq sm">
+                  <span class="v">P</span>(<span class="v">Y</span> &gt; 2000 | <span class="v">X</span> = 1500) =
+                  <span class="int"><span class="s">∫</span><span class="lims"><span>∞</span><span>2000</span></span></span>
+                  0,002 <span class="v">e</span><sup>−0,002(<span class="v">y</span> − 1500)</sup> <span class="v">dy</span>
+                  = <span class="v">e</span><sup>−0,002 · 500</sup> = <span class="v">e</span><sup>−1</sup> ≈ <span class="res">0,368</span>
+                </div>
+                <p>Sem a informação, era 0,05 (§ 04). Saber que a conexão demorou muda muito a previsão.</p>
+              </li>
+              <li class="step fim">
+                <div class="eq sm">
+                  <span class="v">E</span>[<span class="v">Y</span> | <span class="v">X</span> = 1500] = 1500 + <span class="frac"><span>1</span><span>0,002</span></span> = <span class="res">2000 ms</span>
+                </div>
+                <p>Em geral, <span class="v">E</span>[<span class="v">Y</span> | <span class="v">X</span> = <span class="v">x</span>] = <span class="v">x</span> + 500: a mesma espera média de 500 ms do § 05, somada ao instante da conexão.</p>
+              </li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 08 ============ -->
+    <section id="independencia">
+      <div class="wrap">
+        <div class="slide" data-sec="§ 08 · Independência">
+          <div class="sec-head">
+            <span class="n">§ 08</span>
+            <h2>Independência</h2>
+            <span class="sub">Quando saber X não muda nada sobre Y</span>
+          </div>
+          <div class="defn">
+            <span class="lab">Propriedades equivalentes</span>
+            <p>
+              Para variáveis aleatórias <span class="v">X</span> e <span class="v">Y</span>, se
+              <strong>qualquer uma</strong> das propriedades a seguir for verdadeira, todas serão, e
+              <span class="v">X</span> e <span class="v">Y</span> são independentes:
+            </p>
+            <ol>
+              <li><span class="v">f</span><sub><span class="v">XY</span></sub>(<span class="v">x</span>, <span class="v">y</span>) = <span class="v">f</span><sub><span class="v">X</span></sub>(<span class="v">x</span>) <span class="v">f</span><sub><span class="v">Y</span></sub>(<span class="v">y</span>) para todo <span class="v">x</span> e <span class="v">y</span></li>
+              <li><span class="v">f</span><sub><span class="v">Y</span>|<span class="v">x</span></sub>(<span class="v">y</span>) = <span class="v">f</span><sub><span class="v">Y</span></sub>(<span class="v">y</span>) para todo <span class="v">x</span> e <span class="v">y</span> com <span class="v">f</span><sub><span class="v">X</span></sub>(<span class="v">x</span>) &gt; 0</li>
+              <li><span class="v">f</span><sub><span class="v">X</span>|<span class="v">y</span></sub>(<span class="v">x</span>) = <span class="v">f</span><sub><span class="v">X</span></sub>(<span class="v">x</span>) para todo <span class="v">x</span> e <span class="v">y</span> com <span class="v">f</span><sub><span class="v">Y</span></sub>(<span class="v">y</span>) &gt; 0</li>
+              <li><span class="v">P</span>(<span class="v">X</span> ∈ <span class="v">A</span>, <span class="v">Y</span> ∈ <span class="v">B</span>) = <span class="v">P</span>(<span class="v">X</span> ∈ <span class="v">A</span>) <span class="v">P</span>(<span class="v">Y</span> ∈ <span class="v">B</span>) para quaisquer conjuntos <span class="v">A</span> e <span class="v">B</span></li>
+            </ol>
+          </div>
+          <div class="note">
+            <span class="lab">Consequência</span>
+            <p>
+              Se <span class="v">X</span> e <span class="v">Y</span> são independentes, então
+              cov(<span class="v">X</span>, <span class="v">Y</span>) = 0. A volta <strong>não</strong> vale:
+              covariância nula só diz que não há relação <em>linear</em>.
+            </p>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 08 · Independência">
+          <h3>O servidor: X e Y são independentes?</h3>
+          <p>Não, e dá para ver por três caminhos, todos já percorridos nesta aula:</p>
+          <ol>
+            <li>
+              <strong>O suporte não é um retângulo.</strong> Pela propriedade 1, a densidade de
+              independentes é um produto <span class="v">f</span><sub><span class="v">X</span></sub>(<span class="v">x</span>)<span class="v">f</span><sub><span class="v">Y</span></sub>(<span class="v">y</span>),
+              que é positivo em todo o retângulo onde as marginais são positivas. Mas
+              <span class="v">f</span><sub><span class="v">XY</span></sub>(2000, 1000) = 0 enquanto
+              <span class="v">f</span><sub><span class="v">X</span></sub>(2000)<span class="v">f</span><sub><span class="v">Y</span></sub>(1000) &gt; 0. Os zeros
+              abaixo da diagonal na tabela do § 02 dizem o mesmo.
+            </li>
+            <li>
+              <strong>A condicional depende de x.</strong> No § 07,
+              <span class="v">f</span><sub><span class="v">Y</span>|<span class="v">x</span></sub> começa em
+              <span class="v">x</span>; e <span class="v">P</span>(<span class="v">Y</span> &gt; 2000) passou de
+              0,05 para 0,368 ao saber que <span class="v">X</span> = 1500. Falha a propriedade 2.
+            </li>
+            <li>
+              <strong>A covariância não é zero.</strong> σ<sub><span class="v">XY</span></sub> ≈ 111 111 ms² (§ 06).
+              Se fossem independentes, seria 0.
+            </li>
+          </ol>
+          <div class="note">
+            <span class="lab">Mas há uma independência escondida</span>
+            <p>
+              A espera <strong>depois</strong> da conexão, <span class="v">D</span> = <span class="v">Y</span> − <span class="v">X</span>,
+              tem a mesma distribuição (exponencial, taxa 0,002) qualquer que seja <span class="v">x</span>:
+              <span class="v">D</span> é independente de <span class="v">X</span>. É a falta de memória
+              da exponencial (aula 03). Daí saem de graça
+              σ²<sub><span class="v">Y</span></sub> = σ²<sub><span class="v">X</span></sub> + σ²<sub><span class="v">D</span></sub> = 111 111 + 250 000 e
+              cov(<span class="v">X</span>, <span class="v">Y</span>) = cov(<span class="v">X</span>, <span class="v">X</span> + <span class="v">D</span>) = σ²<sub><span class="v">X</span></sub> = 111 111.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 09 ============ -->
+    <section id="generalizacao">
+      <div class="wrap">
+        <div class="slide" data-sec="§ 09 · Mais de duas variáveis">
+          <div class="sec-head">
+            <span class="n">§ 09</span>
+            <h2>Generalização: <span class="v">p</span> variáveis</h2>
+            <span class="sub">Tudo vale em mais dimensões; só o desenho não cabe mais</span>
+          </div>
+          <div class="defn">
+            <span class="lab">Definição — densidade conjunta de X₁, …, Xₚ</span>
+            <p>Uma função densidade de probabilidade conjunta <span class="v">f</span><sub><span class="v">X</span>₁<span class="v">X</span>₂…<span class="v">X</span>ₚ</sub>(<span class="v">x</span>₁, <span class="v">x</span>₂, …, <span class="v">x</span>ₚ) satisfaz</p>
+            <ol>
+              <li><span class="v">f</span>(<span class="v">x</span>₁, …, <span class="v">x</span>ₚ) ≥ 0</li>
+              <li>∫ ∫ ⋯ ∫ <span class="v">f</span>(<span class="v">x</span>₁, …, <span class="v">x</span>ₚ) <span class="v">dx</span>₁ <span class="v">dx</span>₂ ⋯ <span class="v">dx</span>ₚ = 1 &nbsp;(todas de −∞ a ∞)</li>
+              <li><span class="v">P</span>[(<span class="v">X</span>₁, …, <span class="v">X</span>ₚ) ∈ <span class="v">B</span>] = ∫<sub><span class="v">B</span></sub> <span class="v">f</span>(<span class="v">x</span>₁, …, <span class="v">x</span>ₚ) <span class="v">dx</span>₁ ⋯ <span class="v">dx</span>ₚ</li>
+            </ol>
+          </div>
+          <p>Para variáveis discretas é análogo, com somatórios. Marginais, valor esperado, condicionais e independência seguem as mesmas regras: integra-se fora o que não interessa.</p>
+          <div class="note">
+            <span class="lab">O servidor ganha uma terceira etapa</span>
+            <p>
+              Seja <span class="v">Z</span> o instante do primeiro byte de dados, depois da autorização, com
+              espera exponencial de taxa λ₃ a partir de <span class="v">Y</span>. Pela mesma construção do § 08,
+            </p>
+            <div class="eq sm">
+              <span class="v">f</span><sub><span class="v">XYZ</span></sub>(<span class="v">x</span>, <span class="v">y</span>, <span class="v">z</span>) =
+              6 × 10<sup>−6</sup> <span class="v">e</span><sup>−0,001<span class="v">x</span> − 0,002<span class="v">y</span></sup> · λ₃<span class="v">e</span><sup>−λ₃(<span class="v">z</span> − <span class="v">y</span>)</sup>,
+              &nbsp; 0 &lt; <span class="v">x</span> &lt; <span class="v">y</span> &lt; <span class="v">z</span>
+            </div>
+            <p>
+              O suporte agora é uma região de ℝ³ e o gráfico precisaria de quatro eixos. Não se
+              desenha mais, mas se calcula exatamente igual: integrando <span class="v">z</span> de
+              <span class="v">y</span> a ∞, volta-se à densidade do servidor.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 10 ============ -->
+    <section id="resumo">
+      <div class="wrap">
+        <div class="slide" data-sec="§ 10 · Resumo">
+          <div class="sec-head">
+            <span class="n">§ 10</span>
+            <h2>Resumo, com o servidor</h2>
+            <span class="sub">Cada conceito da aula e o que ele disse sobre o exemplo</span>
+          </div>
+          <div class="tbl-scroll">
+            <table class="tri">
+              <thead>
+                <tr><th>Conceito</th><th>Como se obtém</th><th>No servidor</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Densidade conjunta</td><td>superfície; probabilidade = volume</td><td class="num dens">6·10⁻⁶ e<sup>−0,001x−0,002y</sup>, x &lt; y</td></tr>
+                <tr><td>Probabilidade de R</td><td>integral dupla sobre R ∩ suporte</td><td class="num acum">P(X&lt;1000, Y&lt;2000) ≈ 0,915</td></tr>
+                <tr><td>Marginal</td><td>integra fora a outra variável</td><td class="num dens">X ~ Exp(0,003); P(Y&gt;2000) ≈ 0,05</td></tr>
+                <tr><td>Valor esperado</td><td>∬ g · f</td><td class="num acum">μX ≈ 333, μY ≈ 833, E[Y−X] = 500 ms</td></tr>
+                <tr><td>Covariância / correlação</td><td>E[XY] − μXμY; ÷ σXσY</td><td class="num acum">σXY ≈ 111 111 ms², ρ ≈ 0,555</td></tr>
+                <tr><td>Condicional</td><td>fatia ÷ marginal</td><td class="num acum">P(Y&gt;2000 | X=1500) ≈ 0,368</td></tr>
+                <tr><td>Independência</td><td>f = fX · fY (e equivalentes)</td><td class="num">não: suporte triangular, ρ ≠ 0</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="note">
+            <span class="lab">A ideia que atravessa tudo</span>
+            <p>
+              Conjunta → <strong>integra</strong> uma variável → marginal. Conjunta →
+              <strong>fatia e normaliza</strong> → condicional. A conjunta tem toda a informação; as
+              outras são vistas parciais dela.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div class="hud" id="hud">
+  <span class="bar" id="hudBar"></span>
+  <span class="where" id="hudWhere"></span>
+  <span class="count" id="hudCount"></span>
+  <span class="sep"></span>
+  <button type="button" id="hudZoomOut" aria-label="Diminuir fonte">A−</button>
+  <span class="zoom" id="hudZoom">100%</span>
+  <button type="button" id="hudZoomIn" aria-label="Aumentar fonte">A+</button>
+  <span class="sep"></span>
+  <button type="button" id="hudPrev" aria-label="Slide anterior">←</button>
+  <button type="button" id="hudNext" aria-label="Próximo slide">→</button>
+  <button type="button" id="hudExit">Sair</button>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var root = document.documentElement;
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var MONO = 'ui-monospace, "SF Mono", Menlo, Consolas, monospace';
+
+  function css(n) { return getComputedStyle(root).getPropertyValue(n).trim(); }
+  function dn(x, n) { return x.toFixed(n).replace(".", ",").replace("-", "−"); }
+  function d2(x) { return dn(x, 2); }
+  function d4(x) { return dn(x, 4); }
+  function pct(v, n) { return dn(v * 100, n == null ? 2 : n) + " %"; }
+  var SUP = { "-": "⁻", "0": "⁰", "1": "¹", "2": "²", "3": "³", "4": "⁴", "5": "⁵", "6": "⁶", "7": "⁷", "8": "⁸", "9": "⁹" };
+  function sci(v, n) {
+    var s = v.toExponential(n).split("e");
+    return s[0].replace(".", ",") + "·10" + s[1].replace("+", "").split("").map(function (c) { return SUP[c]; }).join("");
+  }
+  function $(id) { return document.getElementById(id); }
+  function txt(id, v) { var e = $(id); if (e) e.textContent = v; }
+
+  /* ---------------- matemática ---------------- */
+  /* erf por Abramowitz & Stegun 7.1.26 (erro < 1,5e-7), de sobra para 4 casas */
+  function erf(x) {
+    var s = x < 0 ? -1 : 1; x = Math.abs(x);
+    var t = 1 / (1 + 0.3275911 * x);
+    var y = 1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-x * x);
+    return s * y;
+  }
+  function Phi(z) { return 0.5 * (1 + erf(z / Math.SQRT2)); }
+  function npdf(x, m, s) { var z = (x - m) / s; return Math.exp(-0.5 * z * z) / (s * Math.sqrt(2 * Math.PI)); }
+  function gauss() {
+    var u = 0, v = 0;
+    while (u === 0) u = Math.random();
+    v = Math.random();
+    return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+  }
+
+  var LNF = [0];
+  (function () { for (var i = 1; i <= 400; i++) LNF[i] = LNF[i - 1] + Math.log(i); })();
+  function lnComb(n, k) { return (k < 0 || k > n) ? -Infinity : LNF[n] - LNF[k] - LNF[n - k]; }
+
+  function wireSeg(id, cb) {
+    var el = $(id);
+    if (!el) return;
+    el.addEventListener("click", function (ev) {
+      var b = ev.target.closest("button[data-k]");
+      if (!b) return;
+      Array.prototype.forEach.call(el.querySelectorAll("button[data-k]"), function (x) {
+        x.setAttribute("aria-pressed", String(x === b));
+      });
+      cb(b.getAttribute("data-k"));
+    });
+  }
+
+  /* Devolve null quando o canvas está sem caixa de layout (slide oculto):
+     sem isso o buffer encolheria para 1px e o CSS o esticaria depois. */
+  function fit(canvas) {
+    if (!canvas) return null;
+    var r = canvas.getBoundingClientRect();
+    if (r.width < 2 || r.height < 2) return null;
+    var dpr = window.devicePixelRatio || 1;
+    canvas.width = Math.round(r.width * dpr);
+    canvas.height = Math.round(r.height * dpr);
+    var ctx = canvas.getContext("2d");
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, r.width, r.height);
+    return { ctx: ctx, w: r.width, h: r.height };
+  }
+
+  /* ---------------- eixos ---------------- */
+  function niceTicks(a, b, n) {
+    var span = b - a, raw = span / n;
+    var step = Math.pow(10, Math.floor(Math.log(raw) / Math.LN10));
+    var e = raw / step;
+    if (e >= 7.5) step *= 10; else if (e >= 3.5) step *= 5; else if (e >= 1.5) step *= 2;
+    var vals = [];
+    for (var v = Math.ceil(a / step - 1e-9) * step; v <= b + step * 1e-6; v += step) vals.push(+v.toFixed(10));
+    return { vals: vals, step: step };
+  }
+  function tickFmt(v, step) {
+    var d = Math.max(0, -Math.floor(Math.log(step) / Math.LN10 + 1e-9));
+    return dn(v, d);
+  }
+
+  /* Um painel cartesiano dentro do canvas. o: {x0,x1,y0,y1, top, h, xticks, yticks, xfmt, padL, xlabel, ylabel} */
+  function panel(fr, o) {
+    var ctx = fr.ctx, W = fr.w;
+    var L = o.padL != null ? o.padL : 46, R = 14, T = o.padT != null ? o.padT : 14, B = 22;
+    var top = o.top || 0, H = o.h || fr.h;
+    function X(v) { return L + (v - o.x0) / (o.x1 - o.x0) * (W - L - R); }
+    function Y(v) { return top + H - B - (v - o.y0) / (o.y1 - o.y0) * (H - T - B); }
+    function Xi(px) { return o.x0 + (px - L) / (W - L - R) * (o.x1 - o.x0); }
+    var base = Y(Math.max(o.y0, 0));
+
+    ctx.font = "11px " + MONO;
+    var yt = o.yticks === false ? null : niceTicks(o.y0, o.y1, 3);
+    if (yt) {
+      yt.vals.forEach(function (v) {
+        if (v === 0) return;
+        ctx.strokeStyle = css("--rule-soft"); ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(L, Y(v)); ctx.lineTo(W - R, Y(v)); ctx.stroke();
+        ctx.fillStyle = css("--ink-mute"); ctx.textAlign = "right";
+        ctx.fillText(tickFmt(v, yt.step), L - 6, Y(v) + 4);
+      });
+    }
+    ctx.strokeStyle = css("--rule"); ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(L, top + T); ctx.lineTo(L, Y(o.y0)); ctx.lineTo(W - R, Y(o.y0));
+    ctx.stroke();
+
+    var xt = o.xticks || niceTicks(o.x0, o.x1, W > 520 ? 8 : 5);
+    ctx.fillStyle = css("--ink-mute"); ctx.textAlign = "center";
+    xt.vals.forEach(function (v, i) {
+      var px = X(v);
+      if (px < L - 1 || px > W - R + 1) return;
+      ctx.strokeStyle = css("--rule"); ctx.beginPath(); ctx.moveTo(px, Y(o.y0)); ctx.lineTo(px, Y(o.y0) + 4); ctx.stroke();
+      var lab = xt.labels ? xt.labels[i] : (o.xfmt ? o.xfmt(v) : tickFmt(v, xt.step));
+      ctx.fillText(lab, px, Y(o.y0) + 15);
+    });
+    if (o.ylabel) { ctx.textAlign = "left"; ctx.fillText(o.ylabel, L + 6, top + T + 2); }
+    if (o.xlabel) { ctx.textAlign = "right"; ctx.fillText(o.xlabel, W - R, Y(o.y0) - 6); }
+
+    function clip() {
+      ctx.save();
+      ctx.beginPath(); ctx.rect(L, top + 2, W - L - R, Y(o.y0) - top - 2); ctx.clip();
+    }
+
+    return {
+      ctx: ctx, X: X, Y: Y, L: L, R: R, W: W, top: top, T: T, base: base,
+      curve: function (fn, color, lw, dash, a, b) {
+        var pa = a == null ? L : Math.max(L, X(a)), pb = b == null ? W - R : Math.min(W - R, X(b));
+        clip();
+        ctx.strokeStyle = color; ctx.lineWidth = lw || 2; ctx.setLineDash(dash || []);
+        ctx.beginPath();
+        var pen = false;
+        for (var px = pa; px <= pb + .01; px += 1) {
+          var y = fn(Xi(px));
+          if (!isFinite(y)) { pen = false; continue; }
+          var py = Y(y);
+          if (!pen) { ctx.moveTo(px, py); pen = true; } else ctx.lineTo(px, py);
+        }
+        ctx.stroke(); ctx.setLineDash([]);
+        ctx.restore();
+      },
+      area: function (fn, a, b, color, alpha) {
+        var pa = Math.max(L, X(a)), pb = Math.min(W - R, X(b));
+        if (pb < pa) return;
+        clip();
+        ctx.fillStyle = color; ctx.globalAlpha = alpha == null ? .3 : alpha;
+        if (pb - pa < 1.5) {
+          ctx.fillRect(pa - .75, Y(fn((a + b) / 2)), 1.5, base - Y(fn((a + b) / 2)));
+        } else {
+          ctx.beginPath(); ctx.moveTo(pa, base);
+          for (var px = pa; px <= pb; px += 1) {
+            var y = fn(Xi(px)); ctx.lineTo(px, Y(isFinite(y) ? y : 0));
+          }
+          var yb = fn(b); ctx.lineTo(pb, Y(isFinite(yb) ? yb : 0));
+          ctx.lineTo(pb, base); ctx.closePath(); ctx.fill();
+        }
+        ctx.globalAlpha = 1;
+        ctx.restore();
+      },
+      vline: function (x, color, dash, lw, y) {
+        var px = X(x);
+        if (px < L - 1 || px > W - R + 1) return;
+        ctx.strokeStyle = color; ctx.lineWidth = lw || 1; ctx.setLineDash(dash || []);
+        ctx.beginPath(); ctx.moveTo(px, y == null ? top + T : Y(y)); ctx.lineTo(px, base); ctx.stroke();
+        ctx.setLineDash([]);
+      },
+      dot: function (x, y, color, r) {
+        ctx.fillStyle = color; ctx.beginPath(); ctx.arc(X(x), Y(y), r || 3.5, 0, Math.PI * 2); ctx.fill();
+      },
+      label: function (s, x, y, color, align, dy) {
+        ctx.font = "12px " + MONO; ctx.textAlign = align || "center";
+        var px = X(x), py = Y(y) + (dy || 0);
+        var lw = ctx.measureText(s).width;
+        var lx = align === "left" ? px : align === "right" ? px - lw : px - lw / 2;
+        ctx.fillStyle = css("--surface"); ctx.globalAlpha = .85;
+        ctx.fillRect(lx - 3, py - 11, lw + 6, 15);
+        ctx.globalAlpha = 1; ctx.fillStyle = color; ctx.fillText(s, px, py);
+      }
+    };
+  }
+
+  function bars(P, xs, hs, w, color, alpha) {
+    var ctx = P.ctx;
+    ctx.fillStyle = color; ctx.globalAlpha = alpha == null ? 1 : alpha;
+    xs.forEach(function (x, i) {
+      var pa = P.X(x - w / 2), pb = P.X(x + w / 2);
+      var py = P.Y(hs[i]);
+      ctx.fillRect(pa + .5, py, Math.max(1, pb - pa - 1), P.base - py);
+    });
+    ctx.globalAlpha = 1;
+  }
+
+  var draws = [];
+  function reg(fn) { draws.push(fn); return fn; }
+  function redrawAll() { draws.forEach(function (d) { d(); }); }
+
+  /* ---------------- tema ---------------- */
+  var themeBtn = $("themeBtn");
+  var modes = ["auto", "light", "dark"];
+  var labels = { auto: "Tema: automático", light: "Tema: claro", dark: "Tema: escuro" };
+  var mi = 0;
+  themeBtn.addEventListener("click", function () {
+    mi = (mi + 1) % modes.length;
+    var m = modes[mi];
+    if (m === "auto") root.removeAttribute("data-theme");
+    else root.setAttribute("data-theme", m);
+    themeBtn.textContent = labels[m];
+    redrawAll();
+  });
+
+  /* ---------------- o servidor ---------------- */
+  /* f(x, y) = 6e-6 exp(-0,001x - 0,002y) em 0 < x < y.
+     fS é a fórmula sem o indicador; quem chama cuida do suporte. */
+  var FMAX = 6e-6;
+  function fS(x, y) { return 6e-6 * Math.exp(-0.001 * x - 0.002 * y); }
+  function fXm(x) { return x < 0 ? 0 : 0.003 * Math.exp(-0.003 * x); }
+  /* P(X < a, Y < b), forma fechada (dedução no exemplo do § 03) */
+  function Pab(a, b) {
+    if (a <= 0 || b <= 0) return 0;
+    if (a >= b) return 1 - 3 * Math.exp(-0.002 * b) + 2 * Math.exp(-0.003 * b);
+    return (1 - Math.exp(-0.003 * a)) - 3 * Math.exp(-0.002 * b) * (1 - Math.exp(-0.001 * a));
+  }
+  function amostraServ() {
+    var x = -Math.log(1 - Math.random()) / 0.003;
+    return [x, x - Math.log(1 - Math.random()) / 0.002];
+  }
+  function ms(v) { return Math.round(v).toLocaleString("pt-BR"); }
+
+  function rgbOf(c) {
+    c = c.replace("#", "");
+    if (c.length === 3) c = c.split("").map(function (h) { return h + h; }).join("");
+    return [parseInt(c.slice(0, 2), 16), parseInt(c.slice(2, 4), 16), parseInt(c.slice(4, 6), 16)];
+  }
+  function rgbStr(c, k) {
+    return "rgb(" + Math.round(Math.min(255, c[0] * k)) + "," + Math.round(Math.min(255, c[1] * k)) + "," + Math.round(Math.min(255, c[2] * k)) + ")";
+  }
+
+  /* ---------------- capa: pares (x, y) sorteados ---------------- */
+  var heroCanvas = $("heroCanvas");
+  var heroPts = [], HERO_N = reduce ? 700 : 0;
+  if (reduce) for (var hi = 0; hi < 700; hi++) heroPts.push(amostraServ());
+
+  function drawHero() {
+    var f = fit(heroCanvas);
+    if (!f) return;
+    var ctx = f.ctx, w = f.w, h = f.h, pad = 8;
+    function X(x) { return pad + x / 2400 * (w - 2 * pad); }
+    function Y(y) { return h - pad - y / 3000 * (h - 2 * pad); }
+    ctx.fillStyle = css("--teorico"); ctx.globalAlpha = .07;
+    ctx.beginPath(); ctx.moveTo(X(0), Y(0)); ctx.lineTo(X(3000), Y(3000)); ctx.lineTo(X(0), Y(3000)); ctx.closePath(); ctx.fill();
+    ctx.globalAlpha = 1;
+    ctx.strokeStyle = css("--empirico"); ctx.lineWidth = 1.6;
+    ctx.beginPath(); ctx.moveTo(X(0), Y(0)); ctx.lineTo(X(3000), Y(3000)); ctx.stroke();
+    ctx.fillStyle = css("--teorico");
+    heroPts.forEach(function (p, i) {
+      ctx.globalAlpha = i === heroPts.length - 1 && !reduce ? 1 : .55;
+      ctx.beginPath(); ctx.arc(X(p[0]), Y(p[1]), 2, 0, Math.PI * 2); ctx.fill();
+    });
+    ctx.globalAlpha = 1;
+  }
+  reg(drawHero);
+  function heroTick() {
+    if (heroPts.length < 700) {
+      heroPts.push(amostraServ()); if (heroPts.length < 700) heroPts.push(amostraServ());
+      drawHero(); requestAnimationFrame(heroTick);
+    } else drawHero();
+  }
+
+  /* ---------------- superfície 3D (canvas 2D + algoritmo do pintor) ---------------- */
+  /* Mundo: u = x/M - 1/2, v = y/M - 1/2, w = altura normalizada.
+     A malha é triangulada na direção da diagonal, então cada triângulo fica
+     inteiro dentro ou fora do suporte x < y: a parede sobre a diagonal sai limpa. */
+  function superficie3D(canvas, o) {
+    var M = o.M, N = 50, hstep = M / N, ZS = .62;
+    var st = { az: -.6, el: .66 }, spin = null;
+    var VIEWS = { persp: [-.6, .66], cima: [0, Math.PI / 2 - .001], lado: [0, .06] };
+
+    function proj(x, y, z, S, cx, cy) {
+      var u = x / M - .5, v = y / M - .5, w = z / FMAX * ZS;
+      var ca = Math.cos(st.az), sa = Math.sin(st.az), ce = Math.cos(st.el), se = Math.sin(st.el);
+      var x1 = u * ca - v * sa, y1 = u * sa + v * ca;
+      return [cx + x1 * S, cy - (w * ce + y1 * se) * S, y1 * ce - w * se];
+    }
+
+    function draw() {
+      var fr = fit(canvas);
+      if (!fr) return;
+      var ctx = fr.ctx, W = fr.w, H = fr.h;
+      var S = Math.min(W * .6, H * .92), cx = W * .52, cy = H * .56;
+      function P(x, y, z) { return proj(x, y, z || 0, S, cx, cy); }
+      var teal = rgbOf(css("--teorico")), amb = rgbOf(css("--empirico"));
+      var dark = root.getAttribute("data-theme") === "dark" ||
+        (root.getAttribute("data-theme") !== "light" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+      var L = [-.35, -.55, .76];
+      var meshCol = dark ? css("--paper") : css("--surface");
+
+      function poly(pts) {
+        ctx.beginPath(); ctx.moveTo(pts[0][0], pts[0][1]);
+        for (var i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]);
+        ctx.closePath();
+      }
+      function line(a, b, color, lw, dash) {
+        ctx.strokeStyle = color; ctx.lineWidth = lw || 1; ctx.setLineDash(dash || []);
+        ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke(); ctx.setLineDash([]);
+      }
+      function lab(s, p, color, align) {
+        ctx.font = "11px " + MONO; ctx.fillStyle = color; ctx.textAlign = align || "center";
+        ctx.fillText(s, p[0], p[1]);
+      }
+
+      /* chão: grade, suporte e região */
+      for (var g = 0; g <= M + 1; g += 500) {
+        line(P(g, 0), P(g, M), css("--rule-soft"));
+        line(P(0, g), P(M, g), css("--rule-soft"));
+      }
+      ctx.fillStyle = css("--teorico"); ctx.globalAlpha = .1;
+      poly([P(0, 0), P(0, M), P(M, M)]); ctx.fill(); ctx.globalAlpha = 1;
+      line(P(0, 0), P(M, M), css("--ink-mute"), 1, [4, 4]);
+      line(P(0, 0), P(M * 1.06, 0), css("--ink-mute"), 1.2);
+      line(P(0, 0), P(0, M * 1.06), css("--ink-mute"), 1.2);
+      for (g = 500; g <= M; g += 500) {
+        var tx = P(g, 0), ty = P(0, g);
+        lab(String(g), [tx[0], tx[1] + 14], css("--ink-mute"));
+        lab(String(g), [ty[0] - 6, ty[1] + 4], css("--ink-mute"), "right");
+      }
+      var ex = P(M * 1.12, 0), ey = P(0, M * 1.12);
+      lab("x", ex, css("--ink"), "center"); lab("y", ey, css("--ink"), "center");
+      var a = o.a ? o.a() : null, b = o.b ? o.b() : null, x0 = o.x0 ? o.x0() : null;
+      if (a != null) {
+        var ac = Math.min(a, M), bc = Math.min(b, M);
+        ctx.strokeStyle = css("--empirico"); ctx.lineWidth = 1.6;
+        poly([P(0, 0), P(ac, 0), P(ac, bc), P(0, bc)]); ctx.stroke();
+      }
+
+      /* primitivas da superfície */
+      var prims = [];
+      /* ed: arestas que caem sobre a malha de 250 ms, desenhadas junto com o triângulo */
+      function tri(p1, p2, p3, col, alpha, ed) {
+        var A = P(p1[0], p1[1], p1[2]), B = P(p2[0], p2[1], p2[2]), C = P(p3[0], p3[1], p3[2]);
+        /* normal no espaço do mundo, para o sombreamento */
+        var u1 = (p2[0] - p1[0]) / M, v1 = (p2[1] - p1[1]) / M, w1 = (p2[2] - p1[2]) / FMAX * ZS;
+        var u2 = (p3[0] - p1[0]) / M, v2 = (p3[1] - p1[1]) / M, w2 = (p3[2] - p1[2]) / FMAX * ZS;
+        var nx = v1 * w2 - w1 * v2, ny = w1 * u2 - u1 * w2, nz = u1 * v2 - v1 * u2;
+        var nn = Math.sqrt(nx * nx + ny * ny + nz * nz) || 1;
+        if (nz < 0) nn = -nn;
+        var lam = Math.abs((nx * L[0] + ny * L[1] + nz * L[2]) / nn);
+        var k = dark ? .55 + .6 * lam : .72 + .45 * lam;
+        var segs = (ed || []).map(function (e) { return [[A, B, C][e[0]], [A, B, C][e[1]]]; });
+        prims.push({ pts: [A, B, C], d: (A[2] + B[2] + C[2]) / 3, fill: rgbStr(col, k), a: alpha, segs: segs });
+      }
+      var alphaS = x0 != null ? .5 : .93;
+      function on(v) { return Math.abs(v / 250 - Math.round(v / 250)) < 1e-6; }
+      for (var i = 0; i < N; i++) {
+        var xa = i * hstep, xb = (i + 1) * hstep;
+        for (var j = i; j < N; j++) {
+          var ya = j * hstep, yb = (j + 1) * hstep;
+          /* triângulo de cima: (xa,ya)-(xa,yb)-(xb,yb), sempre com y ≥ x */
+          var c1 = (a != null && (2 * xa + xb) / 3 < a && (ya + 2 * yb) / 3 < b) ? amb : teal;
+          var e1 = [];
+          if (on(xa)) e1.push([0, 1]);
+          if (on(yb)) e1.push([1, 2]);
+          tri([xa, ya, fS(xa, ya)], [xa, yb, fS(xa, yb)], [xb, yb, fS(xb, yb)], c1, alphaS, e1);
+          if (j > i) {
+            var c2 = (a != null && (xa + 2 * xb) / 3 < a && (2 * ya + yb) / 3 < b) ? amb : teal;
+            var e2 = [];
+            if (on(ya)) e2.push([0, 1]);
+            if (on(xb)) e2.push([1, 2]);
+            tri([xa, ya, fS(xa, ya)], [xb, ya, fS(xb, ya)], [xb, yb, fS(xb, yb)], c2, alphaS, e2);
+          }
+        }
+        /* parede sobre a diagonal */
+        var pa = P(xa, xa, 0), pb = P(xb, xb, 0), pc = P(xb, xb, fS(xb, xb)), pd = P(xa, xa, fS(xa, xa));
+        prims.push({ pts: [pa, pb, pc, pd], d: (pa[2] + pb[2] + pc[2] + pd[2]) / 4 - .002,
+                     fill: rgbStr(teal, dark ? .55 : .85), a: .45 });
+      }
+      /* fatia em x0: tiras verticais, para o pintor ordenar junto com o resto */
+      if (x0 != null) {
+        var K = 40, dy = (M - x0) / K;
+        for (var k2 = 0; k2 < K; k2++) {
+          var y1 = x0 + k2 * dy, y2 = y1 + dy;
+          var q1 = P(x0, y1, 0), q2 = P(x0, y2, 0), q3 = P(x0, y2, fS(x0, y2)), q4 = P(x0, y1, fS(x0, y1));
+          prims.push({ pts: [q1, q2, q3, q4], d: (q1[2] + q2[2] + q3[2] + q4[2]) / 4 - .004,
+                       fill: rgbStr(amb, 1), a: .82, slice: true });
+        }
+      }
+      prims.sort(function (p, q) { return q.d - p.d; });
+      prims.forEach(function (p) {
+        ctx.globalAlpha = p.a; ctx.fillStyle = p.fill;
+        poly(p.pts); ctx.fill();
+        if (p.a > .9) { ctx.strokeStyle = p.fill; ctx.lineWidth = .6; ctx.stroke(); }
+        if (p.segs && p.segs.length) {
+          ctx.strokeStyle = meshCol; ctx.lineWidth = .8; ctx.globalAlpha = .55;
+          p.segs.forEach(function (sg) { ctx.beginPath(); ctx.moveTo(sg[0][0], sg[0][1]); ctx.lineTo(sg[1][0], sg[1][1]); ctx.stroke(); });
+        }
+      });
+      ctx.globalAlpha = 1;
+      if (x0 != null) {
+        ctx.strokeStyle = css("--empirico"); ctx.lineWidth = 2.2; ctx.beginPath();
+        for (var yy = x0; yy <= M; yy += M / 120) {
+          var q = P(x0, yy, fS(x0, yy));
+          if (yy === x0) ctx.moveTo(q[0], q[1]); else ctx.lineTo(q[0], q[1]);
+        }
+        ctx.stroke();
+      }
+
+      /* eixo vertical por cima de tudo */
+      var z0 = P(0, 0, 0), z1 = P(0, 0, FMAX * 1.15);
+      line(z0, z1, css("--ink-mute"), 1.2);
+      lab("f(x, y)", [z1[0], z1[1] - 6], css("--ink"));
+    }
+
+    canvas.addEventListener("pointerdown", function (ev) {
+      var x = ev.clientX, y = ev.clientY;
+      canvas.setPointerCapture(ev.pointerId);
+      stopSpin();
+      function mv(e) {
+        st.az -= (e.clientX - x) * .008;
+        st.el = Math.max(.02, Math.min(Math.PI / 2 - .001, st.el + (e.clientY - y) * .008));
+        x = e.clientX; y = e.clientY; draw();
+      }
+      function up() { canvas.removeEventListener("pointermove", mv); canvas.removeEventListener("pointerup", up); }
+      canvas.addEventListener("pointermove", mv); canvas.addEventListener("pointerup", up);
+    });
+    function stopSpin() { if (spin) { cancelAnimationFrame(spin); spin = null; } }
+    function toggleSpin() {
+      if (spin) { stopSpin(); return; }
+      (function tick() { st.az += .01; draw(); spin = requestAnimationFrame(tick); })();
+    }
+    function view(k) { stopSpin(); st.az = VIEWS[k][0]; st.el = VIEWS[k][1]; draw(); }
+    return { draw: reg(draw), view: view, toggleSpin: toggleSpin };
+  }
+
+  /* ---------------- §03 região R ---------------- */
+  var s3d = superficie3D($("s3dCanvas"), {
+    M: 2500, a: function () { return +$("rA").value; }, b: function () { return +$("rB").value; }
+  });
+  function updR() {
+    var a = +$("rA").value, b = +$("rB").value;
+    txt("oRA", String(a)); txt("oRB", String(b));
+    txt("rP", d4(Pab(a, b)));
+    s3d.draw();
+  }
+  ["rA", "rB"].forEach(function (id) { $(id).addEventListener("input", updR); });
+  wireSeg("s3dVista", s3d.view);
+  $("s3dGira").addEventListener("click", s3d.toggleSpin);
+  updR();
+
+  /* ---------------- §04 fatia → marginal ---------------- */
+  var m3d = superficie3D($("m3dCanvas"), { M: 2000, x0: function () { return +$("mX").value; } });
+  var drawMarg = reg(function () {
+    var x0 = +$("mX").value;
+    txt("oMX", String(x0));
+    txt("mA", sci(fXm(x0), 3)); txt("mH", sci(fS(x0, x0), 3));
+    var fr = fit($("margCanvas"));
+    if (!fr) return;
+    var P = panel(fr, { x0: 0, x1: 2000, y0: 0, y1: 3.3, xlabel: "x (ms)", ylabel: "f_X(x) ×10⁻³" });
+    var f = function (x) { return fXm(x) * 1000; };
+    P.area(f, 0, 2000, css("--teorico"), .12);
+    P.curve(f, css("--teorico"), 2.2);
+    P.vline(x0, css("--empirico"), [4, 3], 1.2, f(x0));
+    P.dot(x0, f(x0), css("--empirico"), 4.5);
+  });
+  $("mX").addEventListener("input", function () { m3d.draw(); drawMarg(); });
+
+  /* ---------------- §06 dispersão e covariância ---------------- */
+  var covMode = "serv", covPts = null;
+  function novaCov() {
+    covPts = [];
+    for (var i = 0; i < 900; i++) {
+      if (covMode === "serv") covPts.push(amostraServ());
+      else covPts.push([amostraServ()[0], amostraServ()[1]]);
+    }
+  }
+  var drawCov = reg(function () {
+    if (!covPts) novaCov();
+    var n = covPts.length, mx = 0, my = 0, sxy = 0, sxx = 0, syy = 0;
+    covPts.forEach(function (p) { mx += p[0]; my += p[1]; });
+    mx /= n; my /= n;
+    covPts.forEach(function (p) {
+      sxy += (p[0] - mx) * (p[1] - my); sxx += (p[0] - mx) * (p[0] - mx); syy += (p[1] - my) * (p[1] - my);
+    });
+    txt("cC", ms(sxy / (n - 1)));
+    txt("cR", d4(sxy / Math.sqrt(sxx * syy)));
+    txt("cT", covMode === "serv" ? "0,5547" : "0");
+    var fr = fit($("covCanvas"));
+    if (!fr) return;
+    var P = panel(fr, { x0: 0, x1: 1600, y0: 0, y1: 3200, xlabel: "x (ms)", ylabel: "y (ms)", padL: 50 });
+    var MX = 1000 / 3, MY = 2500 / 3;
+    if (covMode === "serv") P.curve(function (x) { return x; }, css("--ink-mute"), 1, [3, 4]);
+    covPts.forEach(function (p) {
+      if (p[0] > 1600 || p[1] > 3200) return;
+      var pos = (p[0] - MX) * (p[1] - MY) > 0;
+      P.ctx.globalAlpha = .6;
+      P.dot(p[0], p[1], pos ? css("--teorico") : css("--alerta"), 2.2);
+    });
+    P.ctx.globalAlpha = 1;
+    P.vline(MX, css("--ink"), [5, 4], 1.2);
+    var ctx = P.ctx;
+    ctx.strokeStyle = css("--ink"); ctx.setLineDash([5, 4]); ctx.lineWidth = 1.2;
+    ctx.beginPath(); ctx.moveTo(P.X(0), P.Y(MY)); ctx.lineTo(P.X(1600), P.Y(MY)); ctx.stroke(); ctx.setLineDash([]);
+    P.label("μX", MX, 3000, css("--ink"), "left", 0);
+    P.label("μY", 1450, MY, css("--ink"), "center", -6);
+  });
+  wireSeg("covSeg", function (k) { covMode = k; novaCov(); drawCov(); });
+  $("covNova").addEventListener("click", function () { novaCov(); drawCov(); });
+
+  /* ---------------- §07 fatia → condicional ---------------- */
+  var drawCond = reg(function () {
+    var x0 = +$("cX").value;
+    txt("oCX", String(x0));
+    txt("cFX", sci(fXm(x0), 3));
+    txt("cEY", String(x0 + 500) + " ms");
+    var pc = x0 >= 2000 ? 1 : Math.exp(-0.002 * (2000 - x0));
+    txt("cPY", d4(pc));
+    var fat = function (y) { return y < x0 ? 0 : fS(x0, y) * 1e6; };
+    var con = function (y) { return y < x0 ? 0 : 2 * Math.exp(-0.002 * (y - x0)); };
+    var fr = fit($("fatCanvas"));
+    if (fr) {
+      var P = panel(fr, { x0: 0, x1: 3500, y0: 0, y1: 6.4, xlabel: "y (ms)", ylabel: "fatia f(x, y) ×10⁻⁶" });
+      P.area(fat, x0, 3500, css("--teorico"), .25);
+      P.curve(fat, css("--teorico"), 2.2);
+      P.label("área = f_X(x)", Math.min(x0 + 900, 2800), Math.max(fat(x0) * .5, .8), css("--teorico"), "center");
+    }
+    var fr2 = fit($("condCanvas"));
+    if (fr2) {
+      var Q = panel(fr2, { x0: 0, x1: 3500, y0: 0, y1: 2.3, xlabel: "y (ms)", ylabel: "f(y | x) ×10⁻³" });
+      Q.area(con, x0, 3500, css("--empirico"), .12);
+      Q.area(con, Math.max(2000, x0), 3500, css("--empirico"), .38);
+      Q.curve(con, css("--empirico"), 2.2);
+      Q.vline(2000, css("--ink-mute"), [4, 3], 1, 2.1);
+      Q.label("2000", 2000, 2.15, css("--ink-mute"), "center");
+      Q.vline(x0 + 500, css("--empirico"), [2, 3], 1.2, con(x0 + 500));
+      Q.label("E[Y|x]", x0 + 500, con(x0 + 500), css("--empirico"), "left", -6);
+    }
+  });
+  $("cX").addEventListener("input", drawCond);
+
+  /* ---------------- soluções passo a passo ---------------- */
+  Array.prototype.forEach.call(document.querySelectorAll("[data-steps]"), function (box) {
+    var list = box.querySelector(".steps");
+    var steps = Array.prototype.slice.call(list.querySelectorAll(".step"));
+    var start = document.createElement("button");
+    start.type = "button"; start.className = "b primary"; start.textContent = "Ver solução passo a passo";
+    var nav = document.createElement("div");
+    nav.className = "step-nav";
+    nav.innerHTML =
+      '<button type="button" class="b primary" data-a="next">Próximo passo →</button>' +
+      '<button type="button" class="b" data-a="prev">← Voltar</button>' +
+      '<button type="button" class="b" data-a="all">Mostrar tudo</button>' +
+      '<button type="button" class="b" data-a="hide">Ocultar solução</button>' +
+      '<span class="cnt"></span>';
+    list.parentNode.insertBefore(start, list);
+    list.parentNode.appendChild(nav);
+    var shown = 0;
+    function upd(scroll) {
+      steps.forEach(function (s, i) { s.hidden = i >= shown; });
+      list.hidden = shown === 0;
+      start.hidden = shown > 0;
+      nav.hidden = shown === 0;
+      nav.querySelector('[data-a="next"]').disabled = shown >= steps.length;
+      nav.querySelector('[data-a="all"]').disabled = shown >= steps.length;
+      nav.querySelector(".cnt").textContent = "passo " + shown + " de " + steps.length;
+      if (scroll && shown > 0) {
+        var alvo = steps[shown - 1];
+        alvo.scrollIntoView({ block: "nearest", behavior: reduce ? "auto" : "smooth" });
+      }
+    }
+    start.addEventListener("click", function () { shown = 1; upd(true); });
+    nav.addEventListener("click", function (ev) {
+      var b = ev.target.closest("button[data-a]");
+      if (!b) return;
+      var a = b.getAttribute("data-a");
+      if (a === "next") shown = Math.min(steps.length, shown + 1);
+      else if (a === "prev") shown = Math.max(0, shown - 1);
+      else if (a === "all") shown = steps.length;
+      else shown = 0;
+      upd(a !== "hide");
+      if (shown === 0) start.focus();
+    });
+    upd(false);
+  });
+
+  /* ---------------- navegação (documento) ---------------- */
+  var links = Array.prototype.slice.call(document.querySelectorAll("#toc a"));
+  var secs = links.map(function (a) { return document.querySelector(a.getAttribute("href")); });
+  if ("IntersectionObserver" in window) {
+    var io = new IntersectionObserver(function (entries) {
+      if (isPresent()) return;
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        var i = secs.indexOf(e.target);
+        links.forEach(function (a, j) { a.classList.toggle("on", j === i); });
+      });
+    }, { rootMargin: "-15% 0px -75% 0px" });
+    secs.forEach(function (s) { if (s) io.observe(s); });
+  }
+
+  /* ============================================================
+     MODO APRESENTAÇÃO
+     ============================================================ */
+  var slides = Array.prototype.slice.call(document.querySelectorAll(".slide"));
+  var cur = 0;
+  var hudWhere = $("hudWhere"), hudCount = $("hudCount"), hudBar = $("hudBar"), hudZoom = $("hudZoom");
+
+  function isPresent() { return root.getAttribute("data-mode") === "present"; }
+
+  var ps = 1;
+  try {
+    var saved = parseFloat(localStorage.getItem("ecom020-ps"));
+    if (isFinite(saved) && saved >= .6 && saved <= 2.2) ps = saved;
+  } catch (e) {}
+
+  function applyPs() {
+    root.style.setProperty("--ps", String(ps));
+    hudZoom.textContent = Math.round(ps * 100) + "%";
+    try { localStorage.setItem("ecom020-ps", String(ps)); } catch (e) {}
+    redrawAll();
+  }
+  function bumpPs(d) { ps = Math.min(2.2, Math.max(.6, Math.round((ps + d) * 100) / 100)); applyPs(); }
+
+  $("hudZoomIn").addEventListener("click", function () { bumpPs(.1); });
+  $("hudZoomOut").addEventListener("click", function () { bumpPs(-.1); });
+
+  function show(i) {
+    cur = Math.max(0, Math.min(slides.length - 1, i));
+    slides.forEach(function (s, j) { s.classList.toggle("on", j === cur); });
+    hudWhere.innerHTML = "<b>" + (slides[cur].getAttribute("data-sec") || "") + "</b>";
+    hudCount.textContent = (cur + 1) + " / " + slides.length;
+    hudBar.style.width = (((cur + 1) / slides.length) * 100) + "%";
+    slides[cur].scrollTop = 0;
+    redrawAll();
+  }
+
+  function enterPresent() {
+    var best = 0, bestD = Infinity, mid = window.scrollY + window.innerHeight / 3;
+    slides.forEach(function (s, j) {
+      var el = s.firstElementChild;
+      if (!el) return;
+      var d = Math.abs(el.getBoundingClientRect().top + window.scrollY - mid);
+      if (d < bestD) { bestD = d; best = j; }
+    });
+    root.setAttribute("data-mode", "present");
+    if (root.requestFullscreen) root.requestFullscreen().catch(function () {});
+    applyPs();
+    show(best);
+  }
+
+  function exitPresent() {
+    root.removeAttribute("data-mode");
+    slides.forEach(function (s) { s.classList.remove("on"); });
+    if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(function () {});
+    var el = slides[cur] && slides[cur].firstElementChild;
+    if (el) el.scrollIntoView({ block: "center" });
+    redrawAll();
+  }
+
+  $("presentBtn").addEventListener("click", enterPresent);
+  $("hudExit").addEventListener("click", exitPresent);
+  $("hudNext").addEventListener("click", function () { show(cur + 1); });
+  $("hudPrev").addEventListener("click", function () { show(cur - 1); });
+
+  document.addEventListener("fullscreenchange", function () {
+    if (!document.fullscreenElement && isPresent()) exitPresent();
+  });
+
+  /* botão que leva à solução: no documento é uma âncora; na apresentação, pula de slide */
+  document.addEventListener("click", function (ev) {
+    var a = ev.target.closest("[data-goto]");
+    if (!a) return;
+    var alvo = document.querySelector(a.getAttribute("href"));
+    if (!alvo) return;
+    ev.preventDefault();
+    if (isPresent()) {
+      var i = slides.indexOf(alvo.closest(".slide"));
+      if (i >= 0) show(i);
+    } else {
+      alvo.scrollIntoView({ block: "start", behavior: reduce ? "auto" : "smooth" });
+    }
+  });
+
+  document.addEventListener("keydown", function (ev) {
+    if (ev.target.tagName === "INPUT") return;
+    if (!isPresent()) {
+      if (ev.key === "p" || ev.key === "P") { ev.preventDefault(); enterPresent(); }
+      return;
+    }
+    /* Enter e espaço num botão acionam o botão, não trocam de slide */
+    if ((ev.key === " " || ev.key === "Enter") && ev.target.closest("button, a")) return;
+    switch (ev.key) {
+      case "ArrowRight": case "PageDown": case " ": case "Enter":
+        ev.preventDefault(); show(cur + 1); break;
+      case "ArrowLeft": case "PageUp":
+        ev.preventDefault(); show(cur - 1); break;
+      case "Home": ev.preventDefault(); show(0); break;
+      case "End": ev.preventDefault(); show(slides.length - 1); break;
+      case "+": case "=": ev.preventDefault(); bumpPs(.1); break;
+      case "-": case "_": ev.preventDefault(); bumpPs(-.1); break;
+      case "0": ev.preventDefault(); ps = 1; applyPs(); break;
+      case "Escape": exitPresent(); break;
+    }
+  });
+
+  /* ---------------- início ---------------- */
+  window.addEventListener("resize", redrawAll);
+  hudZoom.textContent = Math.round(ps * 100) + "%";
+  redrawAll();
+  heroTick();
+})();
+</script>
