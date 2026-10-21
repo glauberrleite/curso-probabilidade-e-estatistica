@@ -183,6 +183,48 @@ code { font-family: var(--mono); font-size: .85em; }
 .aula .links a:hover { border-color: var(--teorico); color: var(--teorico); }
 .aula .links span { color: var(--ink-mute); border-style: dashed; }
 
+/* ---------- provas aplicadas ---------- */
+
+.provas {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: 1rem; margin: 0 0 1.2rem;
+}
+.prova {
+  display: flex; flex-direction: column; text-decoration: none; color: inherit;
+  border: 1px solid var(--rule); border-top: 2px solid var(--teorico);
+  background: var(--surface);
+  transition: border-color .15s, transform .15s, box-shadow .15s;
+}
+.prova:hover {
+  border-color: var(--teorico); transform: translateY(-2px);
+  box-shadow: 0 6px 18px -10px color-mix(in srgb, var(--ink) 45%, transparent);
+}
+.prova .folha {
+  position: relative; aspect-ratio: 4 / 3; overflow: hidden;
+  background: var(--surface-2); border-bottom: 1px solid var(--rule);
+  padding: .9rem .9rem 0;
+}
+.prova .folha img {
+  display: block; width: 100%; height: auto; background: #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,.18);
+}
+.prova .folha::after {
+  content: ""; position: absolute; inset: auto 0 0 0; height: 2.2rem;
+  background: linear-gradient(to bottom, transparent, var(--surface-2));
+}
+.prova .info { padding: .75rem .9rem .85rem; }
+.prova .tag {
+  font-family: var(--mono); font-size: .62rem; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--teorico);
+}
+.prova .t { font-family: var(--sans); font-weight: 650; font-size: 1rem; margin: .15rem 0 .2rem; }
+.prova .d { font-family: var(--sans); font-size: .82rem; color: var(--ink-soft); margin: 0 0 .55rem; }
+.prova .meta {
+  font-family: var(--mono); font-size: .64rem; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--ink-mute);
+}
+@media (prefers-reduced-motion: reduce) { .prova, .prova:hover { transition: none; transform: none; } }
+
 /* ---------- ementa ---------- */
 
 .ementa { border-top: 1px solid var(--rule); margin: 0 0 1.2rem; }
@@ -555,6 +597,28 @@ html { scroll-behavior: smooth; }
         &nbsp;&nbsp;&nbsp;&nbsp;
         <span class="v">AV</span><sub>2</sub> =
         <span class="frac"><span><span class="v">P</span><sub>3</sub> + <span class="v">R</span></span><span>2</span></span>
+      </div>
+
+      <h3>Provas aplicadas</h3>
+      <div class="provas">
+        <a class="prova" href="./avaliacoes/p1_2026_2.pdf">
+          <div class="folha"><img src="./avaliacoes/thumbs/p1_2026_2.jpg" alt="Primeira página da Avaliação — Parte 1, 2026.2" loading="lazy"></div>
+          <div class="info">
+            <span class="tag">P<sub>1</sub> · 2026.2</span>
+            <p class="t">Avaliação — Parte 1</p>
+            <p class="d">Probabilidade e variáveis aleatórias discretas.</p>
+            <span class="meta">PDF · 6 págs. · com gabarito</span>
+          </div>
+        </a>
+        <a class="prova" href="./avaliacoes/p2_2026_2.pdf">
+          <div class="folha"><img src="./avaliacoes/thumbs/p2_2026_2.jpg" alt="Primeira página da Avaliação — Parte 2, 2026.2" loading="lazy"></div>
+          <div class="info">
+            <span class="tag">P<sub>2</sub> · 2026.2</span>
+            <p class="t">Avaliação — Parte 2</p>
+            <p class="d">Variáveis aleatórias contínuas e distribuição normal.</p>
+            <span class="meta">PDF · 5 págs. · com gabarito</span>
+          </div>
+        </a>
       </div>
     </div>
   </section>
