@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- histograma (empírico, âmbar) sob a curva normal (teórico, teal) -->
+  <rect width="32" height="32" rx="7" fill="#131b20"/>
+  <g fill="#e2a355">
+    <rect x="5.5"  y="21" width="3.6" height="4"/>
+    <rect x="10.1" y="15" width="3.6" height="10"/>
+    <rect x="14.7" y="10" width="3.6" height="15"/>
+    <rect x="19.3" y="15" width="3.6" height="10"/>
+    <rect x="23.9" y="21" width="3.6" height="4"/>
+  </g>
+  <path d="M3.5 24.6 C9 24.6 11.2 6.5 16.5 6.5 S24 24.6 29.5 24.6" fill="none" stroke="#55c0d2" stroke-width="2.2" stroke-linecap="round"/>
+</svg>
