@@ -1,0 +1,2519 @@
+<meta charset="utf-8">
+<title>Estatística descritiva — frequências, gráficos, posição, dispersão, quantis e boxplot</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="description" content="ECOM020 — Probabilidade e Estatística. Aula 05: estatística descritiva com os dados dos 36 empregados da Companhia MB — população e amostra, tipos de variáveis, distribuições de frequência, gráficos de barras, setores e histograma, média, moda, mediana, variância, desvio padrão, quantis empíricos e boxplot.">
+<style>
+/* ============================================================
+   ECOM020 — Probabilidade e Estatística · Aula 05
+   Mesmo registro visual das demais aulas: caderno de laboratório.
+
+   Acentos com significado fixo no curso:
+     --empirico (âmbar) = medido, acumulado, observado
+     --teorico  (teal)  = exato, pontual, deduzido
+   Nesta aula em particular:
+     teal  = a média e as medidas que dela derivam (variância, dp)
+     âmbar = os dados, a mediana e os quantis (medidas de ordem)
+
+   Dois modos sobre o MESMO DOM:
+     documento     — .slide é display:contents (some do layout)
+     apresentação  — .slide vira slide de tela cheia (tecla P)
+   ============================================================ */
+
+:root {
+  --paper:      #f2f5f6;
+  --surface:    #ffffff;
+  --surface-2:  #e9eef0;
+  --ink:        #131b20;
+  --ink-soft:   #45565e;
+  --ink-mute:   #6d7f88;
+  --rule:       #d5dde1;
+  --rule-soft:  #e5eaed;
+
+  --empirico:   #a8620a;
+  --empirico-bg:#f6ecdd;
+  --teorico:    #0d6e7d;
+  --teorico-bg: #dfeef0;
+  --alerta:     #9d332e;
+  --alerta-bg:  #f7e7e5;
+
+  --serif: ui-serif, "Iowan Old Style", Charter, "Bitstream Charter", "Palatino Linotype", Palatino, Georgia, serif;
+  --sans:  ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --mono:  ui-monospace, "SF Mono", SFMono-Regular, "JetBrains Mono", Menlo, Consolas, monospace;
+
+  --measure: 68ch;
+  --rail: 15rem;
+  --ps: 1;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper:#0d1418; --surface:#131e23; --surface-2:#1a272d;
+    --ink:#e3eaed; --ink-soft:#b3c3ca; --ink-mute:#8598a1;
+    --rule:#263740; --rule-soft:#1c2a31;
+    --empirico:#e2a355; --empirico-bg:#2a2013;
+    --teorico:#55c0d2; --teorico-bg:#102a30;
+    --alerta:#e2867d; --alerta-bg:#2c1817;
+  }
+}
+:root[data-theme="dark"] {
+  --paper:#0d1418; --surface:#131e23; --surface-2:#1a272d;
+  --ink:#e3eaed; --ink-soft:#b3c3ca; --ink-mute:#8598a1;
+  --rule:#263740; --rule-soft:#1c2a31;
+  --empirico:#e2a355; --empirico-bg:#2a2013;
+  --teorico:#55c0d2; --teorico-bg:#102a30;
+  --alerta:#e2867d; --alerta-bg:#2c1817;
+}
+:root[data-theme="light"] {
+  --paper:#f2f5f6; --surface:#ffffff; --surface-2:#e9eef0;
+  --ink:#131b20; --ink-soft:#45565e; --ink-mute:#6d7f88;
+  --rule:#d5dde1; --rule-soft:#e5eaed;
+  --empirico:#a8620a; --empirico-bg:#f6ecdd;
+  --teorico:#0d6e7d; --teorico-bg:#dfeef0;
+  --alerta:#9d332e; --alerta-bg:#f7e7e5;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+
+body {
+  margin: 0; background: var(--paper); color: var(--ink);
+  font-family: var(--serif); font-size: 1.0625rem; line-height: 1.62;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------- estrutura ---------- */
+
+.shell { display: grid; grid-template-columns: var(--rail) minmax(0, 1fr); }
+
+.rail {
+  position: sticky; top: 0; height: 100vh;
+  padding: 2rem 1.25rem 2rem 1.75rem;
+  border-right: 1px solid var(--rule);
+  display: flex; flex-direction: column; gap: 1.2rem; overflow-y: auto;
+}
+.rail-brand {
+  font-family: var(--mono); font-size: .7rem; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--ink-mute); line-height: 1.5;
+}
+.rail-brand b { color: var(--ink); font-weight: 600; display: block; letter-spacing: .1em; }
+
+.rail nav { display: flex; flex-direction: column; }
+.rail nav a {
+  display: grid; grid-template-columns: 1.9rem 1fr; gap: .45rem; align-items: baseline;
+  padding: .34rem 0; text-decoration: none; color: var(--ink-soft);
+  font-family: var(--sans); font-size: .78rem; line-height: 1.25;
+  border-top: 1px solid var(--rule-soft);
+}
+.rail nav a:first-child { border-top: 0; }
+.rail nav a .n { font-family: var(--mono); font-size: .66rem; color: var(--ink-mute); }
+.rail nav a:hover { color: var(--ink); }
+.rail nav a.on, .rail nav a.on .n { color: var(--teorico); }
+
+.rail-foot {
+  margin-top: auto; font-family: var(--sans); font-size: .75rem;
+  color: var(--ink-mute); display: flex; flex-direction: column; gap: .5rem;
+}
+.rail-btn {
+  font-family: var(--mono); font-size: .68rem; letter-spacing: .1em; text-transform: uppercase;
+  background: transparent; color: var(--ink-mute); border: 1px solid var(--rule);
+  padding: .45rem .6rem; cursor: pointer; text-align: left; text-decoration: none;
+}
+.rail-btn:hover { color: var(--ink); border-color: var(--ink-mute); }
+.rail-btn.accent { color: var(--teorico); border-color: var(--teorico); }
+.rail-btn.accent:hover { background: var(--teorico); color: var(--paper); }
+
+main { padding: 0 0 8rem; min-width: 0; }
+.wrap { max-width: var(--measure); padding: 0 2.5rem; }
+.slide { display: contents; }
+
+/* ---------- capa ---------- */
+
+.hero {
+  border-bottom: 1px solid var(--rule); padding: 4.5rem 0 2.5rem;
+  background-image:
+    linear-gradient(to right, var(--rule-soft) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--rule-soft) 1px, transparent 1px);
+  background-size: 28px 28px; background-position: -1px -1px;
+}
+.eyebrow {
+  font-family: var(--mono); font-size: .7rem; letter-spacing: .16em;
+  text-transform: uppercase; color: var(--ink-mute);
+}
+h1 {
+  font-size: clamp(2.1rem, 4.4vw, 3.15rem); line-height: 1.08; font-weight: 600;
+  letter-spacing: -0.018em; margin: .7rem 0 0; text-wrap: balance; max-width: 20ch;
+}
+h1 em { font-style: italic; color: var(--teorico); }
+.dek { margin: 1.1rem 0 0; font-size: 1.15rem; color: var(--ink-soft); max-width: 52ch; }
+
+.hero-fig { margin-top: 2.2rem; }
+.hero-fig canvas {
+  display: block; width: 100%; height: 130px;
+  border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+}
+.hero-cap {
+  margin-top: .55rem; font-family: var(--sans); font-size: .78rem;
+  color: var(--ink-mute); display: flex; gap: 1.4rem; flex-wrap: wrap;
+}
+.hero-cap span::before {
+  content: ""; display: inline-block; width: 1.6rem; height: 2px;
+  vertical-align: middle; margin-right: .45rem;
+}
+.hero-cap .k-dens::before { background: var(--teorico); }
+.hero-cap .k-acum::before { background: var(--empirico); }
+
+/* ---------- seções ---------- */
+
+section { padding-top: 4.5rem; }
+
+.sec-head {
+  display: grid; grid-template-columns: 4.5rem 1fr; gap: .5rem; align-items: start;
+  border-top: 2px solid var(--ink); padding-top: .7rem; margin-bottom: 1.5rem;
+}
+.sec-head .n {
+  font-family: var(--mono); font-size: .72rem; letter-spacing: .1em;
+  color: var(--ink-mute); padding-top: .45rem;
+}
+h2 {
+  font-size: clamp(1.5rem, 2.6vw, 1.95rem); line-height: 1.15; font-weight: 600;
+  letter-spacing: -0.012em; margin: 0; text-wrap: balance;
+}
+.sec-head .sub {
+  grid-column: 2; font-family: var(--sans); font-size: .84rem;
+  color: var(--ink-mute); margin-top: .3rem;
+}
+h3 {
+  font-family: var(--sans); font-size: .76rem; font-weight: 650; letter-spacing: .13em;
+  text-transform: uppercase; color: var(--ink-mute);
+  margin: 2.2rem 0 .8rem; padding-bottom: .35rem; border-bottom: 1px solid var(--rule);
+}
+
+p { margin: 0 0 1rem; }
+p:last-child { margin-bottom: 0; }
+ul, ol { margin: 0 0 1rem; padding-left: 1.3rem; }
+li { margin-bottom: .4rem; }
+li::marker { color: var(--ink-mute); }
+a { color: var(--teorico); text-underline-offset: 2px; }
+strong { font-weight: 650; }
+:focus-visible { outline: 2px solid var(--teorico); outline-offset: 2px; }
+
+/* ---------- definições e avisos ---------- */
+
+.defn {
+  border-left: 2px solid var(--teorico); background: var(--teorico-bg);
+  padding: .95rem 1.2rem; margin: 0 0 1.1rem;
+}
+.defn .lab {
+  display: block; font-family: var(--mono); font-size: .66rem; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--teorico); margin-bottom: .3rem;
+}
+.defn p { margin: 0 0 .7rem; }
+.defn p:last-child { margin-bottom: 0; }
+.defn ol, .defn ul { margin: .5rem 0 0; }
+
+blockquote {
+  margin: 0 0 1.1rem; padding: 0 0 0 1.2rem;
+  border-left: 1px solid var(--rule); color: var(--ink-soft);
+}
+blockquote cite {
+  display: block; margin-top: .5rem; font-style: normal;
+  font-family: var(--sans); font-size: .78rem; color: var(--ink-mute);
+}
+
+.note {
+  border: 1px solid var(--rule); border-left: 2px solid var(--ink-mute);
+  padding: .8rem 1.1rem; margin: 0 0 1.1rem; background: var(--surface);
+}
+.note.problema { border-left-color: var(--alerta); background: var(--alerta-bg); }
+.note.problema .lab { color: var(--alerta); }
+.note .lab {
+  display: block; font-family: var(--mono); font-size: .66rem; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--ink-mute); margin-bottom: .3rem;
+}
+.note p { margin: 0 0 .55rem; }
+.note p:last-child { margin-bottom: 0; }
+
+/* ---------- matemática ---------- */
+
+.eq {
+  font-family: var(--serif); font-size: 1.2rem; line-height: 1.25;
+  text-align: center; margin: 1.4rem 0; overflow-x: auto; padding: .35rem 0;
+  white-space: nowrap;
+}
+.eq.sm { font-size: 1.05rem; margin: .9rem 0; }
+.v { font-style: italic; }
+.frac {
+  display: inline-flex; flex-direction: column; vertical-align: middle;
+  text-align: center; margin: 0 .18em;
+}
+.frac > span:first-child { border-bottom: 1px solid currentColor; padding: 0 .4em .12em; }
+.frac > span:last-child { padding: .12em .4em 0; }
+.cases { display: inline-grid; grid-template-columns: auto auto; gap: .1em 1.2em; text-align: left; font-size: .82em; vertical-align: middle; }
+.brace { font-size: 2.6em; font-weight: 200; line-height: 1; vertical-align: middle; }
+/* integral e barra de avaliação: o símbolo grande e os limites empilhados à direita */
+.int, .ev { display: inline-flex; align-items: stretch; vertical-align: middle; margin: 0 .1em 0 .12em; }
+.int .s, .ev .s, .brk { font-size: 1.9em; line-height: 1.05; font-weight: 300; }
+.brk { vertical-align: middle; }
+.int .lims, .ev .lims {
+  display: flex; flex-direction: column; justify-content: space-between;
+  font-size: .6em; line-height: 1; padding: .05em 0 .05em .06em;
+}
+.int .lims { margin-left: -.15em; }
+.sqrt { white-space: nowrap; }
+.sqrt > span { border-top: 1px solid currentColor; padding: 0 .12em; }
+.res { font-family: var(--mono); font-variant-numeric: tabular-nums; color: var(--empirico); }
+
+/* ---------- demos ---------- */
+
+.demo { border: 1px solid var(--rule); background: var(--surface); margin: 1.3rem 0; }
+.demo-head {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 1rem;
+  flex-wrap: wrap; padding: .7rem 1.1rem;
+  border-bottom: 1px solid var(--rule); background: var(--surface-2);
+}
+.demo-head .t { font-family: var(--sans); font-size: .78rem; font-weight: 650; letter-spacing: .1em; text-transform: uppercase; }
+.demo-head .h { font-family: var(--sans); font-size: .76rem; color: var(--ink-mute); }
+.demo-body { padding: 1.1rem; }
+
+.ctl { display: flex; gap: .45rem; flex-wrap: wrap; align-items: center; margin-bottom: .9rem; }
+
+button.b, a.b {
+  font-family: var(--sans); font-size: .8rem; font-weight: 550; padding: .42rem .85rem;
+  border: 1px solid var(--rule); background: var(--surface); color: var(--ink); cursor: pointer;
+  text-decoration: none; display: inline-block;
+}
+button.b:hover, a.b:hover { border-color: var(--ink-mute); }
+button.b.primary, a.b.primary { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+button.b:disabled { opacity: .4; cursor: default; }
+
+.seg { display: inline-flex; flex-wrap: wrap; max-width: 100%; border: 1px solid var(--rule); }
+.seg button {
+  font-family: var(--sans); font-size: .78rem; padding: .4rem .8rem;
+  border: 0; border-left: 1px solid var(--rule);
+  background: var(--surface); color: var(--ink-soft); cursor: pointer;
+}
+.seg button:first-child { border-left: 0; }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+
+.sliders { display: flex; flex-direction: column; gap: .55rem; margin-bottom: .9rem; }
+.sld { display: grid; grid-template-columns: 10rem 1fr 5.6rem; gap: .6rem; align-items: center; }
+.sld > label { font-family: var(--sans); font-size: .8rem; color: var(--ink-soft); }
+.sld > output {
+  font-family: var(--mono); font-variant-numeric: tabular-nums;
+  font-size: .85rem; color: var(--teorico); text-align: right;
+}
+input[type="range"] {
+  -webkit-appearance: none; appearance: none; width: 100%; height: 1.05rem;
+  background: transparent; cursor: pointer; margin: 0;
+}
+input[type="range"]::-webkit-slider-runnable-track { height: .3rem; background: var(--rule); border: 0; }
+input[type="range"]::-moz-range-track { height: .3rem; background: var(--rule); border: 0; }
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: .95rem; height: .95rem; margin-top: -.33rem;
+  background: var(--teorico); border: 0; border-radius: 50%;
+}
+input[type="range"]::-moz-range-thumb {
+  width: .95rem; height: .95rem; background: var(--teorico); border: 0; border-radius: 50%;
+}
+
+.readout {
+  display: flex; gap: 1.8rem; flex-wrap: wrap;
+  font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: .82rem;
+  margin-top: .9rem; padding-top: .8rem; border-top: 1px solid var(--rule-soft);
+}
+.readout div { display: flex; flex-direction: column; gap: .15rem; }
+/* Sem uppercase: os rótulos trazem f(x) e F(x), e a caixa é o conteúdo.
+   Classes .dens/.acum em vez de .f/.F: sem doctype a página roda em quirks
+   mode, onde seletores de classe ignoram maiúsculas. */
+.readout .k { font-size: .68rem; letter-spacing: .06em; color: var(--ink-mute); }
+.readout .val { font-size: 1.15rem; }
+.readout .val.dens { color: var(--teorico); }
+.readout .val.acum { color: var(--empirico); }
+
+canvas.plot { display: block; width: 100%; height: 220px; }
+canvas.plot.tall { height: 320px; }
+
+.verdict { font-family: var(--sans); font-size: .82rem; margin-top: .8rem; padding: .5rem .7rem; border-left: 2px solid; }
+.verdict.ok { color: var(--teorico); border-color: var(--teorico); background: var(--teorico-bg); }
+
+.legend {
+  display: flex; gap: 1.2rem; flex-wrap: wrap; margin-top: .5rem;
+  font-family: var(--sans); font-size: .76rem; color: var(--ink-mute);
+}
+.legend > span::before {
+  content: ""; display: inline-block; width: 1.3rem; height: 2px;
+  vertical-align: middle; margin-right: .4rem; background: currentColor;
+}
+.legend .l-dens { color: var(--teorico); }
+.legend .l-acum { color: var(--empirico); }
+.legend .l-ref::before { background: none; border-top: 2px dashed var(--ink-mute); height: 0; }
+
+/* ---------- exemplos com solução passo a passo ---------- */
+
+.ex {
+  border: 1px solid var(--rule); border-left: 2px solid var(--empirico);
+  padding: .95rem 1.1rem; margin: 0 0 .9rem; background: var(--surface);
+  scroll-margin-top: 1rem;
+}
+.ex .lab {
+  font-family: var(--mono); font-size: .66rem; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--empirico); display: block; margin-bottom: .35rem;
+}
+.ex p { margin: 0 0 .8rem; }
+.ex .items { margin: 0 0 .8rem; padding-left: 0; list-style: none; }
+.ex .items li { margin-bottom: .25rem; }
+
+.steps { list-style: none; padding: 0; margin: .9rem 0 0; counter-reset: passo; }
+.steps[hidden] { display: none; }
+.step {
+  counter-increment: passo; position: relative;
+  padding: .7rem 0 .7rem 1.1rem; border-top: 1px solid var(--rule-soft); margin: 0;
+  animation: surge .25s ease;
+}
+.step[hidden] { display: none; }
+.step::before {
+  content: "Passo " counter(passo); display: block;
+  font-family: var(--mono); font-size: .64rem; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--empirico); margin-bottom: .25rem;
+}
+.step::after {
+  content: ""; position: absolute; left: 0; top: .85rem; bottom: .85rem;
+  width: 2px; background: var(--empirico-bg);
+}
+.step p { margin: 0 0 .5rem; }
+.step p:last-child { margin-bottom: 0; }
+.step .eq { margin: .6rem 0; }
+.step.fim::before { content: "Resposta"; }
+.step.fim { background: var(--empirico-bg); padding-right: .9rem; }
+@keyframes surge { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+.step-nav {
+  display: flex; gap: .45rem; flex-wrap: wrap; align-items: center;
+  margin-top: .8rem; padding-top: .7rem; border-top: 1px solid var(--rule-soft);
+}
+.step-nav[hidden] { display: none; }
+.step-nav .cnt {
+  margin-left: auto; font-family: var(--mono); font-size: .72rem;
+  font-variant-numeric: tabular-nums; color: var(--ink-mute);
+}
+
+/* ---------- tabelas ---------- */
+
+.tbl-scroll { overflow-x: auto; }
+.tri { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+.tri th, .tri td { text-align: left; padding: .45rem .6rem; border-bottom: 1px solid var(--rule); vertical-align: middle; }
+.tri th {
+  font-family: var(--sans); font-size: .68rem; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--ink-mute); font-weight: 600; white-space: nowrap;
+}
+.tri td { font-size: .95rem; }
+.tri td:first-child { font-family: var(--sans); font-size: .82rem; color: var(--ink-soft); }
+.tri td.num {
+  font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: .85rem; white-space: nowrap;
+}
+.tri td.num.dens { color: var(--teorico); }
+.tri td.num.acum { color: var(--empirico); }
+#resumo .tri td { font-family: var(--sans); font-size: .85rem; }
+#resumo .tri td.num { font-family: var(--mono); }
+.gr { text-transform: none; }
+
+/* ============================================================
+   MODO APRESENTAÇÃO
+   ============================================================ */
+
+.hud { display: none; }
+
+:root[data-mode="present"] { font-size: calc(clamp(15px, 1.45vw, 30px) * var(--ps)); }
+:root[data-mode="present"] body { overflow: hidden; font-size: 1.12rem; line-height: 1.5; }
+:root[data-mode="present"] .rail { display: none; }
+:root[data-mode="present"] .shell { display: block; }
+:root[data-mode="present"] main { padding: 0; }
+:root[data-mode="present"] section,
+:root[data-mode="present"] .wrap,
+:root[data-mode="present"] .hero { display: contents; }
+
+:root[data-mode="present"] .slide { display: none; }
+:root[data-mode="present"] .slide.on {
+  display: flex; flex-direction: column; justify-content: safe center; align-items: center;
+  gap: .7rem; position: fixed; inset: 0;
+  padding: 1.6rem clamp(1rem, 4vw, 4rem) 2.9rem;
+  overflow-y: auto; background: var(--paper);
+}
+:root[data-mode="present"] .slide.on > * { width: 100%; max-width: 52rem; flex-shrink: 0; }
+:root[data-mode="present"] .slide.on > .sec-head { margin-bottom: .2rem; }
+:root[data-mode="present"] .defn,
+:root[data-mode="present"] .note,
+:root[data-mode="present"] .ex,
+:root[data-mode="present"] blockquote { margin-bottom: 0; }
+
+:root[data-mode="present"] h1 { font-size: 3rem; max-width: 22ch; }
+:root[data-mode="present"] h2 { font-size: 2rem; }
+:root[data-mode="present"] .dek { font-size: 1.35rem; max-width: 44ch; }
+:root[data-mode="present"] .eq { font-size: 1.6rem; margin: .9rem 0; }
+:root[data-mode="present"] .eq.sm,
+:root[data-mode="present"] .step .eq { font-size: 1.3rem; margin: .5rem 0; }
+:root[data-mode="present"] .defn .eq { margin: .55rem 0; }
+:root[data-mode="present"] h3 { margin-top: 0; }
+:root[data-mode="present"] canvas.plot { height: clamp(190px, 32vh, 440px); }
+:root[data-mode="present"] canvas.plot.tall { height: clamp(260px, 44vh, 600px); }
+:root[data-mode="present"] .hero-fig canvas { height: clamp(110px, 16vh, 260px); }
+:root[data-mode="present"] .sliders { gap: .35rem; margin-bottom: .6rem; }
+:root[data-mode="present"] .ctl { margin-bottom: .6rem; }
+
+:root[data-mode="present"] .hud {
+  display: flex; align-items: center; gap: .7rem;
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 10;
+  padding: .4rem clamp(.6rem, 2vw, 2rem);
+  background: var(--surface); border-top: 1px solid var(--rule);
+  font-family: var(--sans); font-size: clamp(12px, .55rem, 20px); color: var(--ink-mute);
+}
+.hud .where { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hud .where b { color: var(--ink); font-weight: 600; }
+.hud .count, .hud .zoom {
+  font-family: var(--mono); font-variant-numeric: tabular-nums; letter-spacing: .04em; white-space: nowrap;
+}
+.hud button {
+  font-family: var(--sans); font-size: inherit; padding: .25rem .6rem;
+  border: 1px solid var(--rule); background: var(--surface); color: var(--ink); cursor: pointer;
+}
+.hud button:hover { border-color: var(--ink-mute); }
+.hud .sep { width: 1px; align-self: stretch; background: var(--rule); }
+.hud .bar { position: absolute; left: 0; top: -1px; height: 2px; background: var(--teorico); transition: width .18s ease; }
+
+/* ---------- responsivo ---------- */
+
+@media (max-width: 62rem) {
+  .shell { grid-template-columns: 1fr; }
+  .rail { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--rule); padding: 1.5rem; }
+  .rail nav { display: grid; grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr)); gap: 0 1.2rem; }
+  .rail-foot { margin-top: 1rem; }
+  .wrap { padding-left: 1rem; padding-right: 1rem; }
+}
+@media (max-width: 36rem) {
+  .sld { grid-template-columns: 1fr 4.8rem; }
+  .sld > label { grid-column: 1 / -1; }
+  .sec-head { grid-template-columns: 1fr; }
+  .sec-head .sub { grid-column: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+html { scroll-behavior: smooth; }
+
+/* ---------- aula 05: árvore, quiz, tabela de dados, código, figuras ---------- */
+
+figure { margin: 1.3rem 0; }
+figcaption { font-family: var(--sans); font-size: .78rem; color: var(--ink-mute); margin-top: .5rem; }
+
+.tree { margin: 1.3rem 0; font-family: var(--sans); }
+.tree .lvl { display: grid; gap: .6rem; position: relative; }
+.tree .lvl + .lvl { margin-top: 1.4rem; }
+.tree .lvl + .lvl::before, .tree .l3::after {
+  content: ""; position: absolute; top: -.75rem; border-top: 1px solid var(--rule);
+}
+.tree .l2::before { left: 25%; right: 25%; }
+.tree .l3::before { left: 12.5%; right: 62.5%; }
+.tree .l3::after { left: 62.5%; right: 12.5%; }
+.tree .l1 .nd::after, .tree .l2 .nd::after {
+  content: ""; position: absolute; left: 50%; bottom: -.75rem; height: .75rem; border-left: 1px solid var(--rule);
+}
+.tree .l1 { grid-template-columns: 1fr; justify-items: center; }
+.tree .l2 { grid-template-columns: 1fr 1fr; }
+.tree .l3 { grid-template-columns: repeat(4, 1fr); }
+.tree .nd {
+  border: 1px solid var(--rule); background: var(--surface); padding: .55rem .7rem;
+  font-size: .8rem; color: var(--ink-soft); line-height: 1.35; position: relative;
+}
+.tree .lvl + .lvl .nd::before {
+  content: ""; position: absolute; left: 50%; top: -.75rem; height: .75rem; border-left: 1px solid var(--rule);
+}
+.tree .nd b { display: block; font-size: .86rem; color: var(--ink); margin-bottom: .15rem; }
+.tree .root { background: var(--ink); color: var(--paper); border-color: var(--ink); text-align: center; min-width: 14rem; }
+.tree .root b { color: var(--paper); margin: 0; }
+.tree .qual { border-top: 2px solid var(--empirico); }
+.tree .quan { border-top: 2px solid var(--teorico); }
+.tree .qual b { color: var(--empirico); }
+.tree .quan b { color: var(--teorico); }
+.tree .ex-l { font-size: .74rem; color: var(--ink-mute); margin-top: .25rem; display: block; }
+@media (max-width: 36rem) {
+  .tree .l3 { grid-template-columns: 1fr 1fr; }
+  .tree .l3::before, .tree .l3::after, .tree .l3 .nd::before, .tree .l2 .nd::after { display: none; }
+}
+
+.quiz { display: flex; flex-direction: column; }
+.qrow {
+  display: grid; grid-template-columns: 11rem 1fr; gap: .4rem 1rem; align-items: center;
+  padding: .65rem 0; border-top: 1px solid var(--rule-soft);
+}
+.qrow:first-child { border-top: 0; }
+.qrow .nm { font-family: var(--sans); font-size: .86rem; font-weight: 600; }
+.qrow .nm small { display: block; font-family: var(--mono); font-weight: 400; font-size: .7rem; color: var(--ink-mute); }
+.qrow .seg button.ok { background: var(--teorico); color: var(--paper); }
+.qrow .seg button.no { background: var(--alerta); color: var(--paper); }
+.qrow .fb { grid-column: 2; font-family: var(--sans); font-size: .8rem; color: var(--ink-soft); }
+.qrow .fb.ok { color: var(--teorico); }
+.qrow .fb.no { color: var(--alerta); }
+@media (max-width: 36rem) { .qrow { grid-template-columns: 1fr; } .qrow .fb { grid-column: 1; } }
+
+.dados-box { max-height: 24rem; overflow: auto; border: 1px solid var(--rule); background: var(--surface); }
+:root[data-mode="present"] .dados-box { max-height: 58vh; }
+.dados { width: 100%; border-collapse: collapse; }
+.dados th, .dados td { padding: .32rem .6rem; border-bottom: 1px solid var(--rule-soft); text-align: left; white-space: nowrap; }
+.dados thead th {
+  position: sticky; top: 0; background: var(--surface-2); z-index: 1;
+  font-family: var(--sans); font-size: .68rem; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--ink-mute); font-weight: 600; cursor: pointer; user-select: none;
+}
+.dados thead th:hover { color: var(--ink); }
+.dados thead th[aria-sort="ascending"]::after { content: " ↑"; color: var(--teorico); }
+.dados thead th[aria-sort="descending"]::after { content: " ↓"; color: var(--teorico); }
+.dados td { font-family: var(--sans); font-size: .82rem; color: var(--ink-soft); }
+.dados td.num { font-family: var(--mono); font-variant-numeric: tabular-nums; text-align: right; color: var(--ink); }
+.dados th.num { text-align: right; }
+.dados td.na { color: var(--ink-mute); }
+.tag-q { display: inline-block; font-family: var(--mono); font-size: .62rem; letter-spacing: .06em; padding: 0 .3rem; margin-left: .3rem; border: 1px solid currentColor; text-transform: none; }
+.tag-q.qual { color: var(--empirico); }
+.tag-q.quan { color: var(--teorico); }
+
+pre.code {
+  font-family: var(--mono); font-size: .8rem; line-height: 1.5; background: var(--surface-2);
+  border: 1px solid var(--rule); padding: .8rem 1rem; margin: 0 0 1rem; overflow-x: auto; color: var(--ink);
+}
+pre.code .c { color: var(--ink-mute); }
+code { font-family: var(--mono); font-size: .88em; }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.two > * { min-width: 0; }
+@media (max-width: 48rem) { .two { grid-template-columns: 1fr; } }
+
+.tri td.num.hl { background: var(--empirico-bg); }
+.tri tr.tot td { border-top: 1.5px solid var(--ink-mute); font-weight: 600; }
+
+.swatches { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: .5rem; font-family: var(--sans); font-size: .76rem; color: var(--ink-soft); }
+.swatches i { display: inline-block; width: .75rem; height: .75rem; vertical-align: -1px; margin-right: .35rem; }
+
+.legend .l-dado { color: var(--ink-mute); }
+.legend .l-dado::before { width: .55rem; height: .55rem; border-radius: 50%; }
+
+svg.anat { display: block; width: 100%; height: auto; border: 1px solid var(--rule); background: var(--surface); }
+svg.anat text { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 12px; fill: var(--ink-soft); }
+svg.anat .lbl-e { fill: var(--empirico); }
+svg.anat .lbl-t { fill: var(--teorico); }
+svg.anat .lbl-a { fill: var(--alerta); }
+svg.anat .ax { stroke: var(--rule); stroke-width: 1; }
+svg.anat .bx { fill: var(--empirico-bg); stroke: var(--empirico); stroke-width: 1.6; }
+svg.anat .md { stroke: var(--empirico); stroke-width: 3; }
+svg.anat .wh { stroke: var(--ink-soft); stroke-width: 1.4; }
+svg.anat .lim { stroke: var(--alerta); stroke-width: 1.2; stroke-dasharray: 4 3; }
+svg.anat .out { fill: var(--alerta); }
+svg.anat .pt { fill: var(--ink-mute); opacity: .55; }
+svg.anat .brace { stroke: var(--teorico); stroke-width: 1.2; fill: none; }
+:root[data-mode="present"] svg.anat { max-height: 40vh; }
+
+.hist-list { font-family: var(--mono); font-size: .8rem; color: var(--ink-mute); margin-top: .6rem; }
+.hist-list b { color: var(--empirico); font-weight: 500; }
+.hero-cap .k-dado::before { background: var(--ink-mute); }
+</style>
+
+<div class="shell">
+  <aside class="rail">
+    <div class="rail-brand">
+      <b>ECOM020</b>
+      Probabilidade e Estatística<br>
+      Aula 05 · Eng. de Computação · UFAL
+    </div>
+    <nav id="toc">
+      <a href="#motivacao"><span class="n">01</span><span>Descrever antes de inferir</span></a>
+      <a href="#variaveis"><span class="n">02</span><span>Tipos de variáveis</span></a>
+      <a href="#dados"><span class="n">03</span><span>Os dados da Companhia MB</span></a>
+      <a href="#frequencias"><span class="n">04</span><span>Distribuições de frequência</span></a>
+      <a href="#histograma"><span class="n">05</span><span>Classes e histograma</span></a>
+      <a href="#posicao"><span class="n">06</span><span>Medidas de posição</span></a>
+      <a href="#dispersao"><span class="n">07</span><span>Medidas de dispersão</span></a>
+      <a href="#quantis"><span class="n">08</span><span>Quantis empíricos</span></a>
+      <a href="#boxplot"><span class="n">09</span><span>Boxplot e discrepantes</span></a>
+      <a href="#software"><span class="n">10</span><span>describe() e summary()</span></a>
+      <a href="#resumo"><span class="n">11</span><span>Resumo</span></a>
+    </nav>
+    <div class="rail-foot">
+      <button class="rail-btn accent" id="presentBtn" type="button">▶ Modo apresentação</button>
+      <button class="rail-btn" id="themeBtn" type="button">Tema: automático</button>
+      <a class="rail-btn" href="../index.html">← Início do curso</a>
+      <span>Prof. Glauber R. Leite</span>
+    </div>
+  </aside>
+
+  <main>
+
+    <!-- ============ CAPA ============ -->
+    <header class="hero">
+      <div class="wrap">
+        <div class="slide" data-sec="Abertura">
+          <div>
+            <div class="eyebrow">Aula 05 · Estatística descritiva</div>
+            <h1>36 salários, <em>poucos</em> números</h1>
+            <p class="dek">
+              A estatística é a ciência que estuda os dados, resumindo-os e gerando informação útil
+              sobre eles. Hoje o objetivo é descrever uma amostra: organizar, desenhar e condensar
+              uma série inteira de observações em meia dúzia de medidas.
+            </p>
+          </div>
+          <div class="hero-fig">
+            <canvas id="heroCanvas" aria-label="Os 36 salários da Companhia MB empilhados como pontos sobre o eixo, com a média e a mediana marcadas"></canvas>
+            <div class="hero-cap">
+              <span class="k-dado">cada ponto: um empregado da Companhia MB</span>
+              <span class="k-dens">média <span class="v">x̄</span> ≈ 11,12</span>
+              <span class="k-acum">mediana ≈ 10,17 (salários mínimos)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ============ 01 ============ -->
+    <section id="motivacao">
+      <div class="wrap">
+        <div class="slide" data-sec="§ 01 · Descrever antes de inferir">
+          <div class="sec-head">
+            <span class="n">§ 01</span>
+            <h2>Estatística descritiva e inferencial</h2>
+            <span class="sub">Duas perguntas diferentes sobre os mesmos dados</span>
+          </div>
+          <p>
+            Geralmente, as disciplinas de estatística de graduação separam os estudos em
+            <strong>estatística descritiva</strong> e <strong>estatística inferencial</strong>.
+          </p>
+          <div class="two">
+            <div class="defn">
+              <span class="lab">Descritiva — esta aula</span>
+              <p>
+                Faz a <strong>análise exploratória</strong> dos dados que temos: monta resumos,
+                tabelas e gráficos, e estuda como as variáveis se relacionam entre si.
+              </p>
+            </div>
+            <div class="note">
+              <span class="lab">Inferencial — próximas aulas</span>
+              <p>
+                Elabora <strong>hipóteses que extrapolam</strong> os números à disposição: a partir
+                da amostra, diz algo sobre a população de onde ela veio.
+              </p>
+            </div>
+          </div>
+          <blockquote>
+            A base que aprendemos de probabilidade será um diferencial para melhor compreensão do
+            que vem a seguir. Quase toda medida desta aula é a versão <i>amostral</i> de algo que já
+            vimos: média ↔ <span class="v">E</span>{<span class="v">X</span>}, variância ↔
+            <span class="v">E</span>{(<span class="v">X</span> − <span class="v">μ</span>)²},
+            quantil ↔ inversa da <span class="v">F</span>(<span class="v">x</span>).
+          </blockquote>
+        </div>
+
+        <div class="slide" data-sec="§ 01 · Descrever antes de inferir">
+          <h3>População e amostra</h3>
+          <p>
+            A <strong>população</strong> é o conjunto de todos os elementos de interesse; a
+            <strong>amostra</strong> é a parte dela que de fato observamos. Na descritiva trabalhamos
+            para entender a amostra. Na inferencial, elaboramos hipóteses de como é a população
+            <em>através</em> da amostra.
+          </p>
+          <div class="demo">
+            <div class="demo-head">
+              <span class="t">Uma população, várias amostras</span>
+              <span class="h">cada ponto é um salário; a amostra sorteada fica em âmbar</span>
+            </div>
+            <div class="demo-body">
+              <div class="ctl">
+                <button class="b primary" type="button" id="popSortear">Sortear amostra (n = 36)</button>
+                <button class="b" type="button" id="popLimpar">Limpar histórico</button>
+              </div>
+              <canvas class="plot" id="popCanvas" aria-label="Pontos de uma população de 600 salários; os 36 da amostra sorteada ficam destacados"></canvas>
+              <div class="legend"><span class="l-dado">população (600 empregados hipotéticos)</span><span class="l-acum">amostra e sua média x̄</span><span class="l-dens">média da população μ</span></div>
+              <div class="readout">
+                <div><span class="k">μ (população, em geral desconhecida)</span><span class="val dens" id="popMu">—</span></div>
+                <div><span class="k">x̄ (esta amostra)</span><span class="val acum" id="popXb">—</span></div>
+              </div>
+              <div class="hist-list" id="popHist"></div>
+            </div>
+          </div>
+          <p style="font-size:.95rem; color:var(--ink-soft)">
+            Cada sorteio dá um <span class="v">x̄</span> diferente, e nenhum coincide exatamente com
+            <span class="v">μ</span>. Descrever bem <em>uma</em> amostra é o assunto de hoje; entender
+            como <span class="v">x̄</span> varia de amostra para amostra é o assunto da aula 06.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 02 ============ -->
+    <section id="variaveis">
+      <div class="wrap">
+        <div class="slide" data-sec="§ 02 · Tipos de variáveis">
+          <div class="sec-head">
+            <span class="n">§ 02</span>
+            <h2>Cada tipo de variável pede um resumo</h2>
+            <span class="sub">Qualitativa ou quantitativa, e depois mais um nível</span>
+          </div>
+          <p>Para cada tipo de variável existem técnicas apropriadas para resumir as informações.</p>
+          <div class="tree" role="img" aria-label="Árvore de classificação: variáveis estatísticas se dividem em qualitativas (nominal e ordinal) e quantitativas (discreta e contínua)">
+            <div class="lvl l1"><div class="nd root"><b>Variáveis estatísticas</b></div></div>
+            <div class="lvl l2">
+              <div class="nd qual"><b>Qualitativa</b>expressa uma qualidade ou atributo</div>
+              <div class="nd quan"><b>Quantitativa</b>expressa uma quantidade ou número</div>
+            </div>
+            <div class="lvl l3">
+              <div class="nd qual"><b>Nominal</b>não existe ordem ou hierarquia<span class="ex-l">sexo, cor dos olhos, estado civil</span></div>
+              <div class="nd qual"><b>Ordinal</b>existe uma ordem natural ou nível<span class="ex-l">escolaridade, classe social, estágio de uma doença</span></div>
+              <div class="nd quan"><b>Discreta</b>valores inteiros (contagem)<span class="ex-l">número de filhos, quantidade de carros</span></div>
+              <div class="nd quan"><b>Contínua</b>valores reais (medição, aceita decimais)<span class="ex-l">altura, peso, salário, tempo</span></div>
+            </div>
+          </div>
+          <div class="note">
+            <span class="lab">O paralelo com as aulas 02 e 03</span>
+            <p>
+              Discreta e contínua são as mesmas palavras usadas para variáveis aleatórias. Lá, a
+              distinção decidia entre somar uma função de probabilidade ou integrar uma densidade;
+              aqui, decide entre <strong>contar valores</strong> ou <strong>agrupar em classes</strong>.
+            </p>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 02 · Tipos de variáveis">
+          <h3>Classifique as variáveis da Companhia MB</h3>
+          <p>
+            O arquivo da Companhia MB traz seis variáveis para cada empregado. Escolha a
+            classificação de cada uma; a resposta aparece logo abaixo.
+          </p>
+          <div class="demo">
+            <div class="demo-head">
+              <span class="t">Classificação</span>
+              <span class="h" id="quizScore">0 de 6 classificadas</span>
+            </div>
+            <div class="demo-body">
+              <div class="quiz" id="quiz"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 03 ============ -->
+    <section id="dados">
+      <div class="wrap">
+        <div class="slide" data-sec="§ 03 · Os dados da Companhia MB">
+          <div class="sec-head">
+            <span class="n">§ 03</span>
+            <h2>Os 36 empregados da Companhia MB</h2>
+            <span class="sub">Bussab &amp; Morettin, Tabela 2.1 · salário em múltiplos do salário mínimo</span>
+          </div>
+          <p>
+            Esta é a amostra que vai nos acompanhar. Clique no cabeçalho de uma coluna para ordenar;
+            ordenar pelo salário já antecipa a mediana e os quartis.
+          </p>
+          <div class="dados-box">
+            <table class="dados" id="tabDados">
+              <thead>
+                <tr>
+                  <th class="num" data-c="0">Nº</th>
+                  <th data-c="1">Estado civil<span class="tag-q qual">nom</span></th>
+                  <th data-c="2">Instrução<span class="tag-q qual">ord</span></th>
+                  <th class="num" data-c="3">Filhos<span class="tag-q quan">disc</span></th>
+                  <th class="num" data-c="4">Salário<span class="tag-q quan">cont</span></th>
+                  <th class="num" data-c="5">Idade<span class="tag-q quan">cont</span></th>
+                  <th data-c="7">Região<span class="tag-q qual">nom</span></th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <p style="font-size:.9rem; color:var(--ink-soft); margin-top:.6rem">
+            Idade em anos e meses (35a 10m = 35 anos e 10 meses). “—” no número de filhos:
+            a variável só foi registrada para os casados (20 dos 36).
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 04 ============ -->
+    <section id="frequencias">
+      <div class="wrap">
+        <div class="slide" data-sec="§ 04 · Distribuições de frequência">
+          <div class="sec-head">
+            <span class="n">§ 04</span>
+            <h2>Distribuições de frequência</h2>
+            <span class="sub">Contar quantas vezes cada valor aparece</span>
+          </div>
+          <p>
+            A variável grau de instrução é <strong>qualitativa ordinal</strong>. Para entendê-la
+            melhor, contamos quantos empregados há em cada nível:
+          </p>
+          <div class="tbl-scroll">
+            <table class="tri">
+              <thead><tr><th>Grau de instrução</th><th>Frequência <span class="v gr">n<sub>i</sub></span></th><th>Proporção <span class="v gr">f<sub>i</sub></span></th><th>Porcentagem</th></tr></thead>
+              <tbody>
+                <tr><td>Fundamental</td><td class="num">12</td><td class="num">0,3333</td><td class="num">33,33</td></tr>
+                <tr><td>Médio</td><td class="num">18</td><td class="num">0,5000</td><td class="num">50,00</td></tr>
+                <tr><td>Superior</td><td class="num">6</td><td class="num">0,1667</td><td class="num">16,67</td></tr>
+                <tr class="tot"><td>Total</td><td class="num">36</td><td class="num">1,0000</td><td class="num">100,00</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="defn">
+            <span class="lab">Frequência absoluta e relativa</span>
+            <div class="eq sm">
+              <span class="v">f<sub>i</sub></span> =
+              <span class="frac"><span><span class="v">n<sub>i</sub></span></span><span><span class="v">n</span></span></span>,
+              &nbsp;&nbsp; ∑ <span class="v">n<sub>i</sub></span> = <span class="v">n</span>,
+              &nbsp;&nbsp; ∑ <span class="v">f<sub>i</sub></span> = 1
+            </div>
+            <p>
+              A proporção <span class="v">f<sub>i</sub></span> faz o papel que
+              <span class="v">P</span>(<span class="v">X</span> = <span class="v">x</span>) fazia na
+              aula 02: é a função de probabilidade <em>da amostra</em>.
+            </p>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 04 · Distribuições de frequência">
+          <h3>Tabela e gráfico, para qualquer variável de contagem</h3>
+          <p>
+            Para visualizar, usamos gráficos de <strong>barras</strong> e de <strong>setores</strong>
+            (pizza). Quando a variável tem ordem (ordinal ou discreta), a frequência
+            <strong>acumulada</strong> também faz sentido.
+          </p>
+          <div class="demo">
+            <div class="demo-head">
+              <span class="t">Distribuição de frequências</span>
+              <span class="h">escolha a variável e o tipo de gráfico</span>
+            </div>
+            <div class="demo-body">
+              <div class="ctl">
+                <div class="seg" id="fqVar">
+                  <button type="button" data-k="instr" aria-pressed="true">Instrução</button>
+                  <button type="button" data-k="civil" aria-pressed="false">Estado civil</button>
+                  <button type="button" data-k="reg" aria-pressed="false">Região</button>
+                  <button type="button" data-k="filhos" aria-pressed="false">Nº de filhos</button>
+                </div>
+                <div class="seg" id="fqTipo">
+                  <button type="button" data-k="barras" aria-pressed="true">Barras</button>
+                  <button type="button" data-k="setores" aria-pressed="false">Setores</button>
+                </div>
+              </div>
+              <canvas class="plot" id="fqCanvas" aria-label="Gráfico de barras ou de setores da variável escolhida"></canvas>
+              <div class="swatches" id="fqSw"></div>
+              <div class="tbl-scroll"><table class="tri" id="fqTab"></table></div>
+              <p class="h" id="fqNota" style="font-family:var(--sans); font-size:.8rem; color:var(--ink-mute); margin:0"></p>
+            </div>
+          </div>
+          <div class="note problema">
+            <span class="lab">Setores comparam mal</span>
+            <p>
+              O olho compara comprimentos muito melhor que ângulos. Em “Região”, as três fatias têm
+              11, 12 e 13 empregados: nas barras a ordem é óbvia, nos setores quase não se vê. Use
+              setores só com poucas categorias e quando a mensagem for “parte do todo”.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 05 ============ -->
+    <section id="histograma">
+      <div class="wrap">
+        <div class="slide" data-sec="§ 05 · Classes e histograma">
+          <div class="sec-head">
+            <span class="n">§ 05</span>
+            <h2>Variáveis contínuas: classes e histograma</h2>
+            <span class="sub">Discretizar antes de contar</span>
+          </div>
+          <p>
+            Contar valores de salário não ajuda: quase nenhum se repete. Fazemos uma análise parecida
+            aplicando uma <strong>discretização</strong>: definimos o tamanho de um <i>bin</i> (classe)
+            e contamos quantos salários caem em cada um. A notação
+            <span class="v">a</span> ⊢ <span class="v">b</span> indica o intervalo [<span class="v">a</span>, <span class="v">b</span>):
+            inclui <span class="v">a</span>, exclui <span class="v">b</span>.
+          </p>
+          <div class="tbl-scroll">
+            <table class="tri">
+              <thead><tr><th>Classe de salários</th><th>Frequência <span class="v gr">n<sub>i</sub></span></th><th>Porcentagem</th></tr></thead>
+              <tbody>
+                <tr><td>4,00 ⊢ 8,00</td><td class="num">10</td><td class="num">27,78</td></tr>
+                <tr><td>8,00 ⊢ 12,00</td><td class="num hl">12</td><td class="num hl">33,33</td></tr>
+                <tr><td>12,00 ⊢ 16,00</td><td class="num">8</td><td class="num">22,22</td></tr>
+                <tr><td>16,00 ⊢ 20,00</td><td class="num">5</td><td class="num">13,89</td></tr>
+                <tr><td>20,00 ⊢ 24,00</td><td class="num">1</td><td class="num">2,78</td></tr>
+                <tr class="tot"><td>Total</td><td class="num">36</td><td class="num">100,00</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>
+            O gráfico dessa tabela é o <strong>histograma</strong>: barras encostadas, porque as
+            classes são intervalos contíguos da reta real.
+          </p>
+        </div>
+
+        <div class="slide" data-sec="§ 05 · Classes e histograma">
+          <div class="demo">
+            <div class="demo-head">
+              <span class="t">Histograma dos salários</span>
+              <span class="h">a forma depende da escolha das classes</span>
+            </div>
+            <div class="demo-body">
+              <div class="ctl">
+                <div class="seg" id="hiEsc">
+                  <button type="button" data-k="freq" aria-pressed="true">Frequência</button>
+                  <button type="button" data-k="dens" aria-pressed="false">Densidade</button>
+                </div>
+              </div>
+              <div class="sliders">
+                <div class="sld">
+                  <label for="hiH">largura da classe <span class="v">h</span></label>
+                  <input type="range" id="hiH" min="0.5" max="8" step="0.5" value="4">
+                  <output id="oHiH">4,0</output>
+                </div>
+                <div class="sld">
+                  <label for="hiA">início da 1ª classe</label>
+                  <input type="range" id="hiA" min="0" max="4" step="0.25" value="4">
+                  <output id="oHiA">4,00</output>
+                </div>
+              </div>
+              <canvas class="plot tall" id="hiCanvas" aria-label="Histograma dos 36 salários, com os valores individuais marcados abaixo do eixo"></canvas>
+              <div class="legend"><span class="l-dens">histograma</span><span class="l-acum">cada traço: um salário</span></div>
+              <div class="readout">
+                <div><span class="k">nº de classes</span><span class="val" id="hiK">—</span></div>
+                <div><span class="k">classe modal</span><span class="val acum" id="hiMod">—</span></div>
+                <div><span class="k">soma das áreas</span><span class="val dens" id="hiArea">—</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="note">
+            <span class="lab">Histograma em densidade</span>
+            <p>
+              Com altura <span class="v">n<sub>i</sub></span> / (<span class="v">n</span> · <span class="v">h</span>),
+              a <strong>área</strong> de cada barra é a proporção da classe e a área total é 1, como a
+              densidade <span class="v">f</span>(<span class="v">x</span>) da aula 03. Classes estreitas
+              demais viram ruído; largas demais escondem a forma. Não há largura “certa”: há uma que
+              conta a história com honestidade.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 06 ============ -->
+    <section id="posicao">
+      <div class="wrap">
+        <div class="slide" data-sec="§ 06 · Medidas de posição">
+          <div class="sec-head">
+            <span class="n">§ 06</span>
+            <h2>Medidas de posição</h2>
+            <span class="sub">Um número que represente a amostra inteira</span>
+          </div>
+          <p>
+            Agora a intenção é estabelecer valores que descrevam uma série inteira de 10, 50 ou 1000
+            itens em poucos números. As medidas de posição são <strong>representantes</strong> da
+            amostra, num paralelo direto com o valor esperado
+            <span class="v">E</span>{<span class="v">X</span>}. Tomamos
+            <span class="v">P</span>(<span class="v">X</span> = <span class="v">x</span>) como a
+            proporção de vezes em que a variável assume o valor <span class="v">x</span> na amostra.
+          </p>
+          <div class="defn">
+            <span class="lab">Média aritmética</span>
+            <p>
+              Cada <span class="v">x<sub>i</sub></span> conta individualmente, mesmo repetido. Os
+              <span class="v">n</span> valores têm chance igual de aparecer,
+              <span class="v">P</span>(<span class="v">X</span> = <span class="v">x<sub>i</sub></span>) = 1/<span class="v">n</span>, então
+            </p>
+            <div class="eq">
+              <span class="v">x̄</span> =
+              <span class="frac"><span>1</span><span><span class="v">n</span></span></span>
+              ∑<sub><span class="v">i</span>=1</sub><sup><span class="v">n</span></sup> <span class="v">x<sub>i</sub></span>
+            </div>
+          </div>
+          <div class="defn">
+            <span class="lab">Moda</span>
+            <p>O valor mais frequente:</p>
+            <div class="eq sm">
+              mo(<span class="v">X</span>) = arg max<sub><span class="v">x</span></sub> <span class="v">P</span>(<span class="v">X</span> = <span class="v">x</span>)
+            </div>
+          </div>
+          <div class="defn">
+            <span class="lab">Mediana</span>
+            <p>A posição central das observações ordenadas, <span class="v">x</span><sub>(1)</sub> ≤ <span class="v">x</span><sub>(2)</sub> ≤ … ≤ <span class="v">x</span><sub>(<span class="v">n</span>)</sub>:</p>
+            <div class="eq sm">
+              md(<span class="v">X</span>) =
+              <span class="brace">{</span><span class="cases">
+                <span><span class="v">x</span><sub>((<span class="v">n</span>+1)/2)</sub></span><span>se <span class="v">n</span> ímpar</span>
+                <span><span class="frac"><span><span class="v">x</span><sub>(<span class="v">n</span>/2)</sub> + <span class="v">x</span><sub>(<span class="v">n</span>/2 + 1)</sub></span><span>2</span></span></span><span>se <span class="v">n</span> par</span>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 06 · Medidas de posição">
+          <h3>Cuidados com a moda</h3>
+          <div class="note problema">
+            <span class="lab">⚠ Mais de uma moda</span>
+            <p>Distribuições <strong>multimodais</strong> apresentam mais do que uma moda.</p>
+          </div>
+          <div class="note problema">
+            <span class="lab">⚠ Variáveis contínuas</span>
+            <p>
+              Em variáveis quantitativas contínuas, quase nenhum valor se repete: é preciso
+              discretizar em classes e falar em <strong>classe modal</strong> (a de 8,00 ⊢ 12,00, no
+              histograma do § 05). Mude a largura das classes lá e veja a classe modal mudar.
+            </p>
+          </div>
+          <div class="ex" data-steps>
+            <span class="lab">Exemplo — as três medidas na Companhia MB</span>
+            <p>Calcule a média, a mediana e a moda do salário, e a média e a moda do número de filhos dos casados.</p>
+            <ol class="steps">
+              <li class="step">
+                <p>Média do salário: a soma dos 36 salários é 400,40.</p>
+                <div class="eq sm"><span class="v">x̄</span> = 400,40 / 36 = <span class="res">11,12</span> salários mínimos</div>
+              </li>
+              <li class="step">
+                <p>
+                  Mediana do salário: <span class="v">n</span> = 36 é par, então a mediana é a média
+                  dos valores nas posições 18 e 19 da série ordenada (ordene a tabela do § 03 pelo
+                  salário para conferir):
+                </p>
+                <div class="eq sm">md = (<span class="v">x</span><sub>(18)</sub> + <span class="v">x</span><sub>(19)</sub>) / 2 = (9,80 + 10,53) / 2 = <span class="res">10,165</span></div>
+              </li>
+              <li class="step">
+                <p>
+                  Moda do salário: nenhum valor se repete. Pela tabela de classes, a classe modal é
+                  8,00 ⊢ 12,00, com 12 empregados.
+                </p>
+              </li>
+              <li class="step">
+                <p>
+                  Número de filhos (20 casados): com a tabela de frequências, cada valor entra
+                  multiplicado pela sua frequência. É exatamente ∑ <span class="v">x</span> <span class="v">P</span>(<span class="v">X</span> = <span class="v">x</span>):
+                </p>
+                <div class="eq sm"><span class="v">x̄</span> = (0·4 + 1·5 + 2·7 + 3·3 + 5·1) / 20 = 33 / 20 = <span class="res">1,65</span></div>
+              </li>
+              <li class="step fim">
+                <p>
+                  Salário: <span class="v">x̄</span> ≈ 11,12 &gt; md ≈ 10,17 — a média é puxada pelos poucos
+                  salários altos. Filhos: <span class="v">x̄</span> = 1,65 e moda 2 (7 dos 20
+                  casados). Instrução, ordinal: moda “médio”; e a mediana também é “médio”
+                  (as posições 18 e 19 caem no ensino médio).
+                </p>
+              </li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 06 · Medidas de posição">
+          <h3>Média é ponto de equilíbrio; mediana é ponto do meio</h3>
+          <div class="demo">
+            <div class="demo-head">
+              <span class="t">Um salário extremo</span>
+              <span class="h">aumente o salário do empregado nº 36</span>
+            </div>
+            <div class="demo-body">
+              <div class="sliders">
+                <div class="sld">
+                  <label for="eqSal">salário do nº 36</label>
+                  <input type="range" id="eqSal" min="23.3" max="120" step="0.1" value="23.3">
+                  <output id="oEqSal">23,30</output>
+                </div>
+              </div>
+              <canvas class="plot tall" id="eqCanvas" aria-label="Salários empilhados sobre uma régua; um triângulo na média equilibra a régua; a mediana é marcada à parte"></canvas>
+              <div class="legend"><span class="l-dens">média x̄ (fulcro)</span><span class="l-acum">mediana</span></div>
+              <div class="readout">
+                <div><span class="k">x̄</span><span class="val dens" id="eqMed">—</span></div>
+                <div><span class="k">md</span><span class="val acum" id="eqMd">—</span></div>
+                <div><span class="k">x̄ − md</span><span class="val" id="eqDif">—</span></div>
+                <div><span class="k">∑ (xᵢ − x̄)</span><span class="val" id="eqSoma">—</span></div>
+              </div>
+            </div>
+          </div>
+          <p style="font-size:.95rem; color:var(--ink-soft)">
+            A média é o ponto em que a régua se equilibra: os desvios
+            <span class="v">x<sub>i</sub></span> − <span class="v">x̄</span> sempre somam zero. Por isso
+            um único valor extremo arrasta a média junto. A mediana só olha a <em>ordem</em>: enquanto o
+            nº 36 continuar sendo o maior salário, ela não se mexe.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 07 ============ -->
+    <section id="dispersao">
+      <div class="wrap">
+        <div class="slide" data-sec="§ 07 · Medidas de dispersão">
+          <div class="sec-head">
+            <span class="n">§ 07</span>
+            <h2>Medidas de dispersão</h2>
+            <span class="sub">Mesma média, grupos muito diferentes</span>
+          </div>
+          <p>Apesar das medidas de posição, ainda é comum precisar de mais números para descrever bem os dados. Um exemplo motivador:</p>
+          <div class="tbl-scroll">
+            <table class="tri">
+              <thead><tr><th>Grupo</th><th>Valores</th><th><span class="gr">média</span></th><th><span class="gr">variância</span></th><th><span class="gr">dp</span></th></tr></thead>
+              <tbody>
+                <tr><td>A (<span class="v">X</span>)</td><td class="num">3, 4, 5, 6, 7</td><td class="num">5,0</td><td class="num dens">2,00</td><td class="num dens">1,41</td></tr>
+                <tr><td>B (<span class="v">Y</span>)</td><td class="num">1, 3, 5, 7, 9</td><td class="num">5,0</td><td class="num dens">8,00</td><td class="num dens">2,83</td></tr>
+                <tr><td>C (<span class="v">Z</span>)</td><td class="num">5, 5, 5, 5, 5</td><td class="num">5,0</td><td class="num dens">0,00</td><td class="num dens">0,00</td></tr>
+                <tr><td>D (<span class="v">W</span>)</td><td class="num">3, 5, 5, 7</td><td class="num">5,0</td><td class="num dens">2,00</td><td class="num dens">1,41</td></tr>
+                <tr><td>E (<span class="v">V</span>)</td><td class="num">3, 5, 5, 6, 6</td><td class="num">5,0</td><td class="num dens">1,20</td><td class="num dens">1,10</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>
+            Os grupos são bastante diferentes, mas <span class="v">x̄</span> = <span class="v">ȳ</span> =
+            <span class="v">z̄</span> = <span class="v">w̄</span> = <span class="v">v̄</span> = 5,0. Precisamos de
+            um outro critério: a <strong>variabilidade</strong>. O paralelo é
+            <span class="v">E</span>{(<span class="v">X</span> − <span class="v">μ</span>)²}, com o mesmo
+            argumento de antes: cada valor conta uma vez, com chance igual.
+          </p>
+          <div class="defn">
+            <span class="lab">Variância e desvio padrão</span>
+            <div class="eq">
+              var(<span class="v">X</span>) =
+              <span class="frac"><span>∑<sub><span class="v">i</span>=1</sub><sup><span class="v">n</span></sup> (<span class="v">x<sub>i</sub></span> − <span class="v">x̄</span>)²</span><span><span class="v">n</span></span></span>
+              &nbsp;&nbsp;&nbsp;
+              dp(<span class="v">X</span>) = <span class="sqrt">√<span>var(<span class="v">X</span>)</span></span>
+            </div>
+            <p>
+              O desvio padrão volta à unidade dos dados (salários mínimos, não salários mínimos ao
+              quadrado).
+            </p>
+          </div>
+          <div class="note">
+            <span class="lab">🤔 Por que dividir por n?</span>
+            <p>
+              O argumento usado no Bussab para o <span class="v">n</span> é possibilitar a comparação
+              entre conjuntos de dados com números diferentes de observações (veja A e D: 5 e 4
+              valores, mesma variância). Software estatístico costuma dividir por
+              <span class="v">n</span> − 1; o motivo é inferencial e aparece na aula 06.
+            </p>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 07 · Medidas de dispersão">
+          <h3>A variância é uma área média</h3>
+          <div class="demo">
+            <div class="demo-head">
+              <span class="t">Desvios ao quadrado, literalmente</span>
+              <span class="h">cada quadrado tem lado |xᵢ − x̄|</span>
+            </div>
+            <div class="demo-body">
+              <div class="ctl">
+                <div class="seg" id="dvGrupo">
+                  <button type="button" data-k="A" aria-pressed="true">A</button>
+                  <button type="button" data-k="B" aria-pressed="false">B</button>
+                  <button type="button" data-k="C" aria-pressed="false">C</button>
+                  <button type="button" data-k="D" aria-pressed="false">D</button>
+                  <button type="button" data-k="E" aria-pressed="false">E</button>
+                </div>
+              </div>
+              <canvas class="plot tall" id="dvCanvas" aria-label="Pontos do grupo sobre a reta; para cada ponto, um quadrado de lado igual à distância até a média"></canvas>
+              <div class="legend"><span class="l-acum">dados</span><span class="l-dens">média e quadrados (xᵢ − x̄)²</span></div>
+              <div class="readout">
+                <div><span class="k">x̄</span><span class="val" id="dvM">—</span></div>
+                <div><span class="k">∑ (xᵢ − x̄)² = área total</span><span class="val dens" id="dvS">—</span></div>
+                <div><span class="k">var = área / n</span><span class="val dens" id="dvV">—</span></div>
+                <div><span class="k">dp</span><span class="val dens" id="dvD">—</span></div>
+              </div>
+            </div>
+          </div>
+          <p style="font-size:.95rem; color:var(--ink-soft)">
+            Elevar ao quadrado faz os pontos distantes pesarem muito mais: em B, os dois extremos
+            (1 e 9) respondem por 32 dos 40 de área. Em C, não sobra área nenhuma.
+          </p>
+        </div>
+
+        <div class="slide" data-sec="§ 07 · Medidas de dispersão">
+          <div class="ex" data-steps>
+            <span class="lab">Exemplo — variância do grupo B e dos salários</span>
+            <p>Calcule a variância e o desvio padrão do grupo B (1, 3, 5, 7, 9) de duas formas, e interprete o desvio padrão dos salários.</p>
+            <ol class="steps">
+              <li class="step">
+                <p>Desvios em relação a <span class="v">ȳ</span> = 5: −4, −2, 0, 2, 4 (somam zero, como deviam).</p>
+              </li>
+              <li class="step">
+                <p>Quadrados: 16, 4, 0, 4, 16. Soma 40.</p>
+                <div class="eq sm">var(<span class="v">Y</span>) = 40 / 5 = <span class="res">8</span>, &nbsp; dp(<span class="v">Y</span>) = √8 ≈ <span class="res">2,83</span></div>
+              </li>
+              <li class="step">
+                <p>
+                  Forma alternativa, igual à da aula 02, var = <span class="v">E</span>[<span class="v">X</span>²] − <span class="v">μ</span>²:
+                  a média dos quadrados menos o quadrado da média.
+                </p>
+                <div class="eq sm">(1 + 9 + 25 + 49 + 81) / 5 − 5² = 165 / 5 − 25 = 33 − 25 = <span class="res">8</span></div>
+              </li>
+              <li class="step fim">
+                <p>
+                  Para os 36 salários, a mesma conta dá var ≈ 20,46 e dp ≈ <span class="res">4,52</span>
+                  salários mínimos. Leitura: tipicamente, um empregado ganha cerca de 4,5 salários
+                  mínimos acima ou abaixo da média de 11,12.
+                </p>
+              </li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 08 ============ -->
+    <section id="quantis">
+      <div class="wrap">
+        <div class="slide" data-sec="§ 08 · Quantis empíricos">
+          <div class="sec-head">
+            <span class="n">§ 08</span>
+            <h2>Quantis empíricos</h2>
+            <span class="sub">Quando média e desvio padrão não bastam</span>
+          </div>
+          <p>
+            Um fato importante: médias são afetadas por valores extremos. <i>Outliers</i> (valores
+            discrepantes, pequenos ou grandes demais) afetam a simetria da distribuição dos dados.
+            Por isso a média e, consequentemente, a variância e o desvio padrão podem não ser
+            suficientes para explicar bem o comportamento dos dados.
+          </p>
+          <p>
+            Os <strong>quantis</strong> são valores que aparecem nas fronteiras da distribuição dos
+            dados: <span class="v">q</span>(<span class="v">p</span>) deixa, aproximadamente, uma
+            fração <span class="v">p</span> dos dados abaixo dele.
+          </p>
+          <div class="defn">
+            <span class="lab">Quartis</span>
+            <ul>
+              <li><span class="v">q</span><sub>1</sub> = <span class="v">q</span>(0,25): primeiro quartil (abaixo dele, 25% dos dados)</li>
+              <li><span class="v">q</span><sub>2</sub> = <span class="v">q</span>(0,50): segundo quartil — é a mediana</li>
+              <li><span class="v">q</span><sub>3</sub> = <span class="v">q</span>(0,75): terceiro quartil (75% dos dados abaixo dele)</li>
+              <li><span class="v">q</span><sub>4</sub> = <span class="v">q</span>(1,00): quarto quartil — o maior valor</li>
+            </ul>
+          </div>
+          <div class="defn">
+            <span class="lab">Como calcular (definição do Bussab)</span>
+            <p>
+              Com os dados ordenados, a observação <span class="v">x</span><sub>(<span class="v">i</span>)</sub>
+              ocupa a proporção <span class="v">p<sub>i</sub></span> = (<span class="v">i</span> − 0,5) / <span class="v">n</span>.
+              Para um <span class="v">p</span> entre duas dessas proporções, interpola-se linearmente
+              entre as duas observações vizinhas.
+            </p>
+          </div>
+          <div class="note">
+            <span class="lab">O paralelo com a aula 03</span>
+            <p>
+              Lá, o quantil era a solução de <span class="v">F</span>(<span class="v">x</span>) = <span class="v">p</span>.
+              Aqui é a mesma ideia com a <strong>função de distribuição empírica</strong>
+              <span class="v">F<sub>n</sub></span>(<span class="v">x</span>) = (nº de observações ≤ <span class="v">x</span>) / <span class="v">n</span>,
+              uma escada que sobe 1/<span class="v">n</span> a cada dado.
+            </p>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 08 · Quantis empíricos">
+          <div class="demo">
+            <div class="demo-head">
+              <span class="t">Quantis na escada da distribuição empírica</span>
+              <span class="h">escolha p e leia q(p) no eixo dos salários</span>
+            </div>
+            <div class="demo-body">
+              <div class="ctl">
+                <button class="b" type="button" data-qp="0.25">q₁</button>
+                <button class="b" type="button" data-qp="0.5">mediana</button>
+                <button class="b" type="button" data-qp="0.75">q₃</button>
+                <button class="b" type="button" data-qp="0.9">q(0,90)</button>
+              </div>
+              <div class="sliders">
+                <div class="sld">
+                  <label for="qP">proporção <span class="v">p</span></label>
+                  <input type="range" id="qP" min="0.01" max="0.99" step="0.01" value="0.25">
+                  <output id="oQP">0,25</output>
+                </div>
+              </div>
+              <canvas class="plot tall" id="qCanvas" aria-label="Função de distribuição empírica dos salários em escada, com a linha horizontal em p e o quantil correspondente"></canvas>
+              <div class="legend"><span class="l-dens">F<sub>n</sub>(x), a escada</span><span class="l-acum">pontos (x₍ᵢ₎, (i − 0,5)/n) e q(p)</span></div>
+              <div class="readout">
+                <div><span class="k">q(p)</span><span class="val acum" id="qQ">—</span></div>
+                <div><span class="k">posição na série ordenada</span><span class="val" id="qPos">—</span></div>
+                <div><span class="k">salários ≤ q(p)</span><span class="val dens" id="qAbaixo">—</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="ex" data-steps>
+            <span class="lab">Exemplo — os quartis dos salários</span>
+            <p>Calcule <span class="v">q</span><sub>1</sub> e <span class="v">q</span><sub>3</sub> dos 36 salários.</p>
+            <ol class="steps">
+              <li class="step">
+                <p>
+                  Inverta <span class="v">p<sub>i</sub></span> = (<span class="v">i</span> − 0,5)/<span class="v">n</span>:
+                  a “posição” de <span class="v">p</span> é <span class="v">i</span> = <span class="v">n</span><span class="v">p</span> + 0,5.
+                </p>
+              </li>
+              <li class="step">
+                <p><span class="v">p</span> = 0,25: <span class="v">i</span> = 36 · 0,25 + 0,5 = 9,5, no meio entre <span class="v">x</span><sub>(9)</sub> = 7,44 e <span class="v">x</span><sub>(10)</sub> = 7,59.</p>
+                <div class="eq sm"><span class="v">q</span><sub>1</sub> = (7,44 + 7,59) / 2 = <span class="res">7,515</span></div>
+              </li>
+              <li class="step">
+                <p><span class="v">p</span> = 0,75: <span class="v">i</span> = 27,5, entre <span class="v">x</span><sub>(27)</sub> = 13,85 e <span class="v">x</span><sub>(28)</sub> = 14,69.</p>
+                <div class="eq sm"><span class="v">q</span><sub>3</sub> = (13,85 + 14,69) / 2 = <span class="res">14,27</span></div>
+              </li>
+              <li class="step fim">
+                <p>
+                  <span class="v">q</span><sub>1</sub> = 7,515; md = 10,165; <span class="v">q</span><sub>3</sub> = 14,27.
+                  A distância de md a <span class="v">q</span><sub>3</sub> (4,1) é maior que de
+                  <span class="v">q</span><sub>1</sub> a md (2,65): a metade de cima é mais espalhada,
+                  uma <strong>assimetria à direita</strong> — a mesma que deixou a média acima da mediana.
+                </p>
+              </li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 09 ============ -->
+    <section id="boxplot">
+      <div class="wrap">
+        <div class="slide" data-sec="§ 09 · Boxplot e discrepantes">
+          <div class="sec-head">
+            <span class="n">§ 09</span>
+            <h2>Boxplot e valores discrepantes</h2>
+            <span class="sub">Cinco números e uma regra para outliers</span>
+          </div>
+          <p>Um recurso muito útil na análise de quantis é o <i>boxplot</i>. Sua anatomia:</p>
+          <figure>
+            <svg class="anat" viewBox="0 0 660 210" role="img" aria-label="Anatomia de um boxplot: caixa de q1 a q3 com a mediana, bigodes até os valores extremos dentro dos limites, limites inferior e superior tracejados, e um ponto discrepante além do limite superior">
+              <line class="ax" x1="30" y1="150" x2="640" y2="150"/>
+              <line class="lim" x1="70" y1="40" x2="70" y2="150"/>
+              <line class="lim" x1="560" y1="40" x2="560" y2="150"/>
+              <text x="70" y="32" text-anchor="middle" class="lbl-a">LI = q₁ − 1,5 DI</text>
+              <text x="560" y="32" text-anchor="middle" class="lbl-a">LS = q₃ + 1,5 DI</text>
+              <line class="wh" x1="120" y1="95" x2="240" y2="95"/>
+              <line class="wh" x1="120" y1="80" x2="120" y2="110"/>
+              <line class="wh" x1="390" y1="95" x2="520" y2="95"/>
+              <line class="wh" x1="520" y1="80" x2="520" y2="110"/>
+              <rect class="bx" x="240" y="70" width="150" height="50"/>
+              <line class="md" x1="300" y1="70" x2="300" y2="120"/>
+              <circle class="out" cx="605" cy="95" r="5"/>
+              <circle class="pt" cx="130" cy="140" r="2.5"/><circle class="pt" cx="170" cy="140" r="2.5"/><circle class="pt" cx="205" cy="140" r="2.5"/><circle class="pt" cx="250" cy="140" r="2.5"/><circle class="pt" cx="275" cy="140" r="2.5"/><circle class="pt" cx="292" cy="140" r="2.5"/><circle class="pt" cx="310" cy="140" r="2.5"/><circle class="pt" cx="345" cy="140" r="2.5"/><circle class="pt" cx="380" cy="140" r="2.5"/><circle class="pt" cx="440" cy="140" r="2.5"/><circle class="pt" cx="520" cy="140" r="2.5"/><circle class="pt" cx="120" cy="140" r="2.5"/>
+              <text x="240" y="170" text-anchor="middle" class="lbl-e">q₁</text>
+              <text x="300" y="170" text-anchor="middle" class="lbl-e">md</text>
+              <text x="390" y="170" text-anchor="middle" class="lbl-e">q₃</text>
+              <text x="120" y="170" text-anchor="middle">menor valor ≥ LI</text>
+              <text x="520" y="170" text-anchor="middle">maior valor ≤ LS</text>
+              <text x="605" y="122" text-anchor="middle" class="lbl-a">discrepante</text>
+              <path class="brace" d="M240 62 Q240 52 250 52 L305 52 Q315 52 315 44 Q315 52 325 52 L380 52 Q390 52 390 62"/>
+              <text x="315" y="38" text-anchor="middle" class="lbl-t">DI = q₃ − q₁</text>
+              <text x="180" y="88" text-anchor="middle">bigode</text>
+              <text x="455" y="88" text-anchor="middle">bigode</text>
+              <text x="315" y="200" text-anchor="middle">metade central dos dados dentro da caixa</text>
+            </svg>
+            <figcaption>Os pontos cinzas embaixo são os dados; o boxplot resume todos eles em cinco números e marca à parte o que fugir da regra.</figcaption>
+          </figure>
+          <div class="defn">
+            <span class="lab">A regra dos limites</span>
+            <ul>
+              <li><strong>DI</strong> é a distância interquartil: DI = <span class="v">q</span><sub>3</sub> − <span class="v">q</span><sub>1</sub></li>
+              <li>Limite superior: LS = <span class="v">q</span><sub>3</sub> + 1,5 DI</li>
+              <li>Limite inferior: LI = <span class="v">q</span><sub>1</sub> − 1,5 DI</li>
+              <li>O que estiver acima de LS ou abaixo de LI é um <strong>valor discrepante</strong> (<i>outlier</i>), marcado como ponto isolado. Os bigodes vão até o último dado que ainda está dentro dos limites.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 09 · Boxplot e discrepantes">
+          <div class="demo">
+            <div class="demo-head">
+              <span class="t">Boxplots dos salários da Companhia MB</span>
+              <span class="h">compare grupos · crie um discrepante</span>
+            </div>
+            <div class="demo-body">
+              <div class="ctl">
+                <div class="seg" id="bxGrupo">
+                  <button type="button" data-k="todos" aria-pressed="true">Todos</button>
+                  <button type="button" data-k="instr" aria-pressed="false">Por instrução</button>
+                  <button type="button" data-k="civil" aria-pressed="false">Por estado civil</button>
+                  <button type="button" data-k="reg" aria-pressed="false">Por região</button>
+                </div>
+                <button class="b" type="button" id="bxPts" aria-pressed="true">Pontos: sim</button>
+              </div>
+              <div class="sliders">
+                <div class="sld">
+                  <label for="bxSal">salário do nº 36</label>
+                  <input type="range" id="bxSal" min="23.3" max="45" step="0.1" value="23.3">
+                  <output id="oBxSal">23,30</output>
+                </div>
+              </div>
+              <canvas class="plot tall" id="bxCanvas" aria-label="Boxplots horizontais dos salários, para todos ou separados por grupo"></canvas>
+              <div class="legend"><span class="l-acum">caixa, mediana e dados</span><span class="l-dens">média (losango)</span><span class="l-neg" style="color:var(--alerta)">limites e discrepantes</span></div>
+              <div class="readout" id="bxRead"></div>
+            </div>
+          </div>
+          <p style="font-size:.95rem; color:var(--ink-soft)">
+            Com os dados originais não há discrepante: LS ≈ 24,40 fica logo acima do maior salário
+            (23,30). Leve o nº 36 além disso e ele vira um ponto isolado — e a caixa nem se mexe.
+            Por instrução, o boxplot mostra numa só figura o que a tabela levaria parágrafos para dizer:
+            o salário cresce com a escolaridade, e o grupo do superior tem a maior mediana.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 10 ============ -->
+    <section id="software">
+      <div class="wrap">
+        <div class="slide" data-sec="§ 10 · describe() e summary()">
+          <div class="sec-head">
+            <span class="n">§ 10</span>
+            <h2>Na prática: describe() e summary()</h2>
+            <span class="sub">O resumo de cinco números, pronto em uma linha</span>
+          </div>
+          <p>
+            Como referências práticas, temos o
+            <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.describe.html"><code>describe()</code> do Pandas</a>
+            e o <a href="https://www.statology.org/summary-function-in-r/"><code>summary()</code> do R</a>.
+          </p>
+          <div class="two">
+            <div>
+              <pre class="code"><span class="c"># Python</span>
+import pandas as pd
+mb = pd.read_csv("companhiamb.csv")
+mb["salario"].describe()
+
+count    36.000000
+mean     11.122222
+std       4.587458
+min       4.000000
+25%       7.552500
+50%      10.165000
+75%      14.060000
+max      23.300000</pre>
+            </div>
+            <div>
+              <pre class="code"><span class="c"># R</span>
+mb &lt;- read.csv("companhiamb.csv")
+summary(mb$salario)
+
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.
+  4.000   7.553  10.165  11.122  14.060  23.300
+
+sd(mb$salario)
+[1] 4.587458</pre>
+            </div>
+          </div>
+          <div class="note problema">
+            <span class="lab">Por que os números não batem com os nossos?</span>
+            <p>
+              <strong>Desvio padrão:</strong> Pandas e R dividem por <span class="v">n</span> − 1 e dão 4,587;
+              a nossa definição (÷ <span class="v">n</span>) dá 4,523. Para <span class="v">n</span> = 36 a
+              diferença é pequena; para amostras pequenas, não.
+            </p>
+            <p>
+              <strong>Quartis:</strong> os dois usam outra regra de interpolação,
+              <span class="v">i</span> = (<span class="v">n</span> − 1)<span class="v">p</span> + 1, e dão
+              <span class="v">q</span><sub>1</sub> = 7,5525 e <span class="v">q</span><sub>3</sub> = 14,06 contra os nossos 7,515 e 14,27.
+              Existem pelo menos nove definições de quantil em uso (o R tem todas, em
+              <code>quantile(x, type = 1..9)</code>); todas concordam quando <span class="v">n</span> é grande.
+              Num relatório, diga qual usou.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 11 ============ -->
+    <section id="resumo">
+      <div class="wrap">
+        <div class="slide" data-sec="§ 11 · Resumo">
+          <div class="sec-head">
+            <span class="n">§ 11</span>
+            <h2>Resumo, com a Companhia MB</h2>
+            <span class="sub">Cada medida, sua contraparte em probabilidade e o valor nos salários</span>
+          </div>
+          <div class="tbl-scroll">
+            <table class="tri">
+              <thead>
+                <tr><th>Medida</th><th>Na amostra</th><th>Paralelo</th><th>Salários (×SM)</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Frequência relativa</td><td><span class="v">f<sub>i</sub></span> = <span class="v">n<sub>i</sub></span>/<span class="v">n</span></td><td><span class="v">P</span>(<span class="v">X</span> = <span class="v">x</span>)</td><td class="num">8 ⊢ 12: 33,3%</td></tr>
+                <tr><td>Média</td><td>∑ <span class="v">x<sub>i</sub></span> / <span class="v">n</span></td><td><span class="v">E</span>{<span class="v">X</span>}</td><td class="num dens">11,12</td></tr>
+                <tr><td>Moda</td><td>valor (ou classe) mais frequente</td><td>máximo de <span class="v">f</span>(<span class="v">x</span>)</td><td class="num">classe 8 ⊢ 12</td></tr>
+                <tr><td>Mediana</td><td>centro da série ordenada</td><td><span class="v">F</span>(<span class="v">x</span>) = 0,5</td><td class="num acum">10,165</td></tr>
+                <tr><td>Variância / dp</td><td>∑ (<span class="v">x<sub>i</sub></span> − <span class="v">x̄</span>)² / <span class="v">n</span></td><td><span class="v">E</span>{(<span class="v">X</span> − <span class="v">μ</span>)²}</td><td class="num dens">20,46 / 4,52</td></tr>
+                <tr><td>Quartis</td><td>interpolação em (<span class="v">i</span> − 0,5)/<span class="v">n</span></td><td><span class="v">F</span>(<span class="v">x</span>) = <span class="v">p</span></td><td class="num acum">7,515 · 10,165 · 14,27</td></tr>
+                <tr><td>Limites do boxplot</td><td><span class="v">q</span><sub>1</sub> − 1,5 DI, <span class="v">q</span><sub>3</sub> + 1,5 DI</td><td>—</td><td class="num">−2,62 e 24,40: sem discrepantes</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="note">
+            <span class="lab">A ideia que atravessa tudo</span>
+            <p>
+              Toda medida desta aula é uma medida de probabilidade aplicada à <strong>distribuição
+              empírica</strong>, aquela que dá peso 1/<span class="v">n</span> a cada observação.
+              Média e variância respondem a todos os valores, inclusive aos extremos; mediana e
+              quartis respondem só à ordem. Olhe as duas famílias juntas, e desenhe os dados antes de
+              resumi-los.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div class="hud" id="hud">
+  <span class="bar" id="hudBar"></span>
+  <span class="where" id="hudWhere"></span>
+  <span class="count" id="hudCount"></span>
+  <span class="sep"></span>
+  <button type="button" id="hudZoomOut" aria-label="Diminuir fonte">A−</button>
+  <span class="zoom" id="hudZoom">100%</span>
+  <button type="button" id="hudZoomIn" aria-label="Aumentar fonte">A+</button>
+  <span class="sep"></span>
+  <button type="button" id="hudPrev" aria-label="Slide anterior">←</button>
+  <button type="button" id="hudNext" aria-label="Próximo slide">→</button>
+  <button type="button" id="hudExit">Sair</button>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var root = document.documentElement;
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var MONO = 'ui-monospace, "SF Mono", Menlo, Consolas, monospace';
+
+  function css(n) { return getComputedStyle(root).getPropertyValue(n).trim(); }
+  function dn(x, n) { return x.toFixed(n).replace(".", ",").replace("-", "−"); }
+  function d2(x) { return dn(x, 2); }
+  function d4(x) { return dn(x, 4); }
+  function pct(v, n) { return dn(v * 100, n == null ? 2 : n) + " %"; }
+  var SUP = { "-": "⁻", "0": "⁰", "1": "¹", "2": "²", "3": "³", "4": "⁴", "5": "⁵", "6": "⁶", "7": "⁷", "8": "⁸", "9": "⁹" };
+  function sci(v, n) {
+    var s = v.toExponential(n).split("e");
+    return s[0].replace(".", ",") + "·10" + s[1].replace("+", "").split("").map(function (c) { return SUP[c]; }).join("");
+  }
+  function $(id) { return document.getElementById(id); }
+  function txt(id, v) { var e = $(id); if (e) e.textContent = v; }
+
+  /* ---------------- matemática ---------------- */
+  /* erf por Abramowitz & Stegun 7.1.26 (erro < 1,5e-7), de sobra para 4 casas */
+  function erf(x) {
+    var s = x < 0 ? -1 : 1; x = Math.abs(x);
+    var t = 1 / (1 + 0.3275911 * x);
+    var y = 1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-x * x);
+    return s * y;
+  }
+  function Phi(z) { return 0.5 * (1 + erf(z / Math.SQRT2)); }
+  function npdf(x, m, s) { var z = (x - m) / s; return Math.exp(-0.5 * z * z) / (s * Math.sqrt(2 * Math.PI)); }
+  function gauss() {
+    var u = 0, v = 0;
+    while (u === 0) u = Math.random();
+    v = Math.random();
+    return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+  }
+
+  var LNF = [0];
+  (function () { for (var i = 1; i <= 400; i++) LNF[i] = LNF[i - 1] + Math.log(i); })();
+  function lnComb(n, k) { return (k < 0 || k > n) ? -Infinity : LNF[n] - LNF[k] - LNF[n - k]; }
+
+  function wireSeg(id, cb) {
+    var el = $(id);
+    if (!el) return;
+    el.addEventListener("click", function (ev) {
+      var b = ev.target.closest("button[data-k]");
+      if (!b) return;
+      Array.prototype.forEach.call(el.querySelectorAll("button[data-k]"), function (x) {
+        x.setAttribute("aria-pressed", String(x === b));
+      });
+      cb(b.getAttribute("data-k"));
+    });
+  }
+
+  /* Devolve null quando o canvas está sem caixa de layout (slide oculto):
+     sem isso o buffer encolheria para 1px e o CSS o esticaria depois. */
+  function fit(canvas) {
+    if (!canvas) return null;
+    var r = canvas.getBoundingClientRect();
+    if (r.width < 2 || r.height < 2) return null;
+    var dpr = window.devicePixelRatio || 1;
+    canvas.width = Math.round(r.width * dpr);
+    canvas.height = Math.round(r.height * dpr);
+    var ctx = canvas.getContext("2d");
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, r.width, r.height);
+    return { ctx: ctx, w: r.width, h: r.height };
+  }
+
+  /* ---------------- eixos ---------------- */
+  function niceTicks(a, b, n) {
+    var span = b - a, raw = span / n;
+    var step = Math.pow(10, Math.floor(Math.log(raw) / Math.LN10));
+    var e = raw / step;
+    if (e >= 7.5) step *= 10; else if (e >= 3.5) step *= 5; else if (e >= 1.5) step *= 2;
+    var vals = [];
+    for (var v = Math.ceil(a / step - 1e-9) * step; v <= b + step * 1e-6; v += step) vals.push(+v.toFixed(10));
+    return { vals: vals, step: step };
+  }
+  function tickFmt(v, step) {
+    var d = Math.max(0, -Math.floor(Math.log(step) / Math.LN10 + 1e-9));
+    return dn(v, d);
+  }
+
+  /* Um painel cartesiano dentro do canvas. o: {x0,x1,y0,y1, top, h, xticks, yticks, xfmt, padL, xlabel, ylabel} */
+  function panel(fr, o) {
+    var ctx = fr.ctx, W = fr.w;
+    var L = o.padL != null ? o.padL : 46, R = 14, T = o.padT != null ? o.padT : 14, B = 22;
+    var top = o.top || 0, H = o.h || fr.h;
+    function X(v) { return L + (v - o.x0) / (o.x1 - o.x0) * (W - L - R); }
+    function Y(v) { return top + H - B - (v - o.y0) / (o.y1 - o.y0) * (H - T - B); }
+    function Xi(px) { return o.x0 + (px - L) / (W - L - R) * (o.x1 - o.x0); }
+    var base = Y(Math.max(o.y0, 0));
+
+    ctx.font = "11px " + MONO;
+    var yt = o.yticks === false ? null : niceTicks(o.y0, o.y1, 3);
+    if (yt) {
+      yt.vals.forEach(function (v) {
+        if (v === 0) return;
+        ctx.strokeStyle = css("--rule-soft"); ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(L, Y(v)); ctx.lineTo(W - R, Y(v)); ctx.stroke();
+        ctx.fillStyle = css("--ink-mute"); ctx.textAlign = "right";
+        ctx.fillText(tickFmt(v, yt.step), L - 6, Y(v) + 4);
+      });
+    }
+    ctx.strokeStyle = css("--rule"); ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(L, top + T); ctx.lineTo(L, Y(o.y0)); ctx.lineTo(W - R, Y(o.y0));
+    ctx.stroke();
+
+    var xt = o.xticks || niceTicks(o.x0, o.x1, W > 520 ? 8 : 5);
+    ctx.fillStyle = css("--ink-mute"); ctx.textAlign = "center";
+    xt.vals.forEach(function (v, i) {
+      var px = X(v);
+      if (px < L - 1 || px > W - R + 1) return;
+      ctx.strokeStyle = css("--rule"); ctx.beginPath(); ctx.moveTo(px, Y(o.y0)); ctx.lineTo(px, Y(o.y0) + 4); ctx.stroke();
+      var lab = xt.labels ? xt.labels[i] : (o.xfmt ? o.xfmt(v) : tickFmt(v, xt.step));
+      ctx.fillText(lab, px, Y(o.y0) + 15);
+    });
+    if (o.ylabel) { ctx.textAlign = "left"; ctx.fillText(o.ylabel, L + 6, top + T + 2); }
+    if (o.xlabel) { ctx.textAlign = "right"; ctx.fillText(o.xlabel, W - R, Y(o.y0) - 6); }
+
+    function clip() {
+      ctx.save();
+      ctx.beginPath(); ctx.rect(L, top + 2, W - L - R, Y(o.y0) - top - 2); ctx.clip();
+    }
+
+    return {
+      ctx: ctx, X: X, Y: Y, L: L, R: R, W: W, top: top, T: T, base: base,
+      curve: function (fn, color, lw, dash, a, b) {
+        var pa = a == null ? L : Math.max(L, X(a)), pb = b == null ? W - R : Math.min(W - R, X(b));
+        clip();
+        ctx.strokeStyle = color; ctx.lineWidth = lw || 2; ctx.setLineDash(dash || []);
+        ctx.beginPath();
+        var pen = false;
+        for (var px = pa; px <= pb + .01; px += 1) {
+          var y = fn(Xi(px));
+          if (!isFinite(y)) { pen = false; continue; }
+          var py = Y(y);
+          if (!pen) { ctx.moveTo(px, py); pen = true; } else ctx.lineTo(px, py);
+        }
+        ctx.stroke(); ctx.setLineDash([]);
+        ctx.restore();
+      },
+      area: function (fn, a, b, color, alpha) {
+        var pa = Math.max(L, X(a)), pb = Math.min(W - R, X(b));
+        if (pb < pa) return;
+        clip();
+        ctx.fillStyle = color; ctx.globalAlpha = alpha == null ? .3 : alpha;
+        if (pb - pa < 1.5) {
+          ctx.fillRect(pa - .75, Y(fn((a + b) / 2)), 1.5, base - Y(fn((a + b) / 2)));
+        } else {
+          ctx.beginPath(); ctx.moveTo(pa, base);
+          for (var px = pa; px <= pb; px += 1) {
+            var y = fn(Xi(px)); ctx.lineTo(px, Y(isFinite(y) ? y : 0));
+          }
+          var yb = fn(b); ctx.lineTo(pb, Y(isFinite(yb) ? yb : 0));
+          ctx.lineTo(pb, base); ctx.closePath(); ctx.fill();
+        }
+        ctx.globalAlpha = 1;
+        ctx.restore();
+      },
+      vline: function (x, color, dash, lw, y) {
+        var px = X(x);
+        if (px < L - 1 || px > W - R + 1) return;
+        ctx.strokeStyle = color; ctx.lineWidth = lw || 1; ctx.setLineDash(dash || []);
+        ctx.beginPath(); ctx.moveTo(px, y == null ? top + T : Y(y)); ctx.lineTo(px, base); ctx.stroke();
+        ctx.setLineDash([]);
+      },
+      dot: function (x, y, color, r) {
+        ctx.fillStyle = color; ctx.beginPath(); ctx.arc(X(x), Y(y), r || 3.5, 0, Math.PI * 2); ctx.fill();
+      },
+      label: function (s, x, y, color, align, dy) {
+        ctx.font = "12px " + MONO; ctx.textAlign = align || "center";
+        var px = X(x), py = Y(y) + (dy || 0);
+        var lw = ctx.measureText(s).width;
+        var lx = align === "left" ? px : align === "right" ? px - lw : px - lw / 2;
+        ctx.fillStyle = css("--surface"); ctx.globalAlpha = .85;
+        ctx.fillRect(lx - 3, py - 11, lw + 6, 15);
+        ctx.globalAlpha = 1; ctx.fillStyle = color; ctx.fillText(s, px, py);
+      }
+    };
+  }
+
+  function bars(P, xs, hs, w, color, alpha) {
+    var ctx = P.ctx;
+    ctx.fillStyle = color; ctx.globalAlpha = alpha == null ? 1 : alpha;
+    xs.forEach(function (x, i) {
+      var pa = P.X(x - w / 2), pb = P.X(x + w / 2);
+      var py = P.Y(hs[i]);
+      ctx.fillRect(pa + .5, py, Math.max(1, pb - pa - 1), P.base - py);
+    });
+    ctx.globalAlpha = 1;
+  }
+
+  var draws = [];
+  function reg(fn) { draws.push(fn); return fn; }
+  function redrawAll() { draws.forEach(function (d) { d(); }); }
+
+  /* ---------------- tema ---------------- */
+  var themeBtn = $("themeBtn");
+  var modes = ["auto", "light", "dark"];
+  var labels = { auto: "Tema: automático", light: "Tema: claro", dark: "Tema: escuro" };
+  var mi = 0;
+  themeBtn.addEventListener("click", function () {
+    mi = (mi + 1) % modes.length;
+    var m = modes[mi];
+    if (m === "auto") root.removeAttribute("data-theme");
+    else root.setAttribute("data-theme", m);
+    themeBtn.textContent = labels[m];
+    redrawAll();
+  });
+
+  /* ---------------- os dados: Companhia MB (Bussab & Morettin, Tab. 2.1) ----------------
+     [nº, estado civil, instrução, nº de filhos (null = não se aplica), salário (×SM),
+      idade (anos), idade (meses), região] */
+  var MB = [
+    [1, "solteiro", "fundamental", null, 4.00, 26, 3, "interior"],
+    [2, "casado", "fundamental", 1, 4.56, 32, 10, "capital"],
+    [3, "casado", "fundamental", 2, 5.25, 36, 5, "capital"],
+    [4, "solteiro", "médio", null, 5.73, 20, 10, "outra"],
+    [5, "solteiro", "fundamental", null, 6.26, 40, 7, "outra"],
+    [6, "casado", "fundamental", 0, 6.66, 28, 0, "interior"],
+    [7, "solteiro", "fundamental", null, 6.86, 41, 0, "interior"],
+    [8, "solteiro", "fundamental", null, 7.39, 43, 4, "capital"],
+    [9, "casado", "médio", 1, 7.59, 34, 10, "capital"],
+    [10, "solteiro", "médio", null, 7.44, 23, 6, "outra"],
+    [11, "casado", "médio", 2, 8.12, 33, 6, "interior"],
+    [12, "solteiro", "fundamental", null, 8.46, 27, 11, "capital"],
+    [13, "solteiro", "médio", null, 8.74, 37, 5, "outra"],
+    [14, "casado", "fundamental", 3, 8.95, 44, 2, "outra"],
+    [15, "casado", "médio", 0, 9.13, 30, 5, "interior"],
+    [16, "solteiro", "médio", null, 9.35, 38, 8, "outra"],
+    [17, "casado", "médio", 1, 9.77, 31, 7, "capital"],
+    [18, "casado", "fundamental", 2, 9.80, 39, 7, "outra"],
+    [19, "solteiro", "superior", null, 10.53, 25, 8, "interior"],
+    [20, "solteiro", "médio", null, 10.76, 37, 4, "interior"],
+    [21, "casado", "médio", 1, 11.06, 30, 9, "outra"],
+    [22, "solteiro", "médio", null, 11.59, 34, 2, "capital"],
+    [23, "solteiro", "fundamental", null, 12.00, 41, 0, "outra"],
+    [24, "casado", "superior", 0, 12.79, 26, 1, "outra"],
+    [25, "casado", "médio", 2, 13.23, 32, 5, "interior"],
+    [26, "casado", "médio", 2, 13.60, 35, 0, "outra"],
+    [27, "solteiro", "fundamental", null, 13.85, 46, 7, "outra"],
+    [28, "casado", "médio", 0, 14.69, 29, 8, "interior"],
+    [29, "casado", "médio", 5, 14.71, 40, 6, "interior"],
+    [30, "casado", "médio", 2, 15.99, 35, 10, "capital"],
+    [31, "solteiro", "superior", null, 16.22, 31, 5, "outra"],
+    [32, "casado", "médio", 1, 16.61, 36, 4, "interior"],
+    [33, "casado", "superior", 3, 17.26, 43, 7, "capital"],
+    [34, "solteiro", "superior", null, 18.75, 33, 7, "capital"],
+    [35, "casado", "médio", 2, 19.40, 48, 11, "capital"],
+    [36, "casado", "superior", 3, 23.30, 42, 2, "interior"]
+  ];
+  var SAL = MB.map(function (r) { return r[4]; });
+  /* d2 sem o viés do toFixed (10,165 é 10,1649999… em ponto flutuante) */
+  function d2(x) { return dn(Math.round(x * 100 + 1e-6) / 100, 2); }
+
+  /* ---------------- estatísticas ---------------- */
+  function sorted(a) { return a.slice().sort(function (x, y) { return x - y; }); }
+  function mean(a) { var s = 0; a.forEach(function (v) { s += v; }); return s / a.length; }
+  function varN(a) { var m = mean(a), s = 0; a.forEach(function (v) { s += (v - m) * (v - m); }); return s / a.length; }
+  /* quantil do Bussab: x(i) ocupa p_i = (i − 0,5)/n; interpolação linear entre vizinhos */
+  function quant(s, p) {
+    var n = s.length;
+    if (n === 1) return s[0];
+    var pos = n * p + 0.5;
+    if (pos <= 1) return s[0];
+    if (pos >= n) return s[n - 1];
+    var i = Math.floor(pos), fr = pos - i;
+    return s[i - 1] + fr * (s[i] - s[i - 1]);
+  }
+  function caixa(a) {
+    var s = sorted(a);
+    var q1 = quant(s, .25), q2 = quant(s, .5), q3 = quant(s, .75), di = q3 - q1;
+    var li = q1 - 1.5 * di, ls = q3 + 1.5 * di;
+    var dentro = s.filter(function (v) { return v >= li && v <= ls; });
+    return {
+      s: s, q1: q1, md: q2, q3: q3, di: di, li: li, ls: ls, m: mean(s),
+      lo: dentro[0], hi: dentro[dentro.length - 1],
+      out: s.filter(function (v) { return v < li || v > ls; })
+    };
+  }
+
+  /* gerador com semente, para a população e o jitter ficarem estáveis entre redesenhos */
+  function rng(seed) {
+    return function () {
+      seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+      var t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+
+  /* pontos empilhados: cada valor vira um ponto na pilha da sua faixa de largura w */
+  function pilha(vals, w) {
+    var cont = {};
+    return vals.map(function (v) {
+      var k = Math.floor(v / w + 1e-9);
+      cont[k] = (cont[k] || 0) + 1;
+      return { x: v, k: cont[k] };
+    });
+  }
+
+  /* ---------------- capa ---------------- */
+  var heroT0 = null;
+  var drawHero = reg(function () {
+    var fr = fit($("heroCanvas"));
+    if (!fr) return;
+    var ctx = fr.ctx, W = fr.w, H = fr.h;
+    var L = 16, R = 16, x0 = 2, x1 = 26;
+    function X(v) { return L + (v - x0) / (x1 - x0) * (W - L - R); }
+    var base = H - 22, r = Math.max(2.5, Math.min(5.5, (H - 40) / 22));
+    var t = heroT0 == null ? 1 : Math.min(1, (performance.now() - heroT0) / 1400);
+    var pts = pilha(sorted(SAL), 1);
+    ctx.font = "11px " + MONO; ctx.fillStyle = css("--ink-mute"); ctx.textAlign = "center";
+    ctx.strokeStyle = css("--rule"); ctx.beginPath(); ctx.moveTo(L, base); ctx.lineTo(W - R, base); ctx.stroke();
+    for (var v = 4; v <= 24; v += 4) {
+      ctx.beginPath(); ctx.moveTo(X(v), base); ctx.lineTo(X(v), base + 4); ctx.stroke();
+      ctx.fillText(String(v), X(v), base + 16);
+    }
+    var col = css("--ink-mute");
+    pts.forEach(function (p, i) {
+      var ti = Math.max(0, Math.min(1, t * 1.6 - i / pts.length * .6));
+      if (ti <= 0) return;
+      var e = 1 - Math.pow(1 - ti, 3);
+      var yAlvo = base - r - 1 - (p.k - 1) * (2 * r + 1.5);
+      var y = 8 + (yAlvo - 8) * e;
+      ctx.globalAlpha = .35 + .5 * e;
+      ctx.fillStyle = col; ctx.beginPath();
+      ctx.arc(X(Math.floor(p.x) + .5), y, r, 0, Math.PI * 2); ctx.fill();
+    });
+    ctx.globalAlpha = 1;
+    if (t >= .8) {
+      ctx.globalAlpha = (t - .8) / .2;
+      var m = mean(SAL), md = quant(sorted(SAL), .5);
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = css("--teorico"); ctx.beginPath(); ctx.moveTo(X(m), 6); ctx.lineTo(X(m), base); ctx.stroke();
+      ctx.strokeStyle = css("--empirico"); ctx.setLineDash([4, 3]); ctx.beginPath(); ctx.moveTo(X(md), 6); ctx.lineTo(X(md), base); ctx.stroke();
+      ctx.setLineDash([]); ctx.globalAlpha = 1;
+    }
+  });
+  function heroTick() {
+    if (reduce) { heroT0 = null; drawHero(); return; }
+    heroT0 = performance.now();
+    (function loop() {
+      drawHero();
+      if (performance.now() - heroT0 < 1400) requestAnimationFrame(loop);
+      else { heroT0 = null; drawHero(); }
+    })();
+  }
+
+  /* ---------------- § 01 população e amostra ---------------- */
+  var POP = (function () {
+    var r = rng(20261104), out = [];
+    function g() { var u = 0; while (u === 0) u = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * r()); }
+    for (var i = 0; i < 600; i++) out.push({ x: Math.exp(2.317 + 0.4015 * g()), j: r() });
+    return out;
+  })();
+  var POPMU = mean(POP.map(function (p) { return p.x; }));
+  var amostra = null, histXb = [];
+  function sortearAmostra() {
+    var idx = POP.map(function (_, i) { return i; });
+    for (var i = idx.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = idx[i]; idx[i] = idx[j]; idx[j] = t; }
+    amostra = {};
+    idx.slice(0, 36).forEach(function (k) { amostra[k] = true; });
+    var xb = mean(idx.slice(0, 36).map(function (k) { return POP[k].x; }));
+    histXb.unshift(xb); if (histXb.length > 8) histXb.pop();
+    drawPop();
+  }
+  var drawPop = reg(function () {
+    var fr = fit($("popCanvas"));
+    txt("popMu", d2(POPMU));
+    txt("popXb", histXb.length ? d2(histXb[0]) : "—");
+    $("popHist").innerHTML = histXb.length
+      ? "x̄ dos últimos sorteios: " + histXb.map(function (v, i) { return i === 0 ? "<b>" + d2(v) + "</b>" : d2(v); }).join(" · ")
+      : "Sorteie uma amostra para ver sua média.";
+    if (!fr) return;
+    var P = panel(fr, { x0: 0, x1: 40, y0: 0, y1: 1, yticks: false, padL: 14 });
+    var ctx = P.ctx, yTop = P.top + P.T + 4, yBot = P.base - 6;
+    POP.forEach(function (p, i) {
+      if (p.x > 40) return;
+      var on = amostra && amostra[i];
+      if (on) return;
+      ctx.fillStyle = css("--ink-mute"); ctx.globalAlpha = amostra ? .25 : .45;
+      ctx.beginPath(); ctx.arc(P.X(p.x), yTop + p.j * (yBot - yTop), 2.2, 0, Math.PI * 2); ctx.fill();
+    });
+    ctx.globalAlpha = 1;
+    if (amostra) {
+      POP.forEach(function (p, i) {
+        if (!amostra[i] || p.x > 40) return;
+        ctx.fillStyle = css("--empirico");
+        ctx.beginPath(); ctx.arc(P.X(p.x), yTop + p.j * (yBot - yTop), 4, 0, Math.PI * 2); ctx.fill();
+      });
+      P.vline(histXb[0], css("--empirico"), null, 2.2, 1);
+    }
+    P.vline(POPMU, css("--teorico"), [5, 4], 2, 1);
+  });
+  $("popSortear").addEventListener("click", sortearAmostra);
+  $("popLimpar").addEventListener("click", function () { histXb = []; amostra = null; drawPop(); });
+
+  /* ---------------- § 02 classificação ---------------- */
+  var QUIZ = [
+    { nm: "Estado civil", ex: "solteiro, casado", r: "nom", fb: "Nominal: categorias sem ordem — “casado” não é mais nem menos que “solteiro”." },
+    { nm: "Grau de instrução", ex: "fundamental, médio, superior", r: "ord", fb: "Ordinal: é um atributo (qualitativa), mas os níveis têm ordem natural. Não é quantitativa: “superior − médio” não é um número." },
+    { nm: "Nº de filhos", ex: "0, 1, 2, 3, 5", r: "disc", fb: "Discreta: resultado de uma contagem, só valores inteiros." },
+    { nm: "Salário", ex: "4,00 … 23,30 (×SM)", r: "cont", fb: "Contínua: uma medição, aceita qualquer valor real num intervalo (o arredondamento em centavos não muda a natureza)." },
+    { nm: "Idade", ex: "20a 10m … 48a 11m", r: "cont", fb: "Contínua: o tempo de vida é medido; anos e meses são só a precisão do registro." },
+    { nm: "Região de procedência", ex: "capital, interior, outra", r: "nom", fb: "Nominal: rótulos sem hierarquia entre si." }
+  ];
+  var QOPT = [["nom", "Nominal"], ["ord", "Ordinal"], ["disc", "Discreta"], ["cont", "Contínua"]];
+  (function () {
+    var box = $("quiz"), acertos = {};
+    QUIZ.forEach(function (q, i) {
+      var row = document.createElement("div"); row.className = "qrow";
+      row.innerHTML = '<div class="nm">' + q.nm + "<small>" + q.ex + "</small></div>" +
+        '<div class="seg">' + QOPT.map(function (o) { return '<button type="button" data-k="' + o[0] + '" aria-pressed="false">' + o[1] + "</button>"; }).join("") + "</div>" +
+        '<div class="fb" aria-live="polite"></div>';
+      box.appendChild(row);
+      var fb = row.querySelector(".fb");
+      row.querySelector(".seg").addEventListener("click", function (ev) {
+        var b = ev.target.closest("button[data-k]"); if (!b) return;
+        var k = b.getAttribute("data-k"), ok = k === q.r;
+        Array.prototype.forEach.call(row.querySelectorAll(".seg button"), function (x) {
+          x.classList.remove("ok", "no"); x.setAttribute("aria-pressed", String(x === b));
+        });
+        b.classList.add(ok ? "ok" : "no");
+        fb.className = "fb " + (ok ? "ok" : "no");
+        fb.textContent = ok ? "✓ " + q.fb : "✗ Ainda não. Dica: " + (k === "nom" || k === "ord"
+          ? "pergunte se a variável é um número que faz sentido somar ou subtrair."
+          : "pergunte se os valores são rótulos ou números de verdade.");
+        acertos[i] = ok;
+        var c = Object.keys(acertos).filter(function (j) { return acertos[j]; }).length;
+        txt("quizScore", c + " de 6 corretas");
+      });
+    });
+  })();
+
+  /* ---------------- § 03 tabela de dados ---------------- */
+  (function () {
+    var tb = $("tabDados").querySelector("tbody"), ths = $("tabDados").querySelectorAll("thead th");
+    var ORD = { "fundamental": 0, "médio": 1, "superior": 2 };
+    var col = 0, dir = 1;
+    function render() {
+      var rows = MB.slice().sort(function (a, b) {
+        var va = a[col], vb = b[col];
+        if (col === 2) { va = ORD[va]; vb = ORD[vb]; }
+        if (col === 5) { va = a[5] + a[6] / 12; vb = b[5] + b[6] / 12; }
+        if (va == null) va = -1; if (vb == null) vb = -1;
+        if (va < vb) return -dir; if (va > vb) return dir;
+        return a[0] - b[0];
+      });
+      tb.innerHTML = rows.map(function (r) {
+        return "<tr><td class=\"num\">" + r[0] + "</td><td>" + r[1] + "</td><td>" + r[2] + "</td>" +
+          (r[3] == null ? '<td class="num na">—</td>' : '<td class="num">' + r[3] + "</td>") +
+          '<td class="num">' + d2(r[4]) + '</td><td class="num">' + r[5] + "a " + r[6] + "m</td><td>" + r[7] + "</td></tr>";
+      }).join("");
+      Array.prototype.forEach.call(ths, function (th) {
+        var c = +th.getAttribute("data-c");
+        if (c === col) th.setAttribute("aria-sort", dir > 0 ? "ascending" : "descending");
+        else th.removeAttribute("aria-sort");
+      });
+    }
+    Array.prototype.forEach.call(ths, function (th) {
+      th.tabIndex = 0;
+      function go() {
+        var c = +th.getAttribute("data-c");
+        if (c === col) dir = -dir; else { col = c; dir = 1; }
+        render();
+      }
+      th.addEventListener("click", go);
+      th.addEventListener("keydown", function (ev) { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); go(); } });
+    });
+    render();
+  })();
+
+  /* ---------------- § 04 frequências ---------------- */
+  var FQ = {
+    instr: { col: 2, cats: ["fundamental", "médio", "superior"], ordem: true, nome: "Grau de instrução" },
+    civil: { col: 1, cats: ["solteiro", "casado"], ordem: false, nome: "Estado civil" },
+    reg: { col: 7, cats: ["capital", "interior", "outra"], ordem: false, nome: "Região" },
+    filhos: { col: 3, cats: [0, 1, 2, 3, 4, 5], ordem: true, nome: "Nº de filhos" }
+  };
+  var fqVar = "instr", fqTipo = "barras";
+  function fqCores() { return [css("--teorico"), css("--empirico"), css("--alerta"), css("--ink-mute"), css("--ink"), css("--ink-soft")]; }
+  function fqContar() {
+    var v = FQ[fqVar];
+    var vals = MB.map(function (r) { return r[v.col]; }).filter(function (x) { return x != null; });
+    return { v: v, n: vals.length, ni: v.cats.map(function (c) { return vals.filter(function (x) { return x === c; }).length; }) };
+  }
+  var drawFq = reg(function () {
+    var c = fqContar(), v = c.v, n = c.n, cores = fqCores();
+    /* tabela */
+    var acum = 0, h = "<thead><tr><th>" + v.nome + '</th><th><span class="v gr">n<sub>i</sub></span></th><th><span class="v gr">f<sub>i</sub></span></th><th>%</th><th>% acumulada</th></tr></thead><tbody>';
+    c.ni.forEach(function (ni, i) {
+      acum += ni;
+      h += "<tr><td>" + v.cats[i] + '</td><td class="num">' + ni + '</td><td class="num">' + d4(ni / n) + '</td><td class="num">' + d2(100 * ni / n) +
+        '</td><td class="num acum">' + (v.ordem ? d2(100 * acum / n) : "—") + "</td></tr>";
+    });
+    h += '<tr class="tot"><td>Total</td><td class="num">' + n + '</td><td class="num">1,0000</td><td class="num">100,00</td><td class="num"></td></tr></tbody>';
+    $("fqTab").innerHTML = h;
+    var nota = fqVar === "filhos"
+      ? "Só os 20 casados entram (n = 20). O valor 4 tem frequência zero, mas aparece: numa variável discreta, as lacunas também são informação."
+      : (v.ordem ? "Variável ordinal: a acumulada lê-se “até este nível”." : "Variável nominal: a ordem das linhas é arbitrária, então a acumulada não tem significado.");
+    txt("fqNota", nota);
+    $("fqSw").innerHTML = fqTipo === "setores"
+      ? v.cats.map(function (k, i) { return c.ni[i] ? '<span><i style="background:' + cores[i] + '"></i>' + k + "</span>" : ""; }).join("")
+      : "";
+    var fr = fit($("fqCanvas"));
+    if (!fr) return;
+    var ctx = fr.ctx;
+    if (fqTipo === "barras") {
+      var K = v.cats.length, ymax = Math.max.apply(null, c.ni);
+      var P = panel(fr, {
+        x0: -.6, x1: K - .4, y0: 0, y1: ymax * 1.18, ylabel: "nᵢ",
+        xticks: { vals: v.cats.map(function (_, i) { return i; }), labels: v.cats.map(String), step: 1 }
+      });
+      bars(P, v.cats.map(function (_, i) { return i; }), c.ni, .62, css("--teorico"), .85);
+      c.ni.forEach(function (ni, i) { P.label(ni + " (" + dn(100 * ni / n, 1) + "%)", i, ni, css("--ink"), "center", -6); });
+    } else {
+      var cx = fr.w / 2, cy = fr.h / 2, R = Math.min(fr.h / 2 - 12, fr.w / 4);
+      var a = -Math.PI / 2;
+      c.ni.forEach(function (ni, i) {
+        if (!ni) return;
+        var da = ni / n * Math.PI * 2;
+        ctx.fillStyle = cores[i]; ctx.globalAlpha = .85;
+        ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, R, a, a + da); ctx.closePath(); ctx.fill();
+        ctx.globalAlpha = 1; ctx.strokeStyle = css("--surface"); ctx.lineWidth = 2; ctx.stroke();
+        var am = a + da / 2;
+        ctx.font = "12px " + MONO; ctx.fillStyle = css("--ink"); ctx.textAlign = Math.cos(am) >= 0 ? "left" : "right";
+        ctx.fillText(v.cats[i] + " " + dn(100 * ni / n, 1) + "%", cx + Math.cos(am) * (R + 8), cy + Math.sin(am) * (R + 8) + 4);
+        a += da;
+      });
+    }
+  });
+  wireSeg("fqVar", function (k) { fqVar = k; drawFq(); });
+  wireSeg("fqTipo", function (k) { fqTipo = k; drawFq(); });
+
+  /* ---------------- § 05 histograma ---------------- */
+  var hiEsc = "freq";
+  var drawHi = reg(function () {
+    var h = +$("hiH").value, a0 = +$("hiA").value, n = SAL.length;
+    txt("oHiH", dn(h, 1)); txt("oHiA", d2(a0));
+    var K = Math.ceil((Math.max.apply(null, SAL) - a0) / h + 1e-9);
+    if (a0 + K * h <= Math.max.apply(null, SAL)) K++;
+    var ni = []; for (var k = 0; k < K; k++) ni.push(0);
+    SAL.forEach(function (v) { ni[Math.min(K - 1, Math.floor((v - a0) / h + 1e-9))]++; });
+    var hs = ni.map(function (c) { return hiEsc === "dens" ? c / (n * h) : c; });
+    var im = 0; ni.forEach(function (c, i) { if (c > ni[im]) im = i; });
+    var empate = ni.filter(function (c) { return c === ni[im]; }).length > 1;
+    txt("hiK", String(K));
+    txt("hiMod", d2(a0 + im * h) + " ⊢ " + d2(a0 + (im + 1) * h) + (empate ? " (empate)" : ""));
+    txt("hiArea", hiEsc === "dens" ? "1,000" : dn(n * h, 1) + " (= n·h)");
+    var fr = fit($("hiCanvas"));
+    if (!fr) return;
+    var ymax = Math.max.apply(null, hs);
+    var P = panel(fr, { x0: 0, x1: 29, y0: 0, y1: ymax * 1.15, ylabel: hiEsc === "dens" ? "nᵢ / (n·h)" : "nᵢ", xlabel: "salário" });
+    var ctx = P.ctx;
+    hs.forEach(function (y, i) {
+      var xa = P.X(a0 + i * h), xb = P.X(a0 + (i + 1) * h), py = P.Y(y);
+      ctx.fillStyle = css(i === im ? "--teorico" : "--teorico"); ctx.globalAlpha = i === im ? .75 : .4;
+      ctx.fillRect(xa, py, xb - xa, P.base - py);
+      ctx.globalAlpha = 1; ctx.strokeStyle = css("--surface"); ctx.lineWidth = 1; ctx.strokeRect(xa, py, xb - xa, P.base - py);
+      if (ni[i] && xb - xa > 18) P.label(String(ni[i]), a0 + (i + .5) * h, y, css("--ink"), "center", -5);
+    });
+    ctx.strokeStyle = css("--empirico"); ctx.lineWidth = 1.4;
+    SAL.forEach(function (v) { ctx.beginPath(); ctx.moveTo(P.X(v), P.base - 7); ctx.lineTo(P.X(v), P.base); ctx.stroke(); });
+  });
+  ["hiH", "hiA"].forEach(function (id) { $(id).addEventListener("input", drawHi); });
+  wireSeg("hiEsc", function (k) { hiEsc = k; drawHi(); });
+
+  /* pontos empilhados sobre um painel: devolve a altura de cada pilha */
+  function desenhaPilha(P, vals, w, cor, r, destaque) {
+    var ctx = P.ctx;
+    pilha(vals, w).forEach(function (p, i) {
+      var cx = P.X((Math.floor(p.x / w + 1e-9) + .5) * w), cy = P.base - r - 1 - (p.k - 1) * (2 * r + 1);
+      ctx.fillStyle = destaque === i ? css("--alerta") : cor;
+      ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
+    });
+  }
+
+  /* ---------------- § 06 média × mediana ---------------- */
+  var drawEq = reg(function () {
+    var s36 = +$("eqSal").value;
+    txt("oEqSal", d2(s36));
+    var vals = SAL.slice(); vals[35] = s36;
+    var m = mean(vals), md = quant(sorted(vals), .5), soma = 0;
+    vals.forEach(function (v) { soma += v - m; });
+    txt("eqMed", d2(m)); txt("eqMd", dn(md, 3)); txt("eqDif", d2(m - md));
+    txt("eqSoma", dn(Math.abs(soma) < 1e-9 ? 0 : soma, 2));
+    var fr = fit($("eqCanvas"));
+    if (!fr) return;
+    var x1 = Math.max(26, Math.ceil((s36 + 4) / 5) * 5);
+    var w = x1 / 40;
+    var P = panel(fr, { x0: 0, x1: x1, y0: 0, y1: 1, yticks: false, padL: 14 });
+    var ctx = P.ctx, r = Math.max(2.5, Math.min(6, (P.X(w) - P.X(0)) / 2 - .5));
+    desenhaPilha(P, vals, w, css("--empirico"), r, 35);
+    /* fulcro */
+    var fx = P.X(m), fy = P.base;
+    ctx.fillStyle = css("--teorico");
+    ctx.beginPath(); ctx.moveTo(fx, fy + 1); ctx.lineTo(fx - 9, fy + 15); ctx.lineTo(fx + 9, fy + 15); ctx.closePath(); ctx.fill();
+    P.vline(m, css("--teorico"), null, 2, .9);
+    P.label("x̄ " + d2(m), m, .9, css("--teorico"), m > md ? "left" : "right", -4);
+    P.vline(md, css("--empirico"), [5, 4], 2, .75);
+    P.label("md " + d2(md), md, .75, css("--empirico"), m > md ? "right" : "left", -4);
+  });
+  $("eqSal").addEventListener("input", drawEq);
+
+  /* ---------------- § 07 desvios ao quadrado ---------------- */
+  var GR = { A: [3, 4, 5, 6, 7], B: [1, 3, 5, 7, 9], C: [5, 5, 5, 5, 5], D: [3, 5, 5, 7], E: [3, 5, 5, 6, 6] };
+  var dvG = "A";
+  var drawDv = reg(function () {
+    var g = GR[dvG], m = mean(g), S = 0;
+    g.forEach(function (v) { S += (v - m) * (v - m); });
+    txt("dvM", dn(m, 1)); txt("dvS", d2(S)); txt("dvV", d2(S / g.length)); txt("dvD", d2(Math.sqrt(S / g.length)));
+    var fr = fit($("dvCanvas"));
+    if (!fr) return;
+    var P = panel(fr, { x0: 0, x1: 10, y0: 0, y1: 1, yticks: false, padL: 14 });
+    var ctx = P.ctx, u = P.X(1) - P.X(0);
+    /* escala vertical igual à horizontal, limitada pela altura disponível (maior lado possível: 4) */
+    var uy = Math.min(u, (P.base - P.top - P.T - 18) / 4.2);
+    var cont = {};
+    g.forEach(function (v) {
+      var d = v - m;
+      cont[v] = (cont[v] || 0) + 1;
+      if (Math.abs(d) > 1e-9) {
+        var xa = P.X(Math.min(v, m)), side = Math.abs(d);
+        ctx.fillStyle = css("--teorico"); ctx.globalAlpha = .16;
+        ctx.fillRect(xa, P.base - side * uy, side * u, side * uy);
+        ctx.globalAlpha = .9; ctx.strokeStyle = css("--teorico"); ctx.lineWidth = 1.2;
+        ctx.strokeRect(xa, P.base - side * uy, side * u, side * uy);
+        ctx.globalAlpha = 1;
+        if (cont[v] === 1) {
+          ctx.font = "11px " + MONO; ctx.fillStyle = css("--teorico"); ctx.textAlign = "center";
+          var nq = g.filter(function (x) { return x === v; }).length;
+          ctx.fillText(dn(d * d, 0) + (nq > 1 ? " ×" + nq : ""), P.X((v + m) / 2), P.base - side * uy - 5);
+        }
+      }
+    });
+    P.vline(m, css("--teorico"), [5, 4], 1.6);
+    var seen = {};
+    g.forEach(function (v) {
+      seen[v] = (seen[v] || 0) + 1;
+      ctx.fillStyle = css("--empirico");
+      ctx.beginPath(); ctx.arc(P.X(v), P.base + 0 - 5 - (seen[v] - 1) * 9, 4.2, 0, Math.PI * 2); ctx.fill();
+    });
+  });
+  wireSeg("dvGrupo", function (k) { dvG = k; drawDv(); });
+
+  /* ---------------- § 08 quantis e distribuição empírica ---------------- */
+  var SS = sorted(SAL);
+  var drawQ = reg(function () {
+    var p = +$("qP").value, n = SS.length;
+    txt("oQP", d2(p));
+    var q = quant(SS, p), pos = n * p + .5;
+    txt("qQ", dn(q, 3));
+    txt("qPos", pos <= 1 ? "antes de x₍₁₎" : pos >= n ? "depois de x₍₃₆₎" : "i = " + dn(pos, 2));
+    var ab = SS.filter(function (v) { return v <= q + 1e-9; }).length;
+    txt("qAbaixo", ab + " de 36 (" + dn(100 * ab / n, 1) + "%)");
+    var fr = fit($("qCanvas"));
+    if (!fr) return;
+    var P = panel(fr, { x0: 2, x1: 25, y0: 0, y1: 1.05, ylabel: "Fₙ(x)", xlabel: "salário (×SM)" });
+    var ctx = P.ctx;
+    /* escada */
+    ctx.strokeStyle = css("--teorico"); ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(P.X(2), P.Y(0));
+    SS.forEach(function (v, i) { ctx.lineTo(P.X(v), P.Y(i / n)); ctx.lineTo(P.X(v), P.Y((i + 1) / n)); });
+    ctx.lineTo(P.X(25), P.Y(1)); ctx.stroke();
+    /* pontos (x(i), (i − 0,5)/n) e a poligonal que define q(p) */
+    ctx.strokeStyle = css("--empirico"); ctx.lineWidth = 1; ctx.globalAlpha = .55;
+    ctx.beginPath();
+    SS.forEach(function (v, i) { var y = P.Y((i + .5) / n); if (i) ctx.lineTo(P.X(v), y); else ctx.moveTo(P.X(v), y); });
+    ctx.stroke(); ctx.globalAlpha = 1;
+    SS.forEach(function (v, i) { P.dot(v, (i + .5) / n, css("--empirico"), 2.2); });
+    /* p → q(p) */
+    ctx.strokeStyle = css("--empirico"); ctx.lineWidth = 1.4; ctx.setLineDash([5, 4]);
+    ctx.beginPath(); ctx.moveTo(P.X(2), P.Y(p)); ctx.lineTo(P.X(q), P.Y(p)); ctx.lineTo(P.X(q), P.base); ctx.stroke();
+    ctx.setLineDash([]);
+    P.dot(q, p, css("--empirico"), 5);
+    P.label("p = " + d2(p), 2.3, p, css("--empirico"), "left", -6);
+    P.label("q(p) = " + d2(q), q, .03, css("--empirico"), q > 18 ? "right" : "left", 0);
+  });
+  $("qP").addEventListener("input", drawQ);
+  Array.prototype.forEach.call(document.querySelectorAll("[data-qp]"), function (b) {
+    b.addEventListener("click", function () { $("qP").value = b.getAttribute("data-qp"); drawQ(); });
+  });
+
+  /* ---------------- § 09 boxplots ---------------- */
+  var bxG = "todos", bxPts = true;
+  var BXG = {
+    todos: { col: null, cats: ["todos"] },
+    instr: { col: 2, cats: ["fundamental", "médio", "superior"] },
+    civil: { col: 1, cats: ["solteiro", "casado"] },
+    reg: { col: 7, cats: ["capital", "interior", "outra"] }
+  };
+  var drawBx = reg(function () {
+    var s36 = +$("bxSal").value;
+    txt("oBxSal", d2(s36));
+    var rows = MB.map(function (r) { var c = r.slice(); if (c[0] === 36) c[4] = s36; return c; });
+    var G = BXG[bxG];
+    var grupos = G.cats.map(function (c) {
+      var rs = G.col == null ? rows : rows.filter(function (r) { return r[G.col] === c; });
+      return { nome: c, b: caixa(rs.map(function (r) { return r[4]; })), pts: rs.map(function (r) { return r[4]; }) };
+    });
+    /* leitura: do grupo "todos" ou de cada grupo */
+    var hb = grupos.map(function (g) {
+      var b = g.b;
+      return '<div><span class="k">' + g.nome + " · q₁ / md / q₃</span><span class=\"val acum\">" + d2(b.q1) + " / " + d2(b.md) + " / " + d2(b.q3) + "</span></div>" +
+        '<div><span class="k">DI · LI · LS</span><span class="val">' + d2(b.di) + " · " + d2(b.li) + " · " + d2(b.ls) + "</span></div>" +
+        '<div><span class="k">discrepantes</span><span class="val" style="color:var(--alerta)">' + (b.out.length ? b.out.map(d2).join(", ") : "nenhum") + "</span></div>";
+    });
+    $("bxRead").innerHTML = bxG === "todos" ? hb[0] : grupos.map(function (g) {
+      return '<div><span class="k">' + g.nome + " (n = " + g.pts.length + ")</span><span class=\"val acum\">md " + d2(g.b.md) + "</span></div>";
+    }).join("") + '<div><span class="k">discrepantes</span><span class="val" style="color:var(--alerta)">' +
+      (grupos.some(function (g) { return g.b.out.length; }) ? grupos.filter(function (g) { return g.b.out.length; }).map(function (g) { return g.nome + ": " + g.b.out.map(d2).join(", "); }).join("; ") : "nenhum") + "</span></div>";
+
+    var fr = fit($("bxCanvas"));
+    if (!fr) return;
+    var K = grupos.length, x1 = Math.max(26, Math.ceil((s36 + 2) / 5) * 5);
+    var padL = K > 1 ? 86 : 14;
+    var P = panel(fr, { x0: -4, x1: x1, y0: 0, y1: K, yticks: false, padL: padL, xlabel: "salário (×SM)" });
+    var ctx = P.ctx, rj = rng(7);
+    grupos.forEach(function (g, i) {
+      var b = g.b, yc = P.Y(K - i - .5), hh = Math.min(46, (P.Y(0) - P.Y(1)) * .42);
+      if (K > 1) {
+        ctx.font = "12px " + MONO; ctx.fillStyle = css("--ink-soft"); ctx.textAlign = "right";
+        ctx.fillText(g.nome, padL - 8, yc + 4);
+      }
+      /* limites */
+      ctx.strokeStyle = css("--alerta"); ctx.lineWidth = 1; ctx.setLineDash([3, 3]); ctx.globalAlpha = .7;
+      [b.li, b.ls].forEach(function (L) {
+        if (L < -4 || L > x1) return;
+        ctx.beginPath(); ctx.moveTo(P.X(L), yc - hh * .9); ctx.lineTo(P.X(L), yc + hh * .9); ctx.stroke();
+      });
+      ctx.setLineDash([]); ctx.globalAlpha = 1;
+      /* bigodes */
+      ctx.strokeStyle = css("--ink-soft"); ctx.lineWidth = 1.4;
+      ctx.beginPath();
+      ctx.moveTo(P.X(b.lo), yc); ctx.lineTo(P.X(b.q1), yc);
+      ctx.moveTo(P.X(b.q3), yc); ctx.lineTo(P.X(b.hi), yc);
+      ctx.moveTo(P.X(b.lo), yc - hh * .35); ctx.lineTo(P.X(b.lo), yc + hh * .35);
+      ctx.moveTo(P.X(b.hi), yc - hh * .35); ctx.lineTo(P.X(b.hi), yc + hh * .35);
+      ctx.stroke();
+      /* caixa */
+      ctx.fillStyle = css("--empirico-bg"); ctx.fillRect(P.X(b.q1), yc - hh / 2, P.X(b.q3) - P.X(b.q1), hh);
+      ctx.strokeStyle = css("--empirico"); ctx.lineWidth = 1.6; ctx.strokeRect(P.X(b.q1), yc - hh / 2, P.X(b.q3) - P.X(b.q1), hh);
+      ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(P.X(b.md), yc - hh / 2); ctx.lineTo(P.X(b.md), yc + hh / 2); ctx.stroke();
+      /* média */
+      ctx.fillStyle = css("--teorico"); var mx = P.X(b.m);
+      ctx.beginPath(); ctx.moveTo(mx, yc - 5); ctx.lineTo(mx + 5, yc); ctx.lineTo(mx, yc + 5); ctx.lineTo(mx - 5, yc); ctx.closePath(); ctx.fill();
+      /* pontos */
+      g.pts.forEach(function (v) {
+        var jit = (rj() - .5) * hh * .8;
+        var fora = v < b.li || v > b.ls;
+        if (!bxPts && !fora) return;
+        ctx.fillStyle = css(fora ? "--alerta" : "--ink-mute"); ctx.globalAlpha = fora ? 1 : .55;
+        ctx.beginPath(); ctx.arc(P.X(v), fora ? yc : yc + hh / 2 + 7 + jit * .15, fora ? 4.5 : 2.6, 0, Math.PI * 2); ctx.fill();
+        ctx.globalAlpha = 1;
+      });
+    });
+  });
+  $("bxSal").addEventListener("input", drawBx);
+  wireSeg("bxGrupo", function (k) { bxG = k; drawBx(); });
+  $("bxPts").addEventListener("click", function () {
+    bxPts = !bxPts; this.setAttribute("aria-pressed", String(bxPts));
+    this.textContent = "Pontos: " + (bxPts ? "sim" : "não"); drawBx();
+  });
+
+  /* ---------------- soluções passo a passo ---------------- */
+  Array.prototype.forEach.call(document.querySelectorAll("[data-steps]"), function (box) {
+    var list = box.querySelector(".steps");
+    var steps = Array.prototype.slice.call(list.querySelectorAll(".step"));
+    var start = document.createElement("button");
+    start.type = "button"; start.className = "b primary"; start.textContent = "Ver solução passo a passo";
+    var nav = document.createElement("div");
+    nav.className = "step-nav";
+    nav.innerHTML =
+      '<button type="button" class="b primary" data-a="next">Próximo passo →</button>' +
+      '<button type="button" class="b" data-a="prev">← Voltar</button>' +
+      '<button type="button" class="b" data-a="all">Mostrar tudo</button>' +
+      '<button type="button" class="b" data-a="hide">Ocultar solução</button>' +
+      '<span class="cnt"></span>';
+    list.parentNode.insertBefore(start, list);
+    list.parentNode.appendChild(nav);
+    var shown = 0;
+    function upd(scroll) {
+      steps.forEach(function (s, i) { s.hidden = i >= shown; });
+      list.hidden = shown === 0;
+      start.hidden = shown > 0;
+      nav.hidden = shown === 0;
+      nav.querySelector('[data-a="next"]').disabled = shown >= steps.length;
+      nav.querySelector('[data-a="all"]').disabled = shown >= steps.length;
+      nav.querySelector(".cnt").textContent = "passo " + shown + " de " + steps.length;
+      if (scroll && shown > 0) {
+        var alvo = steps[shown - 1];
+        alvo.scrollIntoView({ block: "nearest", behavior: reduce ? "auto" : "smooth" });
+      }
+    }
+    start.addEventListener("click", function () { shown = 1; upd(true); });
+    nav.addEventListener("click", function (ev) {
+      var b = ev.target.closest("button[data-a]");
+      if (!b) return;
+      var a = b.getAttribute("data-a");
+      if (a === "next") shown = Math.min(steps.length, shown + 1);
+      else if (a === "prev") shown = Math.max(0, shown - 1);
+      else if (a === "all") shown = steps.length;
+      else shown = 0;
+      upd(a !== "hide");
+      if (shown === 0) start.focus();
+    });
+    upd(false);
+  });
+
+  /* ---------------- navegação (documento) ---------------- */
+  var links = Array.prototype.slice.call(document.querySelectorAll("#toc a"));
+  var secs = links.map(function (a) { return document.querySelector(a.getAttribute("href")); });
+  if ("IntersectionObserver" in window) {
+    var io = new IntersectionObserver(function (entries) {
+      if (isPresent()) return;
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        var i = secs.indexOf(e.target);
+        links.forEach(function (a, j) { a.classList.toggle("on", j === i); });
+      });
+    }, { rootMargin: "-15% 0px -75% 0px" });
+    secs.forEach(function (s) { if (s) io.observe(s); });
+  }
+
+  /* ============================================================
+     MODO APRESENTAÇÃO
+     ============================================================ */
+  var slides = Array.prototype.slice.call(document.querySelectorAll(".slide"));
+  var cur = 0;
+  var hudWhere = $("hudWhere"), hudCount = $("hudCount"), hudBar = $("hudBar"), hudZoom = $("hudZoom");
+
+  function isPresent() { return root.getAttribute("data-mode") === "present"; }
+
+  var ps = 1;
+  try {
+    var saved = parseFloat(localStorage.getItem("ecom020-ps"));
+    if (isFinite(saved) && saved >= .6 && saved <= 2.2) ps = saved;
+  } catch (e) {}
+
+  function applyPs() {
+    root.style.setProperty("--ps", String(ps));
+    hudZoom.textContent = Math.round(ps * 100) + "%";
+    try { localStorage.setItem("ecom020-ps", String(ps)); } catch (e) {}
+    redrawAll();
+  }
+  function bumpPs(d) { ps = Math.min(2.2, Math.max(.6, Math.round((ps + d) * 100) / 100)); applyPs(); }
+
+  $("hudZoomIn").addEventListener("click", function () { bumpPs(.1); });
+  $("hudZoomOut").addEventListener("click", function () { bumpPs(-.1); });
+
+  function show(i) {
+    cur = Math.max(0, Math.min(slides.length - 1, i));
+    slides.forEach(function (s, j) { s.classList.toggle("on", j === cur); });
+    hudWhere.innerHTML = "<b>" + (slides[cur].getAttribute("data-sec") || "") + "</b>";
+    hudCount.textContent = (cur + 1) + " / " + slides.length;
+    hudBar.style.width = (((cur + 1) / slides.length) * 100) + "%";
+    slides[cur].scrollTop = 0;
+    redrawAll();
+  }
+
+  function enterPresent() {
+    var best = 0, bestD = Infinity, mid = window.scrollY + window.innerHeight / 3;
+    slides.forEach(function (s, j) {
+      var el = s.firstElementChild;
+      if (!el) return;
+      var d = Math.abs(el.getBoundingClientRect().top + window.scrollY - mid);
+      if (d < bestD) { bestD = d; best = j; }
+    });
+    root.setAttribute("data-mode", "present");
+    if (root.requestFullscreen) root.requestFullscreen().catch(function () {});
+    applyPs();
+    show(best);
+  }
+
+  function exitPresent() {
+    root.removeAttribute("data-mode");
+    slides.forEach(function (s) { s.classList.remove("on"); });
+    if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(function () {});
+    var el = slides[cur] && slides[cur].firstElementChild;
+    if (el) el.scrollIntoView({ block: "center" });
+    redrawAll();
+  }
+
+  $("presentBtn").addEventListener("click", enterPresent);
+  $("hudExit").addEventListener("click", exitPresent);
+  $("hudNext").addEventListener("click", function () { show(cur + 1); });
+  $("hudPrev").addEventListener("click", function () { show(cur - 1); });
+
+  document.addEventListener("fullscreenchange", function () {
+    if (!document.fullscreenElement && isPresent()) exitPresent();
+  });
+
+  /* botão que leva à solução: no documento é uma âncora; na apresentação, pula de slide */
+  document.addEventListener("click", function (ev) {
+    var a = ev.target.closest("[data-goto]");
+    if (!a) return;
+    var alvo = document.querySelector(a.getAttribute("href"));
+    if (!alvo) return;
+    ev.preventDefault();
+    if (isPresent()) {
+      var i = slides.indexOf(alvo.closest(".slide"));
+      if (i >= 0) show(i);
+    } else {
+      alvo.scrollIntoView({ block: "start", behavior: reduce ? "auto" : "smooth" });
+    }
+  });
+
+  document.addEventListener("keydown", function (ev) {
+    if (ev.target.tagName === "INPUT") return;
+    if (!isPresent()) {
+      if (ev.key === "p" || ev.key === "P") { ev.preventDefault(); enterPresent(); }
+      return;
+    }
+    /* Enter e espaço num botão acionam o botão, não trocam de slide */
+    if ((ev.key === " " || ev.key === "Enter") && ev.target.closest("button, a")) return;
+    switch (ev.key) {
+      case "ArrowRight": case "PageDown": case " ": case "Enter":
+        ev.preventDefault(); show(cur + 1); break;
+      case "ArrowLeft": case "PageUp":
+        ev.preventDefault(); show(cur - 1); break;
+      case "Home": ev.preventDefault(); show(0); break;
+      case "End": ev.preventDefault(); show(slides.length - 1); break;
+      case "+": case "=": ev.preventDefault(); bumpPs(.1); break;
+      case "-": case "_": ev.preventDefault(); bumpPs(-.1); break;
+      case "0": ev.preventDefault(); ps = 1; applyPs(); break;
+      case "Escape": exitPresent(); break;
+    }
+  });
+
+  /* ---------------- início ---------------- */
+  window.addEventListener("resize", redrawAll);
+  hudZoom.textContent = Math.round(ps * 100) + "%";
+  redrawAll();
+  heroTick();
+})();
+</script>
