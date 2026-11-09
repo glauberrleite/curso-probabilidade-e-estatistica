@@ -61,7 +61,7 @@ $$V(X) = E\{ (X - \mu_X)^2 \} = \int_{-\infty}^\infty (x - \mu_X)^2 f_X(x) dx = 
 
 A covariância é usada em várias áreas para entender a relação entre duas variáveis.
 
-> (Definição) A covariância entre as variáveis aleatórias $X$ e $Y$, denotada por cov($X,Y$) ou $\sigma_{XY}$, é
+> (Definição) A covariância entre as variáveis aleatórias $X$ e $Y$, denotada por $\text{cov}( X, Y )$ ou $\sigma_{XY}$, é
 > $$ \sigma_{XY} = E\{ (X - \mu_X) (Y - \mu_Y) = E \{ XY \} - \mu_X \mu_Y \} $$
 
 Se os pontos na distribuição de probabilidades conjuntas, que recebem probabilidade positiva, tenderem a cair ao longo de uma linha de inclinação positiva (ou negativa), então $\sigma_{XY}$ será positiva (ou negativa).

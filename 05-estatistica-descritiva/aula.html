@@ -1,10 +1,10 @@
 <meta charset="utf-8">
-<title>Estatística descritiva — frequências, gráficos, posição, dispersão, quantis e boxplot</title>
+<title>Estatística descritiva — frequências, posição, dispersão, quantis, boxplot e correlação</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
 <link rel="icon" href="../favicon-32.png" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
-<meta name="description" content="ECOM020 — Probabilidade e Estatística. Aula 05: estatística descritiva com os dados dos 36 empregados da Companhia MB — população e amostra, tipos de variáveis, distribuições de frequência, gráficos de barras, setores e histograma, média, moda, mediana, variância, desvio padrão, quantis empíricos e boxplot.">
+<meta name="description" content="ECOM020 — Probabilidade e Estatística. Aula 05: estatística descritiva com os dados dos 36 empregados da Companhia MB — população e amostra, tipos de variáveis, distribuições de frequência, gráficos de barras, setores e histograma, média, moda, mediana, variância, desvio padrão, quantis empíricos, boxplot e análise multivariada com correlação de Pearson e matriz de dispersão, usando também dados de resistência de fio e de vinhos tintos.">
 <style>
 /* ============================================================
    ECOM020 — Probabilidade e Estatística · Aula 05
@@ -16,6 +16,7 @@
    Nesta aula em particular:
      teal  = a média e as medidas que dela derivam (variância, dp)
      âmbar = os dados, a mediana e os quantis (medidas de ordem)
+     alerta = sinal negativo: retângulos e correlações negativas, discrepantes
 
    Dois modos sobre o MESMO DOM:
      documento     — .slide é display:contents (some do layout)
@@ -616,6 +617,16 @@ svg.anat .brace { stroke: var(--teorico); stroke-width: 1.2; fill: none; }
 .hist-list { font-family: var(--mono); font-size: .8rem; color: var(--ink-mute); margin-top: .6rem; }
 .hist-list b { color: var(--empirico); font-weight: 500; }
 .hero-cap .k-dado::before { background: var(--ink-mute); }
+
+/* ---------- aula 05: análise multivariada ---------- */
+canvas.plot.mat { height: 460px; }
+canvas.clic { cursor: pointer; }
+:root[data-mode="present"] canvas.plot.mat { height: clamp(280px, 50vh, 640px); }
+.clab { font-family: var(--sans); font-size: .8rem; color: var(--ink-mute); width: 1rem; }
+.pinfo { font-family: var(--sans); font-size: .8rem; color: var(--ink-soft); margin: .6rem 0 0; min-height: 1.3em; }
+#matriz .tri td, #terceira .tri td { font-size: .85rem; font-family: var(--sans); }
+#matriz .tri td.num { font-family: var(--mono); }
+@media (max-width: 36rem) { canvas.plot.mat { height: 340px; } }
 </style>
 
 <div class="shell">
@@ -636,7 +647,12 @@ svg.anat .brace { stroke: var(--teorico); stroke-width: 1.2; fill: none; }
       <a href="#quantis"><span class="n">08</span><span>Quantis empíricos</span></a>
       <a href="#boxplot"><span class="n">09</span><span>Boxplot e discrepantes</span></a>
       <a href="#software"><span class="n">10</span><span>describe() e summary()</span></a>
-      <a href="#resumo"><span class="n">11</span><span>Resumo</span></a>
+      <a href="#multivariada"><span class="n">11</span><span>Análise multivariada</span></a>
+      <a href="#correlacao"><span class="n">12</span><span>Dispersão e correlação</span></a>
+      <a href="#cuidados"><span class="n">13</span><span>O que r não vê</span></a>
+      <a href="#terceira"><span class="n">14</span><span>A terceira variável</span></a>
+      <a href="#matriz"><span class="n">15</span><span>Muitas variáveis</span></a>
+      <a href="#resumo"><span class="n">16</span><span>Resumo</span></a>
     </nav>
     <div class="rail-foot">
       <button class="rail-btn accent" id="presentBtn" type="button">▶ Modo apresentação</button>
@@ -1521,11 +1537,410 @@ sd(mb$salario)
     </section>
 
     <!-- ============ 11 ============ -->
-    <section id="resumo">
+    <section id="multivariada">
       <div class="wrap">
-        <div class="slide" data-sec="§ 11 · Resumo">
+        <div class="slide" data-sec="§ 11 · Várias variáveis">
           <div class="sec-head">
             <span class="n">§ 11</span>
+            <h2>Análise multivariada</h2>
+            <span class="sub">Cada observação traz várias medidas</span>
+          </div>
+          <p>
+            Em muitos problemas, engenheiros e cientistas trabalham com dados que são
+            <strong>multivariados</strong> por natureza: cada observação consiste em medidas de várias
+            variáveis. Até aqui resumimos uma coluna por vez. Agora a pergunta muda: <em>como as
+            colunas se relacionam entre si?</em>
+          </p>
+          <blockquote>
+            Se já existe um esforço para rodar um experimento ou um ensaio, é natural que se observe
+            mais do que uma variável.
+          </blockquote>
+          <div class="demo">
+            <div class="demo-head">
+              <span class="t">Dois novos bancos de dados</span>
+              <span class="h">clique no cabeçalho para ordenar</span>
+            </div>
+            <div class="demo-body">
+              <div class="ctl">
+                <div class="seg" id="tdBase">
+                  <button type="button" data-k="fio" aria-pressed="true">Resistência de fio (n = 25)</button>
+                  <button type="button" data-k="vin" aria-pressed="false">Vinhos tintos (n = 20)</button>
+                </div>
+              </div>
+              <div class="dados-box" style="max-height:17rem">
+                <table class="dados" id="tabNovos"><thead></thead><tbody></tbody></table>
+              </div>
+              <p id="tdNota" style="font-family:var(--sans); font-size:.8rem; color:var(--ink-mute); margin:.6rem 0 0"></p>
+            </div>
+          </div>
+          <p style="font-size:.95rem; color:var(--ink-soft)">
+            Arquivos: <a href="resitencia_fio.csv">resitencia_fio.csv</a> e
+            <a href="vinhos.csv">vinhos.csv</a>. A Companhia MB também volta, agora olhando salário,
+            idade e número de filhos juntos.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 12 ============ -->
+    <section id="correlacao">
+      <div class="wrap">
+        <div class="slide" data-sec="§ 12 · Dispersão e correlação">
+          <div class="sec-head">
+            <span class="n">§ 12</span>
+            <h2>Diagrama de dispersão e correlação</h2>
+            <span class="sub">Ver a relação entre duas variáveis, depois medi-la</span>
+          </div>
+          <p>
+            Em uma análise 2 a 2 das variáveis, o <strong>diagrama de dispersão</strong> ajuda a
+            encontrar relação: cada observação vira um ponto
+            (<span class="v">x<sub>i</sub></span>, <span class="v">y<sub>i</sub></span>). Para quantificar,
+            temos o coeficiente de correlação de
+            <a href="https://en.wikipedia.org/wiki/Karl_Pearson">Pearson</a>:
+          </p>
+          <div class="defn">
+            <span class="lab">Coeficiente de correlação de Pearson</span>
+            <div class="eq">
+              <span class="v">r<sub>xy</sub></span> =
+              <span class="frac">
+                <span>∑<sub><span class="v">i</span>=1</sub><sup><span class="v">n</span></sup> <span class="v">y<sub>i</sub></span> (<span class="v">x<sub>i</sub></span> − <span class="v">x̄</span>)</span>
+                <span><span class="sqrt">√<span>∑<sub><span class="v">i</span>=1</sub><sup><span class="v">n</span></sup> (<span class="v">y<sub>i</sub></span> − <span class="v">ȳ</span>)² · ∑<sub><span class="v">i</span>=1</sub><sup><span class="v">n</span></sup> (<span class="v">x<sub>i</sub></span> − <span class="v">x̄</span>)²</span></span></span>
+              </span>
+            </div>
+            <p>
+              Vale sempre −1 ≤ <span class="v">r<sub>xy</sub></span> ≤ 1, não tem unidade e não muda se
+              trocarmos a unidade de <span class="v">x</span> ou de <span class="v">y</span>. Perto de ±1, os
+              pontos quase formam uma reta; perto de 0, não há tendência <strong>linear</strong>.
+            </p>
+          </div>
+          <div class="note">
+            <span class="lab">🤔 Uma lembrança da aula 04</span>
+            <p>
+              Lá, <span class="v">ρ</span> = <span class="v">σ<sub>XY</sub></span> / (<span class="v">σ<sub>X</sub></span> <span class="v">σ<sub>Y</sub></span>),
+              com <span class="v">σ<sub>XY</sub></span> = <span class="v">E</span>{(<span class="v">X</span> − <span class="v">μ<sub>X</sub></span>)(<span class="v">Y</span> − <span class="v">μ<sub>Y</sub></span>)}.
+              Trocando o valor esperado pela média com peso 1/<span class="v">n</span>, sai a mesma coisa na amostra:
+            </p>
+            <div class="eq sm">
+              cov(<span class="v">x</span>, <span class="v">y</span>) =
+              <span class="frac"><span>∑ (<span class="v">x<sub>i</sub></span> − <span class="v">x̄</span>)(<span class="v">y<sub>i</sub></span> − <span class="v">ȳ</span>)</span><span><span class="v">n</span></span></span>,
+              &nbsp;&nbsp;
+              <span class="v">r<sub>xy</sub></span> =
+              <span class="frac"><span>cov(<span class="v">x</span>, <span class="v">y</span>)</span><span>dp(<span class="v">x</span>) dp(<span class="v">y</span>)</span></span>
+            </div>
+            <p>
+              O numerador da fórmula acima é esse mesmo: como ∑ (<span class="v">x<sub>i</sub></span> − <span class="v">x̄</span>) = 0,
+              subtrair <span class="v">ȳ</span> não altera a soma. E os <span class="v">n</span> se cancelam
+              na razão: ao contrário do desvio padrão no § 10, <span class="v">r</span> dá o mesmo valor
+              dividindo por <span class="v">n</span> ou por <span class="v">n</span> − 1.
+            </p>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 12 · Dispersão e correlação">
+          <h3>A covariância é uma área média com sinal</h3>
+          <div class="demo">
+            <div class="demo-head">
+              <span class="t">Dispersão e correlação</span>
+              <span class="h">clique em um ponto para tirá-lo da conta</span>
+            </div>
+            <div class="demo-body">
+              <div class="ctl">
+                <div class="seg" id="dpBase">
+                  <button type="button" data-k="fio" aria-pressed="true">Fio</button>
+                  <button type="button" data-k="vin" aria-pressed="false">Vinhos</button>
+                  <button type="button" data-k="mb" aria-pressed="false">Companhia MB</button>
+                </div>
+                <button class="b" type="button" id="dpRet" aria-pressed="true">Retângulos: sim</button>
+                <button class="b" type="button" id="dpRest">Restaurar pontos</button>
+              </div>
+              <div class="ctl"><span class="clab"><span class="v">x</span></span><div class="seg" id="dpX"></div></div>
+              <div class="ctl"><span class="clab"><span class="v">y</span></span><div class="seg" id="dpY"></div></div>
+              <canvas class="plot tall clic" id="dpCanvas" aria-label="Diagrama de dispersão das variáveis escolhidas, com retângulos entre cada ponto e o centro (média de x, média de y)"></canvas>
+              <div class="legend"><span class="l-acum">observações</span><span class="l-dens">retângulo positivo (quadrantes ++ e −−)</span><span class="l-neg" style="color:var(--alerta)">retângulo negativo (+− e −+)</span></div>
+              <p class="pinfo" id="dpInfo">Passe o mouse sobre um ponto para ver a observação.</p>
+              <div class="readout">
+                <div><span class="k">n na conta</span><span class="val" id="dpN">—</span></div>
+                <div><span class="k">cov(x, y)</span><span class="val dens" id="dpCov">—</span></div>
+                <div><span class="k">r com estes pontos</span><span class="val dens" id="dpR">—</span></div>
+                <div><span class="k">r com todos</span><span class="val" id="dpR0">—</span></div>
+                <div><span class="k">retângulos + / −</span><span class="val acum" id="dpSin">—</span></div>
+              </div>
+            </div>
+          </div>
+          <p style="font-size:.95rem; color:var(--ink-soft)">
+            No § 07, a variância era a área média de <strong>quadrados</strong> de lado
+            |<span class="v">x<sub>i</sub></span> − <span class="v">x̄</span>|. A covariância é a área média de
+            <strong>retângulos</strong> de lados (<span class="v">x<sub>i</sub></span> − <span class="v">x̄</span>) e
+            (<span class="v">y<sub>i</sub></span> − <span class="v">ȳ</span>), que podem ser negativos. Em
+            resistência × comprimento, 24 dos 25 retângulos são positivos.
+          </p>
+        </div>
+
+        <div class="slide" data-sec="§ 12 · Dispersão e correlação">
+          <div class="ex" data-steps>
+            <span class="lab">Exemplo — resistência × comprimento do fio</span>
+            <p>Com os 25 fios, calcule <span class="v">r</span> entre o comprimento (<span class="v">x</span>) e a resistência à tração (<span class="v">y</span>).</p>
+            <ol class="steps">
+              <li class="step">
+                <p>Médias: <span class="v">x̄</span> = 8,24 e <span class="v">ȳ</span> = 29,03.</p>
+              </li>
+              <li class="step">
+                <p>Numerador, somando em todos os fios:</p>
+                <div class="eq sm">∑ <span class="v">y<sub>i</sub></span> (<span class="v">x<sub>i</sub></span> − <span class="v">x̄</span>) = 9,95·(2 − 8,24) + 24,45·(8 − 8,24) + … = <span class="res">2027,71</span></div>
+              </li>
+              <li class="step">
+                <p>Denominador:</p>
+                <div class="eq sm">∑ (<span class="v">x<sub>i</sub></span> − <span class="v">x̄</span>)² = 698,56, &nbsp; ∑ (<span class="v">y<sub>i</sub></span> − <span class="v">ȳ</span>)² = 6105,94, &nbsp; √(698,56 · 6105,94) = <span class="res">2065,28</span></div>
+              </li>
+              <li class="step fim">
+                <div class="eq sm"><span class="v">r</span> = 2027,71 / 2065,28 = <span class="res">0,982</span></div>
+                <p>
+                  Relação linear fortíssima e positiva: fios mais compridos resistem mais, nestes dados.
+                  Selecione o par no demo anterior para conferir.
+                </p>
+              </li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 13 ============ -->
+    <section id="cuidados">
+      <div class="wrap">
+        <div class="slide" data-sec="§ 13 · O que r não vê">
+          <div class="sec-head">
+            <span class="n">§ 13</span>
+            <h2>O que <i>r</i> não vê</h2>
+            <span class="sub">Mesmo número, histórias diferentes</span>
+          </div>
+          <div class="demo">
+            <div class="demo-head">
+              <span class="t">Quarteto de Anscombe (1973)</span>
+              <span class="h">quatro conjuntos, praticamente o mesmo resumo</span>
+            </div>
+            <div class="demo-body">
+              <div class="ctl">
+                <div class="seg" id="anG">
+                  <button type="button" data-k="0" aria-pressed="true">I</button>
+                  <button type="button" data-k="1" aria-pressed="false">II</button>
+                  <button type="button" data-k="2" aria-pressed="false">III</button>
+                  <button type="button" data-k="3" aria-pressed="false">IV</button>
+                </div>
+              </div>
+              <canvas class="plot tall" id="anCanvas" aria-label="Diagrama de dispersão do conjunto escolhido do quarteto de Anscombe, com a mesma reta de tendência nos quatro"></canvas>
+              <div class="legend"><span class="l-acum">dados</span><span class="l-dens">reta de tendência, a mesma nos quatro</span></div>
+              <div class="readout">
+                <div><span class="k">x̄</span><span class="val" id="anXb">—</span></div>
+                <div><span class="k">ȳ</span><span class="val" id="anYb">—</span></div>
+                <div><span class="k">dp(x)</span><span class="val" id="anDx">—</span></div>
+                <div><span class="k">dp(y)</span><span class="val" id="anDy">—</span></div>
+                <div><span class="k">r</span><span class="val dens" id="anR">—</span></div>
+              </div>
+              <p class="pinfo" id="anTxt"></p>
+            </div>
+          </div>
+          <div class="note problema">
+            <span class="lab">Desenhe antes de resumir</span>
+            <p>
+              <span class="v">r</span> mede só tendência <strong>linear</strong> e é sensível a pontos
+              extremos, porque herda o comportamento da média. E <span class="v">r</span> ≈ 0 não quer
+              dizer “sem relação”: uma parábola simétrica tem <span class="v">r</span> = 0 e relação perfeita.
+            </p>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 13 · O que r não vê">
+          <h3>Os discrepantes dos vinhos puxam para lados opostos</h3>
+          <p>
+            A regra do boxplot (§ 09) aplicada ao SO₂ total dá <span class="v">q</span><sub>1</sub> = 66,5,
+            <span class="v">q</span><sub>3</sub> = 114 e LS = 185,25: dois vinhos ficam acima, com SO₂ de 192 e 301.
+            Veja o que acontece com a correlação entre qualidade e SO₂ ao tirá-los. No demo do § 12,
+            escolha Vinhos e clique neles para reproduzir.
+          </p>
+          <div class="tbl-scroll">
+            <table class="tri">
+              <thead><tr><th>Vinhos na conta</th><th><span class="v gr">n</span></th><th><span class="v gr">r</span> (qualidade, SO₂)</th></tr></thead>
+              <tbody>
+                <tr><td>Todos</td><td class="num">20</td><td class="num dens">−0,445</td></tr>
+                <tr><td>Sem o de SO₂ = 301 (qualidade 14,2, não muito abaixo da média de 15,2)</td><td class="num">19</td><td class="num dens">−0,542</td></tr>
+                <tr><td>Sem os de SO₂ = 301 e 192 (qualidade 11,5, a pior de todas)</td><td class="num">18</td><td class="num dens">−0,390</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>
+            O vinho de SO₂ = 301 tem qualidade comum e <strong>enfraquece</strong> a tendência; o de 192 é o
+            pior da amostra e a <strong>fortalece</strong>. Com só 20 vinhos, um único ponto move
+            <span class="v">r</span> em 0,1. Não é motivo para apagar dados: é motivo para relatar que eles
+            existem e o quanto pesam.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 14 ============ -->
+    <section id="terceira">
+      <div class="wrap">
+        <div class="slide" data-sec="§ 14 · A terceira variável">
+          <div class="sec-head">
+            <span class="n">§ 14</span>
+            <h2>A terceira variável</h2>
+            <span class="sub">Um par de colunas nunca conta a história inteira</span>
+          </div>
+          <div class="demo">
+            <div class="demo-head">
+              <span class="t">Salário × idade na Companhia MB</span>
+              <span class="h">misturar grupos pode diluir uma relação</span>
+            </div>
+            <div class="demo-body">
+              <div class="ctl">
+                <div class="seg" id="grVis">
+                  <button type="button" data-k="todos" aria-pressed="true">Tudo junto</button>
+                  <button type="button" data-k="grupos" aria-pressed="false">Por instrução</button>
+                </div>
+              </div>
+              <canvas class="plot tall" id="grCanvas" aria-label="Salário contra idade dos 36 empregados, juntos ou separados por grau de instrução, com retas de tendência"></canvas>
+              <div class="swatches" id="grSw"></div>
+              <div class="readout">
+                <div><span class="k">r, todos (n = 36)</span><span class="val" id="grR">—</span></div>
+                <div><span class="k">fundamental (n = 12)</span><span class="val dens" id="grF">—</span></div>
+                <div><span class="k">médio (n = 18)</span><span class="val acum" id="grM">—</span></div>
+                <div><span class="k">superior (n = 6)</span><span class="val" style="color:var(--alerta)" id="grS">—</span></div>
+              </div>
+            </div>
+          </div>
+          <p style="font-size:.95rem; color:var(--ink-soft)">
+            Juntos, <span class="v">r</span> = 0,37: relação fraca. Separados por instrução, os três grupos
+            têm <span class="v">r</span> <strong>maior</strong> que o todo. Como? O grupo do fundamental é o
+            mais velho (37,3 anos em média) e o que menos ganha (7,84); o do superior é mais novo (33,8) e
+            ganha mais (16,47). Na mistura, escolaridade embaralha o efeito da idade. Cuidado com o superior:
+            são só 6 pessoas.
+          </p>
+        </div>
+
+        <div class="slide" data-sec="§ 14 · A terceira variável">
+          <h3>Tirando o efeito de uma variável</h3>
+          <p>
+            Dá para “descontar” uma terceira variável <span class="v">z</span>: traçamos a reta de tendência de
+            <span class="v">x</span> em função de <span class="v">z</span>, e a de <span class="v">y</span> em função de
+            <span class="v">z</span>, e correlacionamos <strong>o que sobra</strong> em cada uma. É a
+            <strong>correlação parcial</strong>; as retas em si são o assunto da aula de regressão.
+          </p>
+          <div class="demo">
+            <div class="demo-head">
+              <span class="t">Antes e depois de descontar</span>
+              <span class="h">quanto mais escuro o ponto, maior o valor de z</span>
+            </div>
+            <div class="demo-body">
+              <div class="ctl">
+                <div class="seg" id="pcCaso">
+                  <button type="button" data-k="filhos" aria-pressed="true">Salário × filhos, z = idade</button>
+                  <button type="button" data-k="altura" aria-pressed="false">Resistência × altura, z = comprimento</button>
+                </div>
+                <div class="seg" id="pcVis">
+                  <button type="button" data-k="bruto" aria-pressed="true">Dados</button>
+                  <button type="button" data-k="resto" aria-pressed="false">Descontando z</button>
+                </div>
+              </div>
+              <canvas class="plot tall" id="pcCanvas" aria-label="Dispersão entre duas variáveis, na escala original ou depois de descontar a terceira variável"></canvas>
+              <div class="readout">
+                <div><span class="k">r (dados)</span><span class="val" id="pcR">—</span></div>
+                <div><span class="k">r parcial (descontando z)</span><span class="val dens" id="pcP">—</span></div>
+                <div><span class="k">r(x, z)</span><span class="val" id="pcXz">—</span></div>
+                <div><span class="k">r(y, z)</span><span class="val" id="pcYz">—</span></div>
+              </div>
+              <p class="pinfo" id="pcTxt"></p>
+            </div>
+          </div>
+          <div class="note problema">
+            <span class="lab">Correlação não é causalidade</span>
+            <p>
+              Os dois casos vão em sentidos opostos. Os filhos <strong>perdem</strong> toda a correlação com o
+              salário: a idade explicava as duas coisas. Já a altura do fio <strong>ganha</strong> correlação com
+              a resistência quando o comprimento sai da frente. Nenhum dos dois números, sozinho, prova causa: dados
+              observados mostram associação, e só o desenho do experimento ou o conhecimento do problema
+              sustentam a explicação.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 15 ============ -->
+    <section id="matriz">
+      <div class="wrap">
+        <div class="slide" data-sec="§ 15 · Matriz de dispersão">
+          <div class="sec-head">
+            <span class="n">§ 15</span>
+            <h2>Quando temos muitas variáveis</h2>
+            <span class="sub">Comparar dois a dois, todos os pares</span>
+          </div>
+          <p>
+            Correlação e dispersão comparam 2 variáveis. Com <span class="v">p</span> variáveis, temos
+            <span class="v">p</span>(<span class="v">p</span> − 1)/2 pares para olhar: 5 variáveis já dão 10 pares.
+            O procedimento visual é montar uma <strong>matriz de diagramas de dispersão</strong>.
+          </p>
+          <div class="demo">
+            <div class="demo-head">
+              <span class="t">Matriz de dispersão</span>
+              <span class="h">clique em uma célula para ampliar o par</span>
+            </div>
+            <div class="demo-body">
+              <div class="ctl">
+                <div class="seg" id="mxBase">
+                  <button type="button" data-k="vin" aria-pressed="true">Vinhos (5)</button>
+                  <button type="button" data-k="fio" aria-pressed="false">Fio (3)</button>
+                  <button type="button" data-k="mb" aria-pressed="false">Companhia MB (3)</button>
+                </div>
+              </div>
+              <canvas class="plot mat clic" id="mxCanvas" aria-label="Matriz de dispersão: acima da diagonal os diagramas de cada par, abaixo os coeficientes de correlação"></canvas>
+              <div class="legend"><span class="l-acum">acima da diagonal: dispersão</span><span class="l-dens">abaixo: r positivo</span><span class="l-neg" style="color:var(--alerta)">abaixo: r negativo</span></div>
+              <canvas class="plot" id="mxZoom" style="margin-top:.9rem" aria-label="Diagrama de dispersão ampliado do par selecionado"></canvas>
+              <div class="readout">
+                <div><span class="k">par selecionado</span><span class="val" id="mxPar">—</span></div>
+                <div><span class="k">n</span><span class="val" id="mxN">—</span></div>
+                <div><span class="k">r</span><span class="val dens" id="mxR">—</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide" data-sec="§ 15 · Matriz de dispersão">
+          <h3>O que os três bancos de dados nos disseram</h3>
+          <div class="tbl-scroll">
+            <table class="tri">
+              <thead><tr><th>Dados</th><th>Par</th><th><span class="v gr">r</span></th><th>Constatação</th></tr></thead>
+              <tbody>
+                <tr><td>Vinhos</td><td>intensidade × cor</td><td class="num dens">0,996</td><td>Praticamente a mesma medida (intensidade ≈ 1,59 · cor + 0,36): são 5 colunas, mas não 5 informações independentes.</td></tr>
+                <tr><td>Vinhos</td><td>qualidade × cor</td><td class="num dens">0,712</td><td>A maior associação com a qualidade. Não autoriza concluir que escurecer um vinho o melhora.</td></tr>
+                <tr><td>Vinhos</td><td>pH × SO₂</td><td class="num dens">−0,679</td><td>As medidas de laboratório também se relacionam entre si, não só com a qualidade: SO₂ alto vem com pH baixo.</td></tr>
+                <tr><td>Vinhos</td><td>qualidade × SO₂</td><td class="num dens">−0,445</td><td>Oscila entre −0,39 e −0,54 conforme os discrepantes entram ou saem.</td></tr>
+                <tr><td>Fio</td><td>resistência × comprimento</td><td class="num dens">0,982</td><td>Quase uma reta: uma variável, sozinha, descreve boa parte do comportamento.</td></tr>
+                <tr><td>Fio</td><td>resistência × altura</td><td class="num dens">0,493</td><td>Parcial de 0,690 descontando o comprimento: a altura contribui além do que aparenta.</td></tr>
+                <tr><td>MB</td><td>salário × idade</td><td class="num dens">0,365</td><td>Entre 0,60 e 0,82 dentro de cada grau de instrução: a mistura de grupos diluía a relação.</td></tr>
+                <tr><td>MB</td><td>salário × filhos</td><td class="num dens">0,358</td><td>Parcial de 0,008 descontando a idade: a associação vinha da idade (casados, n = 20).</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="note">
+            <span class="lab">📚 Próxima etapa: estatística inferencial</span>
+            <p>
+              Vamos fazer mais do que perceber que média, variância e correlação lembram o que vimos em
+              variáveis aleatórias: vamos estabelecer parâmetros e hipóteses, e formalizar essa constatação,
+              trazendo o <strong>Teorema Central do Limite</strong>. E uma pergunta fica pendurada desde já:
+              com 20 vinhos, <span class="v">r</span> = −0,445 é uma relação real ou poderia ser acaso da amostra?
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 16 ============ -->
+    <section id="resumo">
+      <div class="wrap">
+        <div class="slide" data-sec="§ 16 · Resumo">
+          <div class="sec-head">
+            <span class="n">§ 16</span>
             <h2>Resumo, com a Companhia MB</h2>
             <span class="sub">Cada medida, sua contraparte em probabilidade e o valor nos salários</span>
           </div>
@@ -1542,6 +1957,8 @@ sd(mb$salario)
                 <tr><td>Variância / dp</td><td>∑ (<span class="v">x<sub>i</sub></span> − <span class="v">x̄</span>)² / <span class="v">n</span></td><td><span class="v">E</span>{(<span class="v">X</span> − <span class="v">μ</span>)²}</td><td class="num dens">20,46 / 4,52</td></tr>
                 <tr><td>Quartis</td><td>interpolação em (<span class="v">i</span> − 0,5)/<span class="v">n</span></td><td><span class="v">F</span>(<span class="v">x</span>) = <span class="v">p</span></td><td class="num acum">7,515 · 10,165 · 14,27</td></tr>
                 <tr><td>Limites do boxplot</td><td><span class="v">q</span><sub>1</sub> − 1,5 DI, <span class="v">q</span><sub>3</sub> + 1,5 DI</td><td>—</td><td class="num">−2,62 e 24,40: sem discrepantes</td></tr>
+                <tr><td>Covariância</td><td>∑ (<span class="v">x<sub>i</sub></span> − <span class="v">x̄</span>)(<span class="v">y<sub>i</sub></span> − <span class="v">ȳ</span>) / <span class="v">n</span></td><td><span class="v">σ<sub>XY</sub></span></td><td class="num dens">salário × idade: 10,92</td></tr>
+                <tr><td>Correlação</td><td>cov / (dp · dp)</td><td><span class="v">ρ</span></td><td class="num dens">salário × idade: 0,365</td></tr>
               </tbody>
             </table>
           </div>
@@ -1551,8 +1968,8 @@ sd(mb$salario)
               Toda medida desta aula é uma medida de probabilidade aplicada à <strong>distribuição
               empírica</strong>, aquela que dá peso 1/<span class="v">n</span> a cada observação.
               Média e variância respondem a todos os valores, inclusive aos extremos; mediana e
-              quartis respondem só à ordem. Olhe as duas famílias juntas, e desenhe os dados antes de
-              resumi-los.
+              quartis respondem só à ordem. Olhe as duas famílias juntas, desenhe os dados antes de
+              resumi-los e, ao comparar duas colunas, pergunte qual terceira está ficando de fora.
             </p>
           </div>
         </div>
@@ -2343,6 +2760,329 @@ sd(mb$salario)
   $("bxPts").addEventListener("click", function () {
     bxPts = !bxPts; this.setAttribute("aria-pressed", String(bxPts));
     this.textContent = "Pontos: " + (bxPts ? "sim" : "não"); drawBx();
+  });
+
+  /* ---------------- § 11–15 análise multivariada ---------------- */
+  /* resitencia_fio.csv: [resistência à tração, comprimento, altura] */
+  var FIO = [[9.95,2,50],[24.45,8,110],[31.75,11,120],[35.00,10,550],[25.02,8,295],[16.86,4,200],[14.38,2,375],[9.60,2,52],[24.35,9,100],[27.50,8,300],[17.08,4,412],[37.00,11,400],[41.95,12,500],[11.66,2,360],[21.65,4,205],[17.89,4,400],[69.00,20,600],[10.30,1,585],[34.93,10,540],[46.59,15,250],[44.88,15,290],[54.12,16,510],[56.63,17,590],[22.13,6,100],[21.15,5,400]];
+  /* vinhos.csv: [qualidade, pH, SO2 total, intensidade de cor, cor] */
+  var VIN = [[19.2,3.85,66,9.35,5.65],[18.3,3.75,79,11.15,6.95],[17.1,3.88,73,9.40,5.75],[15.2,3.66,86,6.40,4.00],[14.0,3.47,178,3.60,2.25],[13.8,3.75,108,5.80,3.20],[12.8,3.92,96,5.00,2.70],[17.3,3.97,59,10.25,6.10],[16.3,3.76,22,8.20,5.00],[16.0,3.98,58,10.15,6.00],[15.7,3.75,120,8.80,5.50],[15.3,3.77,144,5.60,3.35],[14.3,3.76,100,5.55,3.25],[14.0,3.76,104,8.70,5.10],[13.8,3.90,67,7.41,4.40],[12.5,3.80,89,5.35,3.15],[11.5,3.65,192,6.35,3.90],[14.2,3.60,301,4.25,2.40],[17.3,3.86,99,12.85,7.70],[15.8,3.93,66,4.90,2.75]];
+  function coluna(m, j) { return m.map(function (l) { return l[j]; }); }
+  var BASES = {
+    fio: { nome: "Fio", x: 1, y: 0, vars: [
+      { n: "resistência", c: "resist.", v: coluna(FIO, 0) },
+      { n: "comprimento", c: "compr.", v: coluna(FIO, 1) },
+      { n: "altura", c: "altura", v: coluna(FIO, 2) }] },
+    vin: { nome: "Vinhos", x: 2, y: 0, vars: [
+      { n: "qualidade", c: "qualid.", v: coluna(VIN, 0) },
+      { n: "pH", c: "pH", v: coluna(VIN, 1) },
+      { n: "SO₂ total", c: "SO₂", v: coluna(VIN, 2) },
+      { n: "intensidade", c: "intens.", v: coluna(VIN, 3) },
+      { n: "cor", c: "cor", v: coluna(VIN, 4) }] },
+    mb: { nome: "Companhia MB", x: 1, y: 0, vars: [
+      { n: "salário", c: "salário", v: SAL },
+      { n: "idade", c: "idade", v: MB.map(function (r) { return r[5] + r[6] / 12; }) },
+      { n: "filhos", c: "filhos", v: coluna(MB, 3) }] }
+  };
+
+  /* pares completos (x, y), guardando o índice da observação; dados ausentes saem par a par */
+  function pares(xs, ys, fora) {
+    var out = [];
+    xs.forEach(function (x, i) {
+      if (x == null || ys[i] == null || (fora && fora[i])) return;
+      out.push({ x: x, y: ys[i], i: i });
+    });
+    return out;
+  }
+  function corr(a, b) {
+    var ma = mean(a), mb = mean(b), sab = 0, saa = 0, sbb = 0;
+    a.forEach(function (v, i) { sab += (v - ma) * (b[i] - mb); saa += (v - ma) * (v - ma); sbb += (b[i] - mb) * (b[i] - mb); });
+    return saa > 0 && sbb > 0 ? sab / Math.sqrt(saa * sbb) : NaN;
+  }
+  function corrP(ps) { return corr(ps.map(function (p) { return p.x; }), ps.map(function (p) { return p.y; })); }
+  function reta(x, y) {
+    var mx = mean(x), my = mean(y), sxy = 0, sxx = 0;
+    x.forEach(function (v, i) { sxy += (v - mx) * (y[i] - my); sxx += (v - mx) * (v - mx); });
+    var b = sxy / sxx;
+    return { a: my - b * mx, b: b };
+  }
+  function resto(y, z) { var f = reta(z, y); return y.map(function (v, i) { return v - f.a - f.b * z[i]; }); }
+  function d3(x) { return isFinite(x) ? dn(Math.round(x * 1000 + (x < 0 ? -1e-6 : 1e-6)) / 1000, 3) : "—"; }
+  function faixa(a, f) {
+    var lo = Math.min.apply(null, a), hi = Math.max.apply(null, a), m = (hi - lo || 1) * (f == null ? .08 : f);
+    return [lo - m, hi + m];
+  }
+  /* número com casas conforme a escala da variável */
+  function nv(v) { return Math.abs(v) >= 100 ? dn(v, 0) : d2(v); }
+
+  function eixos(fr, xs, ys, o) {
+    var fx = o.fx || faixa(xs), fy = o.fy || faixa(ys);
+    return panel(fr, { x0: fx[0], x1: fx[1], y0: fy[0], y1: fy[1], xlabel: o.xlabel, ylabel: o.ylabel, padL: 50 });
+  }
+
+  /* ---- § 11 tabela dos novos dados ---- */
+  (function () {
+    var COLS = {
+      fio: { nomes: ["Nº", "Resistência à tração", "Comprimento", "Altura"], m: FIO, nota: "Cada linha é um fio ensaiado. A resistência é a variável de interesse; comprimento e altura são características do fio." },
+      vin: { nomes: ["Nº", "Qualidade", "pH", "SO₂ total", "Intensidade de cor", "Cor"], m: VIN, nota: "Cada linha é um vinho tinto. A qualidade é a nota atribuída; as demais são medidas de laboratório." }
+    };
+    var base = "fio", col = 0, dir = 1;
+    function render() {
+      var C = COLS[base], t = $("tabNovos");
+      t.querySelector("thead").innerHTML = "<tr>" + C.nomes.map(function (n, j) {
+        var s = j === col ? ' aria-sort="' + (dir > 0 ? "ascending" : "descending") + '"' : "";
+        return '<th class="num" tabindex="0" data-c="' + j + '"' + s + ">" + n + "</th>";
+      }).join("") + "</tr>";
+      var rows = C.m.map(function (l, i) { return [i + 1].concat(l); });
+      rows.sort(function (a, b) { return (a[col] - b[col]) * dir || a[0] - b[0]; });
+      t.querySelector("tbody").innerHTML = rows.map(function (r) {
+        return "<tr>" + r.map(function (v, j) { return '<td class="num">' + (j === 0 || Number.isInteger(v) ? v : d2(v)) + "</td>"; }).join("") + "</tr>";
+      }).join("");
+      txt("tdNota", C.nota);
+    }
+    function ordena(th) {
+      var c = +th.getAttribute("data-c");
+      if (c === col) dir = -dir; else { col = c; dir = 1; }
+      render();
+    }
+    var head = $("tabNovos").querySelector("thead");
+    head.addEventListener("click", function (ev) { var th = ev.target.closest("th"); if (th) ordena(th); });
+    head.addEventListener("keydown", function (ev) {
+      var th = ev.target.closest("th");
+      if (th && (ev.key === "Enter" || ev.key === " ")) { ev.preventDefault(); ev.stopPropagation(); ordena(th); }
+    });
+    wireSeg("tdBase", function (k) { base = k; col = 0; dir = 1; render(); });
+    render();
+  })();
+
+  /* ---- § 12 dispersão, retângulos e remoção de pontos ---- */
+  var dpB = "fio", dpXi = 1, dpYi = 0, dpRet = true, dpFora = {}, dpPix = [];
+  function dpSeg() {
+    var V = BASES[dpB].vars;
+    [["dpX", dpXi], ["dpY", dpYi]].forEach(function (e) {
+      $(e[0]).innerHTML = V.map(function (v, i) {
+        return '<button type="button" data-k="' + i + '" aria-pressed="' + (i === e[1]) + '">' + v.n + "</button>";
+      }).join("");
+    });
+  }
+  function dpRotulo(i) { return (dpB === "fio" ? "fio " : dpB === "vin" ? "vinho " : "empregado ") + "nº " + (i + 1); }
+  var drawDp = reg(function () {
+    var V = BASES[dpB].vars, vx = V[dpXi], vy = V[dpYi];
+    var todos = pares(vx.v, vy.v), ps = todos.filter(function (p) { return !dpFora[p.i]; });
+    var xs = ps.map(function (p) { return p.x; }), ys = ps.map(function (p) { return p.y; });
+    var xb = mean(xs), yb = mean(ys), mais = 0, menos = 0, cov = 0;
+    ps.forEach(function (p) {
+      var a = (p.x - xb) * (p.y - yb);
+      cov += a; if (a > 1e-12) mais++; else if (a < -1e-12) menos++;
+    });
+    cov /= ps.length;
+    txt("dpN", ps.length + " de " + todos.length);
+    txt("dpCov", isFinite(cov) ? nv(cov) : "—");
+    txt("dpR", ps.length > 2 ? d3(corrP(ps)) : "—");
+    txt("dpR0", d3(corrP(todos)));
+    txt("dpSin", mais + " / " + menos);
+    var fr = fit($("dpCanvas"));
+    if (!fr) return;
+    var P = eixos(fr, todos.map(function (p) { return p.x; }), todos.map(function (p) { return p.y; }), { xlabel: vx.n, ylabel: vy.n });
+    var ctx = P.ctx, cx = P.X(xb), cy = P.Y(yb);
+    if (dpRet) ps.forEach(function (p) {
+      var pos = (p.x - xb) * (p.y - yb) >= 0;
+      ctx.fillStyle = css(pos ? "--teorico" : "--alerta"); ctx.globalAlpha = .07;
+      ctx.fillRect(Math.min(cx, P.X(p.x)), Math.min(cy, P.Y(p.y)), Math.abs(P.X(p.x) - cx), Math.abs(P.Y(p.y) - cy));
+      ctx.globalAlpha = 1;
+    });
+    ctx.strokeStyle = css("--ink-mute"); ctx.lineWidth = 1; ctx.setLineDash([4, 3]);
+    ctx.beginPath(); ctx.moveTo(cx, P.top + P.T); ctx.lineTo(cx, P.Y(P_y0(P, todos))); ctx.moveTo(P.L, cy); ctx.lineTo(P.W - P.R, cy); ctx.stroke();
+    ctx.setLineDash([]);
+    dpPix = todos.map(function (p) {
+      var px = P.X(p.x), py = P.Y(p.y), f = dpFora[p.i];
+      ctx.beginPath(); ctx.arc(px, py, f ? 4.5 : 4, 0, Math.PI * 2);
+      if (f) { ctx.strokeStyle = css("--alerta"); ctx.lineWidth = 1.5; ctx.stroke(); }
+      else { ctx.fillStyle = css("--empirico"); ctx.fill(); }
+      return { x: px, y: py, p: p };
+    });
+  });
+  /* base do eixo y do painel, para a linha vertical da média não passar do eixo */
+  function P_y0(P, todos) { return faixa(todos.map(function (p) { return p.y; }))[0]; }
+  function maisPerto(cv, ev, lista, raio) {
+    var r = cv.getBoundingClientRect(), mx = ev.clientX - r.left, my = ev.clientY - r.top, best = null, bd = raio * raio;
+    lista.forEach(function (q) { var d = (q.x - mx) * (q.x - mx) + (q.y - my) * (q.y - my); if (d < bd) { bd = d; best = q; } });
+    return best;
+  }
+  $("dpCanvas").addEventListener("click", function (ev) {
+    var q = maisPerto(this, ev, dpPix, 14);
+    if (!q) return;
+    dpFora[q.p.i] = !dpFora[q.p.i];
+    drawDp();
+  });
+  $("dpCanvas").addEventListener("mousemove", function (ev) {
+    var q = maisPerto(this, ev, dpPix, 14), V = BASES[dpB].vars;
+    txt("dpInfo", q
+      ? dpRotulo(q.p.i) + ": " + V[dpXi].n + " = " + nv(q.p.x) + ", " + V[dpYi].n + " = " + nv(q.p.y) + (dpFora[q.p.i] ? " (fora da conta)" : "")
+      : "Passe o mouse sobre um ponto para ver a observação.");
+  });
+  wireSeg("dpBase", function (k) {
+    dpB = k; dpXi = BASES[k].x; dpYi = BASES[k].y; dpFora = {};
+    dpSeg(); drawDp();
+  });
+  wireSeg("dpX", function (k) { dpXi = +k; drawDp(); });
+  wireSeg("dpY", function (k) { dpYi = +k; drawDp(); });
+  $("dpRet").addEventListener("click", function () {
+    dpRet = !dpRet; this.setAttribute("aria-pressed", String(dpRet));
+    this.textContent = "Retângulos: " + (dpRet ? "sim" : "não"); drawDp();
+  });
+  $("dpRest").addEventListener("click", function () { dpFora = {}; drawDp(); });
+  dpSeg();
+
+  /* ---- § 13 quarteto de Anscombe (Anscombe, 1973) ---- */
+  var AN_X = [10, 8, 13, 9, 11, 14, 6, 4, 12, 7, 5], AN_X4 = [8, 8, 8, 8, 8, 8, 8, 19, 8, 8, 8];
+  var AN = [
+    { x: AN_X, y: [8.04, 6.95, 7.58, 8.81, 8.33, 9.96, 7.24, 4.26, 10.84, 4.82, 5.68], t: "I: o caso que todos imaginam ao ouvir r = 0,82: tendência linear com ruído." },
+    { x: AN_X, y: [9.14, 8.14, 8.74, 8.77, 9.26, 8.10, 6.13, 3.10, 9.13, 7.26, 4.74], t: "II: relação perfeita, mas curva. A reta é o modelo errado, e r não avisa." },
+    { x: AN_X, y: [7.46, 6.77, 12.74, 7.11, 7.81, 8.84, 6.08, 5.39, 8.15, 6.42, 5.73], t: "III: reta quase exata, com um ponto discrepante que muda a inclinação e rebaixa r." },
+    { x: AN_X4, y: [6.58, 5.76, 7.71, 8.84, 8.47, 7.04, 5.25, 12.50, 5.56, 7.91, 6.89], t: "IV: x quase não varia. Toda a correlação vem de um único ponto." }
+  ];
+  var anG = 0;
+  var drawAn = reg(function () {
+    var A = AN[anG], n = A.x.length;
+    txt("anXb", d2(mean(A.x))); txt("anYb", d2(mean(A.y)));
+    txt("anDx", d2(Math.sqrt(varN(A.x)))); txt("anDy", d2(Math.sqrt(varN(A.y))));
+    txt("anR", d3(corr(A.x, A.y)));
+    txt("anTxt", A.t);
+    var fr = fit($("anCanvas"));
+    if (!fr) return;
+    var P = panel(fr, { x0: 2, x1: 20, y0: 2, y1: 14, xlabel: "x", ylabel: "y" });
+    P.curve(function (x) { return 3 + .5 * x; }, css("--teorico"), 1.6, [5, 4]);
+    for (var i = 0; i < n; i++) P.dot(A.x[i], A.y[i], css("--empirico"), 4.5);
+  });
+  wireSeg("anG", function (k) { anG = +k; drawAn(); });
+
+  /* ---- § 14 salário × idade por instrução ---- */
+  var grVis = "todos";
+  var GRUPOS = [["fundamental", "--teorico", "grF"], ["médio", "--empirico", "grM"], ["superior", "--alerta", "grS"]];
+  var IDADE = BASES.mb.vars[1].v;
+  var drawGr = reg(function () {
+    txt("grR", d3(corr(IDADE, SAL)));
+    var sep = grVis === "grupos";
+    GRUPOS.forEach(function (g) {
+      var idx = MB.map(function (r, i) { return r[2] === g[0] ? i : -1; }).filter(function (i) { return i >= 0; });
+      txt(g[2], d3(corr(idx.map(function (i) { return IDADE[i]; }), idx.map(function (i) { return SAL[i]; }))));
+    });
+    $("grSw").innerHTML = sep
+      ? GRUPOS.map(function (g) { return '<span><i style="background:var(' + g[1] + ')"></i>' + g[0] + "</span>"; }).join("")
+      : '<span><i style="background:var(--ink-mute)"></i>todos os 36 empregados</span>';
+    var fr = fit($("grCanvas"));
+    if (!fr) return;
+    var P = panel(fr, { x0: 18, x1: 50, y0: 0, y1: 26, xlabel: "idade (anos)", ylabel: "salário (×SM)" });
+    if (sep) {
+      GRUPOS.forEach(function (g) {
+        var idx = MB.map(function (r, i) { return r[2] === g[0] ? i : -1; }).filter(function (i) { return i >= 0; });
+        var xs = idx.map(function (i) { return IDADE[i]; }), ys = idx.map(function (i) { return SAL[i]; }), f = reta(xs, ys);
+        P.curve(function (x) { return f.a + f.b * x; }, css(g[1]), 2, null, Math.min.apply(null, xs), Math.max.apply(null, xs));
+        xs.forEach(function (x, j) { P.dot(x, ys[j], css(g[1]), 4); });
+      });
+    } else {
+      var f = reta(IDADE, SAL);
+      P.curve(function (x) { return f.a + f.b * x; }, css("--ink-soft"), 2, null, Math.min.apply(null, IDADE), Math.max.apply(null, IDADE));
+      IDADE.forEach(function (x, j) { P.dot(x, SAL[j], css("--ink-mute"), 4); });
+    }
+  });
+  wireSeg("grVis", function (k) { grVis = k; drawGr(); });
+
+  /* ---- § 14 correlação parcial ---- */
+  var PC = {
+    filhos: { b: "mb", x: 2, y: 0, z: 1, t: "Só os 20 casados. Filhos e salário crescem com a idade (r = 0,74 e 0,48). Descontada a idade, não sobra nada: r parcial ≈ 0,01." },
+    altura: { b: "fio", x: 2, y: 0, z: 1, t: "Compare fios de comprimento 2: alturas 50 e 52 dão resistência 9,95 e 9,60; alturas 360 e 375 dão 11,66 e 14,38. Nem todo grupo é tão limpo: entre os de comprimento 4, o mais resistente (21,65) tem altura 205." }
+  };
+  var pcC = "filhos", pcV = "bruto";
+  var drawPc = reg(function () {
+    var C = PC[pcC], V = BASES[C.b].vars, vx = V[C.x], vy = V[C.y], vz = V[C.z];
+    var idx = vx.v.map(function (_, i) { return i; }).filter(function (i) { return vx.v[i] != null && vy.v[i] != null && vz.v[i] != null; });
+    var x = idx.map(function (i) { return vx.v[i]; }), y = idx.map(function (i) { return vy.v[i]; }), z = idx.map(function (i) { return vz.v[i]; });
+    var rx = resto(x, z), ry = resto(y, z);
+    txt("pcR", d3(corr(x, y))); txt("pcP", d3(corr(rx, ry)));
+    txt("pcXz", d3(corr(x, z))); txt("pcYz", d3(corr(y, z)));
+    txt("pcTxt", C.t);
+    var fr = fit($("pcCanvas"));
+    if (!fr) return;
+    var res = pcV === "resto", X = res ? rx : x, Y = res ? ry : y;
+    var P = eixos(fr, X, Y, {
+      xlabel: vx.n + (res ? " (o que sobra)" : ""),
+      ylabel: vy.n + (res ? " (o que sobra)" : "")
+    });
+    var ctx = P.ctx, zf = faixa(z, 0);
+    if (res) {
+      var fy = faixa(Y);
+      ctx.strokeStyle = css("--ink-mute"); ctx.lineWidth = 1; ctx.setLineDash([4, 3]);
+      ctx.beginPath(); ctx.moveTo(P.X(0), P.top + P.T); ctx.lineTo(P.X(0), P.Y(fy[0])); ctx.moveTo(P.L, P.Y(0)); ctx.lineTo(P.W - P.R, P.Y(0)); ctx.stroke();
+      ctx.setLineDash([]);
+    }
+    X.forEach(function (v, i) {
+      ctx.fillStyle = css("--teorico"); ctx.globalAlpha = .2 + .8 * (z[i] - zf[0]) / (zf[1] - zf[0]);
+      ctx.beginPath(); ctx.arc(P.X(v), P.Y(Y[i]), 5, 0, Math.PI * 2); ctx.fill();
+      ctx.globalAlpha = 1; ctx.strokeStyle = css("--teorico"); ctx.lineWidth = 1; ctx.stroke();
+    });
+  });
+  wireSeg("pcCaso", function (k) { pcC = k; drawPc(); });
+  wireSeg("pcVis", function (k) { pcV = k; drawPc(); });
+
+  /* ---- § 15 matriz de dispersão ---- */
+  var mxB = "vin", mxI = 0, mxJ = 4, mxCel = null;
+  var drawMx = reg(function () {
+    var V = BASES[mxB].vars, p = V.length;
+    var vx = V[mxJ], vy = V[mxI], ps = pares(vx.v, vy.v), r = corrP(ps);
+    txt("mxPar", vy.n + " × " + vx.n); txt("mxN", String(ps.length)); txt("mxR", d3(r));
+    var fr = fit($("mxCanvas"));
+    if (fr) {
+      var ctx = fr.ctx, cw = fr.w / p, ch = fr.h / p, pad = 5;
+      mxCel = { w: cw, h: ch, p: p };
+      for (var i = 0; i < p; i++) for (var j = 0; j < p; j++) {
+        var x0 = j * cw, y0 = i * ch;
+        if (i === j) {
+          ctx.fillStyle = css("--surface-2"); ctx.fillRect(x0, y0, cw, ch);
+          ctx.font = "600 " + (cw < 80 ? 10 : 12) + "px " + MONO; ctx.fillStyle = css("--ink"); ctx.textAlign = "center";
+          ctx.fillText(cw < 80 ? V[i].c : V[i].n, x0 + cw / 2, y0 + ch / 2 + 4);
+        } else if (j > i) {
+          var q = pares(V[j].v, V[i].v);
+          var fx = faixa(q.map(function (a) { return a.x; })), fy = faixa(q.map(function (a) { return a.y; }));
+          ctx.fillStyle = css("--empirico"); ctx.globalAlpha = .75;
+          q.forEach(function (a) {
+            ctx.beginPath();
+            ctx.arc(x0 + pad + (a.x - fx[0]) / (fx[1] - fx[0]) * (cw - 2 * pad), y0 + ch - pad - (a.y - fy[0]) / (fy[1] - fy[0]) * (ch - 2 * pad), Math.min(2.6, cw / 34 + .6), 0, Math.PI * 2);
+            ctx.fill();
+          });
+          ctx.globalAlpha = 1;
+        } else {
+          var rc = corrP(pares(V[j].v, V[i].v));
+          ctx.fillStyle = css(rc >= 0 ? "--teorico" : "--alerta"); ctx.globalAlpha = Math.abs(rc) * .45;
+          ctx.fillRect(x0, y0, cw, ch);
+          ctx.globalAlpha = 1;
+          ctx.font = (cw < 80 ? 11 : 14) + "px " + MONO; ctx.fillStyle = css("--ink"); ctx.textAlign = "center";
+          ctx.fillText(d3(rc), x0 + cw / 2, y0 + ch / 2 + 5);
+        }
+        ctx.strokeStyle = css("--rule"); ctx.lineWidth = 1; ctx.strokeRect(x0 + .5, y0 + .5, cw - 1, ch - 1);
+      }
+      ctx.strokeStyle = css("--ink"); ctx.lineWidth = 2;
+      ctx.strokeRect(mxJ * cw + 1, mxI * ch + 1, cw - 2, ch - 2);
+      ctx.strokeRect(mxI * cw + 1, mxJ * ch + 1, cw - 2, ch - 2);
+    }
+    var fz = fit($("mxZoom"));
+    if (fz) {
+      var Pz = eixos(fz, ps.map(function (a) { return a.x; }), ps.map(function (a) { return a.y; }), { xlabel: vx.n, ylabel: vy.n });
+      ps.forEach(function (a) { Pz.dot(a.x, a.y, css("--empirico"), 3.6); });
+    }
+  });
+  $("mxCanvas").addEventListener("click", function (ev) {
+    if (!mxCel) return;
+    var r = this.getBoundingClientRect();
+    var j = Math.floor((ev.clientX - r.left) / mxCel.w), i = Math.floor((ev.clientY - r.top) / mxCel.h);
+    if (i === j || i < 0 || j < 0 || i >= mxCel.p || j >= mxCel.p) return;
+    mxI = Math.min(i, j); mxJ = Math.max(i, j);
+    drawMx();
+  });
+  wireSeg("mxBase", function (k) {
+    mxB = k; mxI = 0; mxJ = BASES[k].vars.length - 1;
+    drawMx();
   });
 
   /* ---------------- soluções passo a passo ---------------- */

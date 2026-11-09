@@ -166,3 +166,30 @@ Um recurso muito útil na análise de quantis é o *boxplot*. Estabelecemos a *a
 - O limite superior é $LS = q_3 + 1.5 DI$
 - O limite inferior é $LI = q_1 - 1.5 DI$
 - O que estiver acima do limite superior ($LS$) ou abaixo do limite inferior ($LI$) é um valor discrepante (ou *outlier*).
+
+# Análise multivariada
+
+Em muitos problemas, engenheiros e cientistas trabalham com dados que são multivariados por natureza; ou seja, cada observação consiste em medidas de várias variáveis.
+Exemplos de observações:
+
+- [Dados sobre resistência de fio](./resitencia_fio.csv)
+- [Dados sobre a qualidade de vinhos tintos](./vinhos.csv)
+
+> Se já existe um esforço para rodar um experimento ou um ensaio, é natural que se observe mais do que uma variável.
+
+Em uma análise 2 a 2 das varíaves, um gráfico de dispersão pode ajudar a encontrar relação entre as variáveis. Para quantificar, temos o coeficiente de correlação de [Pearson](https://en.wikipedia.org/wiki/Karl_Pearson):
+
+$$r_{xy} = \frac{\sum_{i=1}^{n} y_i (x_i - \bar{x})}{ \left[ \sum_{i=1}^{n} (y_i - \bar{y})^2 \sum_{i=1}^{n} (x_i - \bar{x})^2 \right]^{\frac{1}{2}} }$$
+
+> 🤔 Veja que existe uma certa lembrança dos conceitos de covariância e correlação para variáveis aleatórias em probabilidade conjunta
+
+## Quando temos muitas variáveis
+
+Os conceitos de correlação e dispersão são aplicados para quando queremos comparar 2 variáveis. Se temos $n$ variáveis, temos que comparar dois a dois.
+
+Um procedimento visual seria montar uma matriz de diagramas de dispersão:
+
+![matriz de diagramas de dispersao](matriz_dispersao.png)
+
+📚 Próxima etapa da disciplina é estatística inferencial, vamos fazer mais do que apenas perceber que os conceitos de média, variância e correlação lembram o que vimos em variáveis aleatórias. Vamos estabelecer parâmetros, hipóteses e formalizar essa constatação.
+Vamos trazer o Teorema Central do Limite.
